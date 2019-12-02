@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SubscriptionActivity">
+
+    <include
+        android:id="@+id/subs_bar"
+        layout="@layout/app_bar_layout"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/subs_bar"
+        android:layout_margin="6dp"
+        android:paddingStart="4dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subs_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </androidx.core.widget.NestedScrollView>
+
+<TextView
+    android:id="@+id/textToSee"
+    android:textSize="20sp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="@string/subscription_text"
+    android:layout_below="@id/subs_bar"
+    android:textColor="#FFD700"
+    android:padding="12dp"
+    android:visibility="gone"/>
+
+</RelativeLayout>

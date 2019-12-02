@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ChatApp.iml" filepath="$PROJECT_DIR$/ChatApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/filepicker/filepicker.iml" filepath="$PROJECT_DIR$/filepicker/filepicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/imageeditengine/imageeditengine.iml" filepath="$PROJECT_DIR$/imageeditengine/imageeditengine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/videotrimmer/videotrimmer.iml" filepath="$PROJECT_DIR$/videotrimmer/videotrimmer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/voicemessager/voicemessager.iml" filepath="$PROJECT_DIR$/voicemessager/voicemessager.iml" />
+    </modules>
+  </component>
+</project>

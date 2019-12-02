@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="25dp"
+    android:layout_gravity="center"
+    android:background="@drawable/border"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="1.0"
+    app:layout_constraintStart_toStartOf="parent"
+    tools:layout_editor_absoluteY="157dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilePic"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ic_avatar" />
+
+        <TextView
+            android:id="@+id/name"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/profilePic"
+            android:layout_toRightOf="@id/profilePic"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:text="@string/name"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/status"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:layout_toEndOf="@id/profilePic"
+            android:layout_toRightOf="@id/profilePic"
+            android:paddingStart="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="10dp"
+            android:text="@string/status_profile"
+            android:textSize="16sp" />
+
+        <View
+            android:id="@+id/v"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/profilePic"
+            android:layout_marginTop="8dp"
+            android:background="#ccc" />
+
+        <TextView
+            android:id="@+id/phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/v"
+            android:drawableLeft="@drawable/ic_account"
+            android:drawablePadding="24dp"
+            android:paddingTop="8dp"
+            android:text="@string/phone_number"
+            android:textSize="16sp"
+            android:textColor="#FFA500"
+            android:textStyle="bold"
+            android:drawableStart="@drawable/ic_account" />
+
+        <TextView
+            android:id="@+id/numberConversation"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/phone_number"
+            android:paddingTop="8dp"
+            android:text="@string/number_of_conversation" />
+
+        <TextView
+            android:id="@+id/numberOfBlockedUsers"
+            android:textSize="16sp"
+            android:textColor="@color/colorPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/numberConversation"
+            android:paddingTop="8dp"
+            android:clickable="true"
+            android:background="@drawable/highlighted_layout"
+            android:text="@string/blocked_users"
+            android:focusable="true" />
+
+</RelativeLayout>
+

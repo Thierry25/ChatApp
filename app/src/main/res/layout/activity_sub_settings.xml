@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SubSettingsActivity">
+
+    <include layout="@layout/app_bar_layout"
+        android:id="@+id/sub_settings_bar"/>
+
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sub_settings_bar"
+        android:layout_marginLeft="7dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="7dp"
+        android:background="@drawable/border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settings_channel_bar"
+        app:layout_constraintVertical_bias="0.0">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/picId"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/ic_avatar" />
+
+        <TextView
+            android:id="@+id/chan_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/picId"
+            android:layout_toRightOf="@id/picId"
+            android:fontFamily="sans-serif-light"
+            android:padding="8dp"
+            android:text="@string/channel_name"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/time_created"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/chan_name"
+            android:layout_toEndOf="@id/picId"
+            android:layout_toRightOf="@id/picId"
+            android:fontFamily="sans-serif-light"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="4dp"
+            android:text="@string/time_created"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/amount_subscribers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/time_created"
+            android:layout_toEndOf="@id/picId"
+            android:layout_toRightOf="@id/picId"
+            android:fontFamily="sans-serif-light"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/subscribers"
+            android:textSize="17sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/relativeLayout"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/border">
+
+        <TextView
+            android:id="@+id/unsubscribe"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@android:color/black"
+            android:background="@drawable/highlighted_layout"
+            android:text="@string/unsubscribe_to_channel"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/media"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/unsubscribe"
+            android:background="@drawable/highlighted_layout"
+            android:textColor="@android:color/black"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:text="@string/medias"
+            android:textSize="20sp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/_4sdp">
+    
+    <Spinner
+        android:id="@+id/questionSpinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:layout_marginLeft="@dimen/_4sdp">
+    </Spinner>
+    
+    <EditText
+        android:id="@+id/questionAnswered"
+        android:textColor="#000"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_4sdp"
+        android:layout_marginStart="@dimen/_4sdp"
+        android:layout_below="@id/questionSpinner"
+        android:layout_marginTop="@dimen/_12sdp"
+        android:singleLine="true"
+        android:hint="@string/answer"
+        android:layout_marginRight="@dimen/_4sdp" />
+
+    <Button
+        android:id="@+id/verify_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/questionAnswered"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@drawable/border_"
+        android:text="@string/verify___"/>
+
+</RelativeLayout>

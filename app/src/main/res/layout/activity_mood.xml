@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MoodActivity">
+
+  <include
+      android:id="@+id/moodBar"
+      layout="@layout/mood_bar" />
+
+  <androidx.core.widget.NestedScrollView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_margin="0dp"
+      android:layout_below="@id/moodBar">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/moodBar">
+
+      <TextView
+          android:id="@+id/contactsName"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_margin="8dp"
+          android:background="@color/light_gray"
+          android:text="@string/contacts"
+          android:textSize="18sp"
+          android:textColor="@color/black"
+          android:drawableEnd="@drawable/ic_down_arrow"/>
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/contactList"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/contactsName"
+          android:layout_marginStart="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginRight="8dp"
+          android:layout_marginBottom="8dp"/>
+
+      <TextView
+          android:id="@+id/groupsName"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/contactList"
+          android:layout_margin="8dp"
+          android:background="@color/light_gray"
+          android:text="@string/_groups"
+          android:textSize="18sp"
+          android:textColor="@color/black"
+          android:drawableEnd="@drawable/ic_down_arrow"/>
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/groupList"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/groupsName"
+          android:layout_marginStart="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginRight="8dp"
+          android:layout_marginBottom="8dp"/>
+
+      <TextView
+          android:id="@+id/channelsName"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/noGroupsText"
+          android:layout_margin="8dp"
+          android:background="@color/light_gray"
+          android:textColor="@color/black"
+          android:text="@string/_channels"
+          android:textSize="18sp"
+          android:drawableRight="@drawable/ic_down_arrow"
+          android:drawableEnd="@drawable/ic_down_arrow"/>
+
+      <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/channelList"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/channelsName"
+          android:layout_marginStart="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginEnd="8dp"
+          android:layout_marginRight="8dp"
+          android:layout_marginBottom="8dp"/>
+
+      <TextView
+          android:id="@+id/noContactsText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/contactsName"
+          android:padding="4dp"
+          android:text="@string/no_contacts_"
+          android:textColor="@color/black"
+          android:textSize="20sp"
+          android:visibility="gone" />
+
+      <TextView
+          android:id="@+id/noGroupsText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/groupList"
+          android:padding="4dp"
+          android:text="@string/no_group_enrolled"
+          android:textColor="@color/black"
+          android:textSize="18sp"
+          android:visibility="gone" />
+
+      <TextView
+          android:id="@+id/noChannelsText"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/channelsName"
+          android:padding="4dp"
+          android:text="@string/no_channel_subscribed"
+          android:textColor="@color/black"
+          android:textSize="18sp"
+          android:visibility="gone" />
+
+      <ProgressBar
+          android:layout_marginTop="8dp"
+          android:id="@+id/groupProgress"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/groupsName"
+          android:layout_centerHorizontal="true"/>
+
+      <ProgressBar
+          android:layout_marginTop="8dp"
+          android:id="@+id/channelProgress"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@id/channelsName"
+          android:layout_centerHorizontal="true"/>
+
+      <TextView
+          android:textSize="24sp"
+          android:id="@+id/textNoBlockedUsers"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/no_blocked_users_yet"
+          android:layout_centerHorizontal="true"
+          android:visibility="gone"/>
+
+
+    </RelativeLayout>
+  </androidx.core.widget.NestedScrollView>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="4dp"
+        android:gravity="bottom|end">
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="17dp"
+        android:src="@android:drawable/ic_menu_send"
+        android:layout_marginBottom="12dp"
+        app:elevation="4dp"
+        app:fabSize="normal"
+        app:backgroundTint="@color/light_blue"/>
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--<item android:title="@string/add_users"-->
+        <!--android:id="@+id/menu_add_user"/>-->
+
+    <item
+        android:id="@+id/menu_search"
+        android:title="@string/searched"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        android:icon="@drawable/ic_search"/>
+
+    <item android:title="@string/invite_via_link"
+        android:id="@+id/menu_invite_link"/>
+    <item
+        android:id="@+id/menu_delete_channel"
+        android:title="@string/delete_channel" />
+    <item
+        android:id="@+id/menu_media"
+        android:title="@string/medias"/>
+
+</menu>

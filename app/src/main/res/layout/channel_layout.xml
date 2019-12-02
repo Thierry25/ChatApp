@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="4dp"
+    android:background="@drawable/border">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:text="@string/choose_option"
+            android:textSize="18sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="8dp"
+            android:background="@color/light_gray" />
+
+        <Button
+            android:id="@+id/reconnectToChannel"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:drawableStart="@drawable/ic_insert_link"
+            android:drawableLeft="@drawable/ic_insert_link"
+            android:drawablePadding="22dp"
+            android:duplicateParentState="true"
+            android:text="@string/chan_recon"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:id="@+id/newChannel"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:drawableStart="@drawable/ic_fiber_new"
+            android:drawableLeft="@drawable/ic_fiber_new"
+            android:drawablePadding="22dp"
+            android:duplicateParentState="true"
+            android:text="@string/channel"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+
+        <Button
+            android:id="@+id/mySubscriptions"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:drawableStart="@drawable/ic_group_"
+            android:drawableLeft="@drawable/ic_group_"
+            android:drawablePadding="22dp"
+            android:duplicateParentState="true"
+            android:text="@string/subscriptions"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/searchChannel"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="64dp"
+            android:drawableStart="@drawable/ic_green_search"
+            android:drawableLeft="@drawable/ic_green_search"
+            android:drawablePadding="22dp"
+            android:duplicateParentState="true"
+            android:text="@string/chan_search"
+            android:textAllCaps="false"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

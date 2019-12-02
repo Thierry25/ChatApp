@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainRLayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.ChannelSettingsActivity">
+
+    <!-- TODO: Add search bar and list all the contacts from phone, create another db for public
+    and private channels!-->
+
+    <include
+        android:id="@+id/channel_settings_bar"
+        layout="@layout/app_bar_layout" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cstLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="77dp"
+        android:layout_alignParentLeft="true">
+
+        <RadioGroup
+            android:id="@+id/radioPrivacy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/border"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/radioPublic"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/radio_public" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:layout_margin="7dp"
+                android:background="#ccc" />
+
+            <RadioButton
+                android:id="@+id/radioPrivate"
+                android:layout_width="95dp"
+                android:layout_height="36dp"
+                android:text="@string/radio_private" />
+
+        </RadioGroup>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <FrameLayout
+        android:id="@+id/frmLayout"
+        android:layout_below="@id/cstLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:layout_margin="8dp"
+        android:paddingTop="12dp">
+
+        <TextView
+            android:id="@+id/textToShowToUser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
+            android:textColor="#ffa500"
+            android:text="@string/text_channel" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/rLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/frmLayout"
+        android:background="@drawable/border"
+        android:layout_margin="8dp">
+
+        <TextView
+            android:id="@+id/linkText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="8dp"
+            android:text="@string/link"
+            android:textColor="#000" />
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="0.7dp"
+            android:layout_margin="7dp"
+            android:background="#ccc" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/actualLink"
+            android:paddingTop="3dp"
+            android:text="@string/actual_link"
+            android:paddingLeft="4dp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rLayout"
+        android:text="Link to share with others to subscribe"
+        android:textSize="15sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_marginLeft="10dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/continueToUsers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/frmLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="11dp"
+        android:src="@android:drawable/ic_menu_send"
+        android:layout_alignRight="@+id/frmLayout" />
+</RelativeLayout>

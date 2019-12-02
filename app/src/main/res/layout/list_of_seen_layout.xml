@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_gravity="bottom"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginStart="8dp"
+    android:maxHeight="550dp">
+
+    <LinearLayout
+        android:id="@+id/linLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="3"
+        android:background="@drawable/seen_border">
+
+        <TextView
+            android:id="@+id/textSeen"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_weight="2"
+            android:text="@string/viewed_"
+            android:textColor="#FFFFFF" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:id="@+id/delete"
+            android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:layout_marginBottom="4dp"
+            android:src="@drawable/ic_trash"
+            android:layout_weight="1"
+            android:layout_gravity="end"/>
+
+        <!--<ImageView-->
+            <!--android:layout_width="0dp"-->
+            <!--android:id="@+id/forward"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:src="@drawable/ic_forward"-->
+            <!--android:layout_marginBottom="4dp"-->
+            <!--android:paddingTop="3dp"-->
+            <!--android:layout_weight=".5"-->
+            <!--android:layout_gravity="end"/>-->
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/linLayout"
+        android:background="#FFF">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:id="@+id/seenUpdatesList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"></androidx.recyclerview.widget.RecyclerView>
+
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

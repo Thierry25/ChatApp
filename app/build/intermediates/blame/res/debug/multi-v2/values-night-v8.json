@@ -1,0 +1,36 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-night-v8\\values-night-v8.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\0165c20265b8a7523cbe25b17c01c65b\\jetified-emoji-0.6.0\\res\\values-night-v8\\values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "55,120,180",
+                        "endColumns": "64,59,56",
+                        "endOffsets": "115,175,232"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\a6bcca69332d012fdf4728b3d0574c3a\\appcompat-1.1.0\\res\\values-night-v8\\values-night-v8.xml",
+                    "from": {
+                        "startLines": "2,3,4,5,6,7,8,9",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,125,209,293,389,491,593,687",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "120,204,288,384,486,588,682,771"
+                    },
+                    "to": {
+                        "startLines": "5,6,7,8,9,10,11,12",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "237,307,391,475,571,673,775,869",
+                        "endColumns": "69,83,83,95,101,101,93,88",
+                        "endOffsets": "302,386,470,566,668,770,864,953"
+                    }
+                }
+            ]
+        }
+    ]
+}

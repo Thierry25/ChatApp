@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/menu_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/searched"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView" />
+
+    <item
+        android:id="@+id/menu_contacts"
+        android:title="@string/contacts" />
+
+<!--    <item-->
+<!--        android:id="@+id/menu_subscriptions"-->
+<!--        android:title="@string/subscriptions" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/menu_mood"-->
+<!--        android:title="@string/mood"/>-->
+
+    <item
+        android:id="@+id/menu_more_settings"
+        android:title="@string/more_settings">
+        <menu>
+
+<!--            <item-->
+<!--                android:id="@+id/menu_channel_"-->
+<!--                android:title="@string/_channel">-->
+<!--                <menu>-->
+
+<!--                    <item-->
+<!--                        android:id="@+id/menu_channel"-->
+<!--                        android:title="@string/channel"/>-->
+
+<!--                    <item-->
+<!--                        android:id="@+id/menu_reconnect"-->
+<!--                        android:title="@string/chan_recon" />-->
+<!--                </menu>-->
+<!--            </item>-->
+<!--            <item-->
+<!--                android:id="@+id/menu_group"-->
+<!--                android:title="@string/group" />-->
+
+            <item
+                android:id="@+id/menu_list_call"
+                android:title="@string/_calls_"/>
+
+            <item
+                android:id="@+id/menu_change_language"
+                android:title="@string/change_language"/>
+            <item
+                android:id="@+id/menu_parametre"
+                android:title="@string/settings"/>
+
+        </menu>
+
+    </item>
+
+
+</menu>
+

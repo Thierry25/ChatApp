@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="colorPrimary">#2f363d</color>
+  <color name="colorPrimaryDark">#23282d</color>
+  <color name="colorAccent">#616269</color>
+  <!--<color name="button_color">#455A64</color>-->
+  <color name="login_background">#EEEEEE</color>
+  <color name="light_blue">#20BF9F</color>
+  <color name="light_gray">#f6f6f6</color>
+  <color name="black_overlay">#66000000</color>
+
+  <!-- Screens background color-->
+  <color name="bg_screen1">#f64c73</color>
+  <color name="bg_screen2">#20d2bb</color>
+  <color name="bg_screen3">#3395ff</color>
+  <color name="bg_screen4">#c873f4</color>
+
+  <!-- dots inactive colors -->
+  <color name="dot_dark_screen1">#d1395c</color>
+  <color name="dot_dark_screen2">#14a895</color>
+  <color name="dot_dark_screen3">#2278d4</color>
+  <color name="dot_dark_screen4">#a854d4</color>
+
+  <!-- dots active colors -->
+  <color name="dot_light_screen1">#f98da5</color>
+  <color name="dot_light_screen2">#8cf9eb</color>
+  <color name="dot_light_screen3">#93c6fd</color>
+  <color name="dot_light_screen4">#e4b5fc</color>
+
+  <array name="array_dot_active">
+    <item>@color/dot_light_screen1</item>
+    <item>@color/dot_light_screen2</item>
+    <item>@color/dot_light_screen3</item>
+    <item>@color/dot_light_screen4</item>
+  </array>
+
+  <array name="array_dot_inactive">
+    <item>@color/dot_dark_screen1</item>
+    <item>@color/dot_dark_screen2</item>
+    <item>@color/dot_dark_screen3</item>
+    <item>@color/dot_dark_screen4</item>
+  </array>
+
+  <color name="list_item_selected_state">#F4F6F6</color>
+
+
+  <color name="colorGray">#808080</color>
+  <color name="colorDarkGreen">#00574B</color>
+  <color name="colorPink">#D81B60</color>
+  <color name="colorOrange">#FFA500</color>
+  <color name="colorOrangered">#FF4500</color>
+  <color name="colorBlack">#000</color>
+  <color name="colorPurple">#4B0082</color>
+  <color name="colorRed">#B22222</color>
+  <color name="colorTeal">#008080</color>
+  <color name="colorPhil">#ffeedd</color>
+  <color name="colorBrown">#e5b895</color>
+  <color name="colorPinkFade">#ffaabb</color>
+  <color name="colorLightPurple">#9b8dc2</color>
+  <color name="colorLDarkBlue">#6a7a94</color>
+  <color name="colorRedLight">#ee134a</color>
+
+
+  <color name="black">#000000</color>
+  <color name="white">#FFFFFF</color>
+  <color name="blue_color_picker">#0066FF</color>
+  <color name="brown_color_picker">#AF593E</color>
+  <color name="green_color_picker">#01A368</color>
+  <color name="orange_color_picker">#FF861F</color>
+  <color name="red_color_picker">#ED0A3F</color>
+  <color name="red_orange_color_picker">#FF3F34</color>
+  <color name="sky_blue_color_picker">#76D7EA</color>
+  <color name="violet_color_picker">#8359A3</color>
+  <color name="yellow_color_picker">#FBE870</color>
+  <color name="yellow_green_color_picker">#C5E17A</color>
+  <color name="tool_bg">#151414</color>
+
+  <!-- video trimming colors -->
+  <color name="blackOverlay">#80000000</color>
+  <item name="tooltip_mask" type="color">#CC4f5355</item>
+
+
+</resources>
+
+    <!--#cc8400-->

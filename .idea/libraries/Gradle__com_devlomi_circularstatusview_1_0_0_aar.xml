@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.devlomi:circularstatusview:1.0.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6c6250722b85d502e3d0dab042fc4f19/jetified-circularstatusview-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6c6250722b85d502e3d0dab042fc4f19/jetified-circularstatusview-1.0.0/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.devlomi/circularstatusview/1.0.0/8016c52e55fddc12d9d2b421a5b104fd9bf50251/circularstatusview-1.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.devlomi/circularstatusview/1.0.0/76ff0b72fc6ecff96ac980ec2c28cebc4afce210/circularstatusview-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

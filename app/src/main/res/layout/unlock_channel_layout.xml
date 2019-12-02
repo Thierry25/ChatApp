@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+    android:layout_gravity="center_vertical"
+    android:background="@drawable/border"
+    android:layout_margin="10dp">
+
+       <EditText
+           android:id="@+id/passwordEntered"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:inputType="textPassword"
+           android:textColor="@android:color/black"
+           android:hint="@string/chan_pass_entered"/>
+
+    <TextView
+        android:paddingTop="@dimen/_4sdp"
+        android:id="@+id/recoverPasswordButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/passwordEntered"
+        android:text="@string/forgot_password"
+        android:textColor="#0080ff"
+        android:textStyle="italic"
+        android:gravity="end"/>
+
+    <Button
+        android:id="@+id/unlockButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recoverPasswordButton"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="@dimen/_4sdp"
+        style="?android:attr/borderlessButtonStyle"
+        android:textAlignment="center"
+        android:textColor="#ff4500"
+        android:text="@string/un_" />
+
+</RelativeLayout>

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.coderconsole.cextracter:contact-extractor:1.0.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3091f4ecbeee0b1488c8a782a880e897/jetified-contact-extractor-1.0.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/3091f4ecbeee0b1488c8a782a880e897/jetified-contact-extractor-1.0.0/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.coderconsole.cextracter/contact-extractor/1.0.0/9b3523f7aafd024703139514d348aed590f4277a/contact-extractor-1.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.coderconsole.cextracter/contact-extractor/1.0.0/276029edb62f37d0558aee79f69ffdb080804615/contact-extractor-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/rLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/message_text_background"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingStart="8dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/ic_avatar" />
+
+        <TextView
+            android:id="@+id/nameStoredInPhone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="12dp"
+            android:layout_toEndOf="@id/profileImage"
+            android:layout_toRightOf="@id/profileImage"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/get_info"
+            android:textColor="#000" />
+
+        <View
+            android:layout_width="100dp"
+            android:layout_height="0.5dp"
+            android:layout_below="@id/nameStoredInPhone"
+            android:background="#ccc"
+            android:layout_marginTop="14dp"
+            android:layout_marginLeft="8dp"/>
+
+        <ImageView
+            android:id="@+id/checked"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_toRightOf="@id/nameStoredInPhone"
+            android:paddingRight="6dp"
+            android:src="@drawable/ic_check"
+            android:visibility="gone" />
+
+<LinearLayout
+    android:orientation="horizontal"
+    android:id="@+id/l"
+    android:layout_width="104dp"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/profileImage"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentLeft="true"
+    android:weightSum="3">
+
+    <TextView
+        android:id="@+id/lala"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_weight="1.5"
+        android:text="@string/save"
+        android:gravity="center_horizontal"
+        android:textColor="#58c890"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp" />
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.5"
+        android:textColor="@color/black"
+        android:textSize="9sp"
+        android:text="@string/_00_00"/>
+
+</LinearLayout>
+
+
+    </RelativeLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/mainVLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="0dp"
+        android:padding="0dp"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true">
+
+        <LinearLayout
+            android:id="@+id/replyLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:orientation="horizontal"
+            android:paddingBottom="0dp"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/replyLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="-12dp"
+                android:layout_weight="3.04"
+                android:background="@drawable/reply_border"
+                android:orientation="horizontal"
+                android:paddingBottom="-12dp">
+
+                <RelativeLayout
+                    android:id="@+id/replyTextLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F1F1F1"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/senderOfMessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:paddingLeft="2dp"
+                        android:paddingBottom="4dp"
+                        android:text="@string/sender"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/messageReceived"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/senderOfMessage"
+                        android:gravity="start"
+                        android:maxLength="25"
+                        android:paddingLeft="2dp"
+                        android:text="@string/sender"
+                        android:textSize="14sp"
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/imageSent"
+                        android:layout_width="40dp"
+                        android:layout_height="20dp"
+                        android:layout_below="@id/senderOfMessage"
+                        android:gravity="start"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/audioSent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/senderOfMessage"
+                        android:gravity="start"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/videoSent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/senderOfMessage"
+                        android:gravity="start"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/documentSent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/senderOfMessage"
+                        android:gravity="start"
+                        android:visibility="gone" />
+
+                    <ImageView
+
+                        android:id="@+id/close_reply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true" />
+
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="0dp"
+                android:layout_weight=".43"
+                android:padding="0dp"
+                android:text="@string/sender"
+                android:visibility="invisible" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/messageLinLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginRight="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_weight="4.3"
+                android:background="@drawable/new_border"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageButton
+                    android:id="@+id/send_emoji"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:contentDescription="@string/open_emoji_keyboard"
+                    android:src="@drawable/ic_send_emoji" />
+
+                <com.vanniktech.emoji.EmojiEditText
+                    android:id="@+id/send_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:hint="@string/type_message"
+                    android:imeOptions="actionSend|flagNoExtractUi"
+                    android:inputType="textCapSentences|textMultiLine">
+
+                    <requestFocus />
+                </com.vanniktech.emoji.EmojiEditText>
+
+                <ImageButton
+                    android:id="@+id/send_attachment"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".5"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:contentDescription="@string/send_attachment"
+                    android:src="@android:drawable/ic_input_add"
+                    android:tint="@color/colorPrimary" />
+
+                <com.devlomi.record_view.RecordView
+                    android:id="@+id/record_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4.3"
+                    android:visibility="gone"
+                    app:counter_time_color="#ff0000"
+                    app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                    app:slide_to_cancel_arrow_color="#000000"
+                    app:slide_to_cancel_bounds="8dp"
+                    app:slide_to_cancel_margin_right="10dp"
+                    app:slide_to_cancel_text="Slide To Cancel" />
+
+            </LinearLayout>
+
+            <com.devlomi.record_view.RecordButton
+                android:id="@+id/record_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/mic"
+                android:scaleType="centerInside"
+                android:tag="voice_tag"/>
+<!--                app:mic_icon="@drawable/recv_ic_mic_white" />-->
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

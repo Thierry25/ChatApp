@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+    android:background="@drawable/border"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center"
+        android:layout_margin="25dp">
+
+        <ImageView
+            android:id="@+id/icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:clickable="false"
+            android:contentDescription="@string/textview"
+            android:padding="4dp"
+            android:src="@drawable/ic_call" />
+
+        <TextView
+            android:id="@+id/phone_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="66dp"
+            android:layout_marginStart="66dp"
+            android:layout_marginTop="12dp"
+            android:clickable="false"
+            android:text="@string/textview"
+            android:textColor="#4B0082"
+            android:textSize="24sp" />
+
+        <View
+            android:id="@+id/seperator"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@id/icon"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:background="#ccc"
+            android:paddingTop=".5dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/seperator"
+            android:layout_marginLeft="65dp"
+            android:text="@string/shared_items"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:padding="4dp"
+            android:textSize="22sp"
+            android:id="@+id/media"
+            android:layout_marginStart="65dp"
+            android:focusable="true"
+            android:background="@drawable/highlighted_layout"/>
+
+        <View
+            android:id="@+id/seperator_"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@id/media"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:background="#ccc"
+            android:layout_marginTop="5dp"
+            />
+
+        <TextView
+            android:id="@+id/delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_conversation"
+            android:layout_below="@id/seperator_"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:padding="4dp"
+            android:layout_marginLeft="65dp"
+            android:textSize="22sp"
+            android:layout_marginStart="65dp"
+            android:focusable="true"
+            android:background="@drawable/highlighted_layout"/>
+
+        <View
+            android:id="@+id/seperator__"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:layout_below="@id/delete"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp"
+            android:background="#ccc"
+            android:layout_marginTop="5dp"
+            />
+
+        <TextView
+            android:id="@+id/block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/block"
+            android:layout_below="@id/seperator__"
+            android:textColor="@android:color/black"
+            android:clickable="true"
+            android:padding="4dp"
+            android:layout_marginLeft="65dp"
+            android:textSize="22sp"
+            android:layout_marginStart="65dp"
+            android:focusable="true"
+            android:background="@drawable/highlighted_layout"/>
+
+    </RelativeLayout>
+

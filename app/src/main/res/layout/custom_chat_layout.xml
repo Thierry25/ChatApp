@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_toolbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/a"
+    android:fitsSystemWindows="true"
+    app:layout_collapseMode="pin"
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_chevron_left"
+            android:layout_marginEnd="12dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title"
+            android:layout_centerVertical="true"
+            android:textColor="@android:color/black"
+            android:layout_toRightOf="@id/profileImage"
+            android:paddingRight="8dp"
+            android:textSize="18sp"
+            android:textStyle="bold|italic"
+            android:fontFamily="sans-serif-light"
+            android:text="@string/s"
+            android:layout_toEndOf="@id/profileImage"
+            android:paddingEnd="8dp" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_avatar"
+            android:layout_marginEnd="16dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/backButton"
+            android:id="@+id/profileImage"
+            android:layout_marginRight="16dp" />
+    </RelativeLayout>
+
+
+</androidx.appcompat.widget.Toolbar>
+
+
+    <!--    android:background="#0FDDAF"-->

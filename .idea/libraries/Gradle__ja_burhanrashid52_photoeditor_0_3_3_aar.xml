@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: ja.burhanrashid52:photoeditor:0.3.3@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6cf7a382012704542f57487bbcb74efb/jetified-photoeditor-0.3.3/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/6cf7a382012704542f57487bbcb74efb/jetified-photoeditor-0.3.3/res" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ja.burhanrashid52/photoeditor/0.3.3/f956bf2339d1dd83d102344acf13bc65a27535da/photoeditor-0.3.3-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/ja.burhanrashid52/photoeditor/0.3.3/b64d1c5478977ba89484dea36e680f1b9afd6fb9/photoeditor-0.3.3-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
