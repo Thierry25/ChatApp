@@ -1,10 +1,10 @@
 [
     {
-        "merged": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_video_trimmer.xml",
-        "source": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\src\\main\\res\\layout\\activity_video_trimmer.xml"
+        "merged": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\dialog_video_picker.xml",
+        "source": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\src\\main\\res\\layout\\dialog_video_picker.xml"
     },
     {
-        "merged": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\dialog_video_picker.xml",
-        "source": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\src\\main\\res\\layout\\dialog_video_picker.xml"
+        "merged": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\stripped.dir\\layout\\activity_video_trimmer.xml",
+        "source": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\src\\main\\res\\layout\\activity_video_trimmer.xml"
     }
 ]

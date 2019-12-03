@@ -1,10 +1,10 @@
-#Tue Dec 03 03:45:34 CST 2019
+#Tue Dec 03 15:35:35 EST 2019
 path.2=classes3.dex
 path.1=classes2.dex
 path.0=classes.dex
 renamed.2=classes3.dex
 renamed.1=classes2.dex
 renamed.0=classes.dex
-base.2=C\:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes3.dex
-base.1=C\:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes2.dex
-base.0=C\:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
+base.2=C\:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes3.dex
+base.1=C\:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes2.dex
+base.0=C\:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\dex\\debug\\mergeDexDebug\\out\\classes.dex
