@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-es-rGT\\values-es-rGT.xml",
+            "outputFile": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-es-rGT\\values-es-rGT.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\577e1b88e1eae558093ef28e9bb13dea\\jetified-android-image-cropper-2.7.0\\res\\values-es-rGT\\values-es-rGT.xml",
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\5a648c45eb260b7d9313454b9e2d3d50\\jetified-android-image-cropper-2.7.0\\res\\values-es-rGT\\values-es-rGT.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10",
                         "startColumns": "4,4,4,4,4,4,4,4,4",

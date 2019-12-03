@@ -1,27 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\marce\\Music\\BackUpChatApp\\ChatApp\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-fi\\values-fi.xml",
+            "outputFile": "C:\\Users\\famarcelin\\Documents\\marcelin\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-fi\\values-fi.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\2f135f50411e0f3165f24c495f3fdfb8\\core-1.1.0\\res\\values-fi\\values-fi.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "100",
-                        "endOffsets": "151"
-                    },
-                    "to": {
-                        "startLines": "86",
-                        "startColumns": "4",
-                        "startOffsets": "8150",
-                        "endColumns": "100",
-                        "endOffsets": "8246"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\a6bcca69332d012fdf4728b3d0574c3a\\appcompat-1.1.0\\res\\values-fi\\values-fi.xml",
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\a6bcca69332d012fdf4728b3d0574c3a\\appcompat-1.1.0\\res\\values-fi\\values-fi.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -38,24 +21,7 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\8055bde38c10f0e876f9d191babbc8c5\\jetified-play-services-basement-11.8.0\\res\\values-fi\\values.xml",
-                    "from": {
-                        "startLines": "4",
-                        "startColumns": "0",
-                        "startOffsets": "283",
-                        "endColumns": "208",
-                        "endOffsets": "491"
-                    },
-                    "to": {
-                        "startLines": "37",
-                        "startColumns": "4",
-                        "startOffsets": "3926",
-                        "endColumns": "208",
-                        "endOffsets": "4130"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\956a2eb7d4eb5821d75c3b9d1ed55d88\\jetified-play-services-base-11.8.0\\res\\values-fi\\values.xml",
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\830abb465367b13ddd61d46f20044655\\jetified-play-services-base-11.8.0\\res\\values-fi\\values.xml",
                     "from": {
                         "startLines": "4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",
                         "startColumns": "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
@@ -72,7 +38,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\94e652bd42f0c66112bfca6bcdb1b6d3\\jetified-firebase-messaging-11.8.0\\res\\values-fi\\values.xml",
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\1a27a2c2fb12f500ee3ab36c1a300896\\jetified-play-services-basement-11.8.0\\res\\values-fi\\values.xml",
+                    "from": {
+                        "startLines": "4",
+                        "startColumns": "0",
+                        "startOffsets": "283",
+                        "endColumns": "208",
+                        "endOffsets": "491"
+                    },
+                    "to": {
+                        "startLines": "37",
+                        "startColumns": "4",
+                        "startOffsets": "3926",
+                        "endColumns": "208",
+                        "endOffsets": "4130"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\99fc6e0be58a24951450548f71db5425\\jetified-firebase-messaging-11.8.0\\res\\values-fi\\values.xml",
                     "from": {
                         "startLines": "4",
                         "startColumns": "0",
@@ -89,7 +72,24 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\marce\\.gradle\\caches\\transforms-2\\files-2.1\\53c35e8812e4839fd0fef8572a0ad23d\\exoplayer-ui-2.10.3\\res\\values-fi\\values-fi.xml",
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\2f135f50411e0f3165f24c495f3fdfb8\\core-1.1.0\\res\\values-fi\\values-fi.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "86",
+                        "startColumns": "4",
+                        "startOffsets": "8150",
+                        "endColumns": "100",
+                        "endOffsets": "8246"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\famarcelin\\.gradle\\caches\\transforms-2\\files-2.1\\53c35e8812e4839fd0fef8572a0ad23d\\exoplayer-ui-2.10.3\\res\\values-fi\\values-fi.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
