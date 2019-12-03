@@ -270,13 +270,9 @@ public class MainActivity extends AppCompatActivity {
             //loadConversations();
             es1 = Executors.newFixedThreadPool(3);
             es2 = Executors.newFixedThreadPool(2);
-            es1.execute(() ->  {
-                //fetchAllConversations();
-                fetchConversation();
-            });
-            es2.execute(() -> {
-                fetchStatus();
-            });
+            //fetchAllConversations();
+            es1.execute(this::fetchConversation);
+            es2.execute(this::fetchStatus);
         }
 
         mFabOpen = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
