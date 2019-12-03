@@ -482,9 +482,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        mStatusText.setOnClickListener(v->{
-//            startActivity(new Intent(this, PrivacyActivity.class));
-//        });
+        mStatusPrivacy.setOnClickListener(v->{
+            startActivity(new Intent(this, PrivacyActivity.class));
+        });
     }
 
     private void fetchConversation() {

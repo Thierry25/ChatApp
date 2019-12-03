@@ -1,21 +1,21 @@
 -- Merging decision tree log ---
 manifest
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
 MERGED from [androidx.databinding:databinding-adapters:3.5.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ce14a416514fd7dbf76c1557d4373564\databinding-adapters-3.5.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.databinding:databinding-runtime:3.5.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\9e9a2eda460c649f3e39662a96ea8ab1\databinding-runtime-3.5.1\AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.multidex:multidex:2.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a15fe84de7367b31914d21430706d6d3\multidex-2.0.0\AndroidManifest.xml:17:1-22:12
 MERGED from [com.hbb20:ccp:2.2.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0e8644592c03e9f8fb873bb38c5970cf\jetified-ccp-2.2.0\AndroidManifest.xml:2:1-17:12
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-14:12
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-14:12
 MERGED from [com.google.android.material:material:1.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ee84c36610ea98c7a9d40657129e7641\material-1.0.0\AndroidManifest.xml:17:1-24:12
 MERGED from [com.theartofdev.edmodo:android-image-cropper:2.7.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\577e1b88e1eae558093ef28e9bb13dea\jetified-android-image-cropper-2.7.0\AndroidManifest.xml:2:1-11:12
 MERGED from [net.alhazmy13.MediaPicker:libary:2.4.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\c9a38858c9f4047b404ccbf76b981c55\jetified-libary-2.4.0\AndroidManifest.xml:2:1-35:12
 MERGED from [com.github.hani-momanii:SuperNova-Emoji:1.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\4731a26de86ce526f7eb9d4bc6dcdb67\jetified-SuperNova-Emoji-1.1\AndroidManifest.xml:2:1-10:12
 MERGED from [com.devlomi.record-view:record-view:2.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\73c57cdc0dbb8bfae63d9266c92509f3\jetified-record-view-2.0.1\AndroidManifest.xml:2:1-15:12
 MERGED from [com.bestsoft32.tayyab:tt-fancy-gif-dialog:1.0.2] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\97ae9f154b656b809c30385fbaff857e\jetified-tt-fancy-gif-dialog-1.0.2\AndroidManifest.xml:2:1-17:12
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-15:12
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:2:1-15:12
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:2:1-20:12
 MERGED from [com.github.shts:StoriesProgressView:3.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\e35d00bc02c0cb697a322196b036e8f7\jetified-StoriesProgressView-3.0.0\AndroidManifest.xml:2:1-12:12
 MERGED from [com.devlomi:circularstatusview:1.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\6c6250722b85d502e3d0dab042fc4f19\jetified-circularstatusview-1.0.0\AndroidManifest.xml:2:1-11:12
@@ -106,31 +106,31 @@ MERGED from [com.google.firebase:firebase-database-connection-license:11.8.0] C:
 MERGED from [com.google.firebase:firebase-storage-common-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\26400c62402e6990308de39c231561a0\firebase-storage-common-license-11.8.0\AndroidManifest.xml:2:1-6:12
 MERGED from [com.google.firebase:firebase-analytics-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\d2296b8211e7ea89f18c30a1a13233e9\firebase-analytics-license-11.8.0\AndroidManifest.xml:2:1-6:12
 MERGED from [com.google.firebase:firebase-analytics-impl-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\af7e37ac76abca9d60cdb989d413bb8e\firebase-analytics-impl-license-11.8.0\AndroidManifest.xml:2:1-6:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
 	package
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:5:5-39
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:5:5-39
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 	android:versionName
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 	xmlns:tools
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:4:5-51
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:4:5-51
 	android:versionCode
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:1-250:12
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 	xmlns:android
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:3:11-69
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:3:11-69
 uses-permission#android.permission.DISABLE_KEYGUARD
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:7:5-75
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:7:5-75
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:7:22-72
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:7:22-72
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:8:5-80
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:8:5-80
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:11:5-80
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:11:5-80
 MERGED from [com.droidninja:filepicker:2.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\6047876b5ae9fd538e3864cd05aafdca\jetified-filepicker-2.1.5\AndroidManifest.xml:12:5-80
@@ -138,19 +138,19 @@ MERGED from [com.droidninja:filepicker:2.1.5] C:\Users\marce\.gradle\caches\tran
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:11:5-80
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:11:5-80
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:8:22-77
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:8:22-77
 uses-permission#android.permission.READ_PHONE_NUMBERS
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:9:5-77
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:9:5-77
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:9:22-74
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:9:22-74
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:10:5-81
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:5-81
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:5-81
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:10:5-81
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:5-81
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:12:5-81
 MERGED from [net.alhazmy13.MediaPicker:libary:2.4.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\c9a38858c9f4047b404ccbf76b981c55\jetified-libary-2.4.0\AndroidManifest.xml:12:5-81
 MERGED from [net.alhazmy13.MediaPicker:libary:2.4.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\c9a38858c9f4047b404ccbf76b981c55\jetified-libary-2.4.0\AndroidManifest.xml:12:5-81
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-81
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-81
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-81
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-81
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:12:5-81
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:12:5-81
 MERGED from [com.droidninja:filepicker:2.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\6047876b5ae9fd538e3864cd05aafdca\jetified-filepicker-2.1.5\AndroidManifest.xml:11:5-81
@@ -158,21 +158,21 @@ MERGED from [com.droidninja:filepicker:2.1.5] C:\Users\marce\.gradle\caches\tran
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:10:5-81
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:10:5-81
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:10:22-78
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:10:22-78
 uses-permission#android.permission.READ_CONTACTS
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:11:5-72
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:11:5-72
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:11:22-69
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:11:22-69
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:12:5-71
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-71
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-71
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:12:5-71
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-71
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:11:5-71
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:9:5-71
 MERGED from [com.kailashdabhi:om-recorder:1.1.5] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\1fd56ea3668baf1b9cb661140f8e1782\om-recorder-1.1.5\AndroidManifest.xml:9:5-71
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:12:22-68
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:12:22-68
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:13:5-79
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:13:5-79
 MERGED from [com.google.firebase:firebase-analytics:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\024ccb3a9fdb0324a13c3b4183dd3ba9\jetified-firebase-analytics-11.8.0\AndroidManifest.xml:24:5-79
 MERGED from [com.google.firebase:firebase-analytics:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\024ccb3a9fdb0324a13c3b4183dd3ba9\jetified-firebase-analytics-11.8.0\AndroidManifest.xml:24:5-79
 MERGED from [com.google.firebase:firebase-analytics-impl:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0cfc3f438951267eb98615733096d15e\jetified-firebase-analytics-impl-11.8.0\AndroidManifest.xml:24:5-79
@@ -182,9 +182,9 @@ MERGED from [com.google.firebase:firebase-iid:11.8.0] C:\Users\marce\.gradle\cac
 MERGED from [com.google.android.exoplayer:exoplayer-core:2.10.3] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\d50009f626747f684ae8174273860e1a\jetified-exoplayer-core-2.10.3\AndroidManifest.xml:24:5-79
 MERGED from [com.google.android.exoplayer:exoplayer-core:2.10.3] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\d50009f626747f684ae8174273860e1a\jetified-exoplayer-core-2.10.3\AndroidManifest.xml:24:5-79
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:13:22-76
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:13:22-76
 uses-permission#android.permission.INTERNET
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:14:5-67
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:14:5-67
 MERGED from [com.google.firebase:firebase-analytics:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\024ccb3a9fdb0324a13c3b4183dd3ba9\jetified-firebase-analytics-11.8.0\AndroidManifest.xml:23:5-67
 MERGED from [com.google.firebase:firebase-analytics:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\024ccb3a9fdb0324a13c3b4183dd3ba9\jetified-firebase-analytics-11.8.0\AndroidManifest.xml:23:5-67
 MERGED from [com.google.firebase:firebase-analytics-impl:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0cfc3f438951267eb98615733096d15e\jetified-firebase-analytics-impl-11.8.0\AndroidManifest.xml:23:5-67
@@ -192,17 +192,17 @@ MERGED from [com.google.firebase:firebase-analytics-impl:11.8.0] C:\Users\marce\
 MERGED from [com.google.firebase:firebase-iid:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\b0b77c834844ac0ec16feb82209fa6d4\jetified-firebase-iid-11.8.0\AndroidManifest.xml:23:5-67
 MERGED from [com.google.firebase:firebase-iid:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\b0b77c834844ac0ec16feb82209fa6d4\jetified-firebase-iid-11.8.0\AndroidManifest.xml:23:5-67
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:14:22-64
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:14:22-64
 uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:16:5-80
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:16:5-80
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:16:22-77
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:16:22-77
 uses-permission#android.permission.READ_PHONE_STATE
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:17:5-75
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:17:5-75
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:17:22-72
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:17:22-72
 application
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:20:5-248:19
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:20:5-248:19
 MERGED from [com.hbb20:ccp:2.2.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0e8644592c03e9f8fb873bb38c5970cf\jetified-ccp-2.2.0\AndroidManifest.xml:11:5-15:19
 MERGED from [com.hbb20:ccp:2.2.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0e8644592c03e9f8fb873bb38c5970cf\jetified-ccp-2.2.0\AndroidManifest.xml:11:5-15:19
 MERGED from [com.google.android.material:material:1.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ee84c36610ea98c7a9d40657129e7641\material-1.0.0\AndroidManifest.xml:22:5-20
@@ -213,8 +213,8 @@ MERGED from [com.devlomi.record-view:record-view:2.0.1] C:\Users\marce\.gradle\c
 MERGED from [com.devlomi.record-view:record-view:2.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\73c57cdc0dbb8bfae63d9266c92509f3\jetified-record-view-2.0.1\AndroidManifest.xml:9:5-13:19
 MERGED from [com.bestsoft32.tayyab:tt-fancy-gif-dialog:1.0.2] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\97ae9f154b656b809c30385fbaff857e\jetified-tt-fancy-gif-dialog-1.0.2\AndroidManifest.xml:11:5-15:19
 MERGED from [com.bestsoft32.tayyab:tt-fancy-gif-dialog:1.0.2] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\97ae9f154b656b809c30385fbaff857e\jetified-tt-fancy-gif-dialog-1.0.2\AndroidManifest.xml:11:5-15:19
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:5-47
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:5-47
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:5-47
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:13:5-47
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:14:5-18:19
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:14:5-18:19
 MERGED from [ja.burhanrashid52:photoeditor:0.3.3] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\6cf7a382012704542f57487bbcb74efb\jetified-photoeditor-0.3.3\AndroidManifest.xml:11:5-14:38
@@ -290,375 +290,375 @@ MERGED from [com.google.firebase:firebase-analytics-impl-license:11.8.0] C:\User
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.1.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\2f135f50411e0f3165f24c495f3fdfb8\core-1.1.0\AndroidManifest.xml:24:18-86
 	android:supportsRtl
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:27:9-35
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:27:9-35
 	android:label
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:24:9-41
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:24:9-41
 	android:roundIcon
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:26:9-54
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:26:9-54
 	android:largeHeap
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:25:9-33
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:25:9-33
 	android:icon
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:23:9-47
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:23:9-47
 	android:allowBackup
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:22:9-35
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:22:9-35
 	android:theme
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:28:9-40
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:28:9-40
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:21:9-40
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:21:9-40
 activity#marcelin.thierry.chatapp.activities.PrivacyActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:29:9-64
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:29:9-64
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:29:19-61
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:29:19-61
 activity#marcelin.thierry.chatapp.activities.videotrimming.VideoTrimmerActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:30:9-83
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:30:9-83
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:30:19-80
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:30:19-80
 activity#marcelin.thierry.chatapp.activities.SendContactActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:31:9-33:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:31:9-33:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:33:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:33:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:32:13-59
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:32:13-59
 activity#marcelin.thierry.chatapp.activities.StatsActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:34:9-36:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:34:9-36:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:36:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:36:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:35:13-53
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:35:13-53
 activity#marcelin.thierry.chatapp.activities.AddTextActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:37:9-39:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:37:9-39:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:39:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:39:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:38:13-55
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:38:13-55
 activity#marcelin.thierry.chatapp.activities.UnwantedActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:40:9-42:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:40:9-42:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:42:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:42:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:41:13-56
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:41:13-56
 activity#marcelin.thierry.chatapp.activities.MoodActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:44:9-47:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:44:9-47:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:47:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:47:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:46:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:46:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:45:13-52
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:45:13-52
 activity#marcelin.thierry.chatapp.activities.VideoCallActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:49:9-66
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:49:9-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:49:19-63
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:49:19-63
 activity#marcelin.thierry.chatapp.activities.ReceiveVideoActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:51:9-69
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:51:9-69
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:51:19-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:51:19-66
 activity#marcelin.thierry.chatapp.activities.ReceiveActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:53:9-64
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:53:9-64
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:53:19-61
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:53:19-61
 activity#marcelin.thierry.chatapp.activities.CallScreenActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:55:9-67
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:55:9-67
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:55:19-64
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:55:19-64
 activity#marcelin.thierry.chatapp.activities.ChannelReconnectActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:57:9-60:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:57:9-60:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:60:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:60:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:59:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:59:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:58:13-64
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:58:13-64
 service#marcelin.thierry.chatapp.classes.FirebaseMessagingService
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:62:9-68:15
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:62:9-68:15
 	android:stopWithTask
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:64:9-37
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:64:9-37
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:63:9-57
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:63:9-57
 intent-filter#action:name:com.google.firebase.MESSAGING_EVENT
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:65:9-67:25
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:65:9-67:25
 action#com.google.firebase.MESSAGING_EVENT
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:66:13-74
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:66:13-74
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:66:21-71
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:66:21-71
 activity#marcelin.thierry.chatapp.activities.MainActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:70:9-73:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:70:9-73:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:73:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:73:13-49
 	android:configChanges
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:72:13-43
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:72:13-43
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:71:13-52
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:71:13-52
 activity#marcelin.thierry.chatapp.activities.LoginActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:75:9-77:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:75:9-77:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:77:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:77:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:76:13-53
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:76:13-53
 activity#marcelin.thierry.chatapp.activities.SettingsActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:79:9-82:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:79:9-82:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:82:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:82:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:81:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:81:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:80:13-56
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:80:13-56
 activity#com.theartofdev.edmodo.cropper.CropImageActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:84:9-87:59
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:84:9-87:59
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:86:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:86:13-49
 	android:theme
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:87:13-56
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:87:13-56
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:85:13-76
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:85:13-76
 activity#marcelin.thierry.chatapp.activities.ContactsActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:89:9-92:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:89:9-92:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:92:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:92:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:91:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:91:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:90:13-56
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:90:13-56
 activity#marcelin.thierry.chatapp.activities.ProfilePictureActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:94:9-97:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:94:9-97:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:97:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:97:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:96:13-70
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:96:13-70
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:95:13-62
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:95:13-62
 activity#marcelin.thierry.chatapp.activities.ChatActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:99:9-104:20
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:99:9-104:20
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:102:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:102:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:101:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:101:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:100:13-52
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:100:13-52
 activity#marcelin.thierry.chatapp.activities.ForwardListMessageActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:106:9-108:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:106:9-108:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:108:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:108:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:107:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:107:13-66
 activity#marcelin.thierry.chatapp.activities.FullScreenImageActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:110:9-113:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:110:9-113:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:113:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:113:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:112:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:112:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:111:13-63
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:111:13-63
 activity#marcelin.thierry.chatapp.activities.GroupActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:115:9-118:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:115:9-118:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:118:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:118:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:117:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:117:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:116:13-53
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:116:13-53
 activity#marcelin.thierry.chatapp.activities.GroupCreationActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:120:9-123:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:120:9-123:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:123:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:123:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:122:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:122:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:121:13-61
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:121:13-61
 activity#marcelin.thierry.chatapp.activities.GroupChatActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:125:9-128:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:125:9-128:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:128:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:128:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:127:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:127:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:126:13-57
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:126:13-57
 activity#marcelin.thierry.chatapp.activities.GroupSettings
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:130:9-133:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:130:9-133:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:133:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:133:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:132:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:132:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:131:13-53
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:131:13-53
 activity#marcelin.thierry.chatapp.activities.ChannelActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:135:9-138:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:135:9-138:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:138:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:138:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:137:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:137:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:136:13-55
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:136:13-55
 activity#marcelin.thierry.chatapp.activities.ChannelSettingsActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:140:9-143:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:140:9-143:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:143:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:143:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:142:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:142:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:141:13-63
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:141:13-63
 activity#marcelin.thierry.chatapp.activities.UserSelectionActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:145:9-148:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:145:9-148:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:148:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:148:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:147:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:147:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:146:13-61
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:146:13-61
 activity#marcelin.thierry.chatapp.activities.ChannelAdminChatActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:150:9-153:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:150:9-153:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:153:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:153:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:152:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:152:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:151:13-64
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:151:13-64
 activity#marcelin.thierry.chatapp.activities.OneToOneChatSettings
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:155:9-158:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:155:9-158:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:158:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:158:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:157:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:157:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:156:13-60
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:156:13-60
 activity#marcelin.thierry.chatapp.activities.ChannelSubscriberActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:160:9-163:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:160:9-163:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:163:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:163:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:162:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:162:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:161:13-65
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:161:13-65
 activity#marcelin.thierry.chatapp.activities.SettingsChannelActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:165:9-168:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:165:9-168:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:168:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:168:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:167:13-78
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:167:13-78
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:166:13-63
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:166:13-63
 activity#marcelin.thierry.chatapp.activities.ForwardActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:170:9-173:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:170:9-173:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:173:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:173:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:172:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:172:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:171:13-55
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:171:13-55
 activity#marcelin.thierry.chatapp.activities.GroupForwardActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:175:9-178:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:175:9-178:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:178:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:178:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:177:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:177:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:176:13-60
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:176:13-60
 activity#marcelin.thierry.chatapp.activities.SearchActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:180:9-183:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:180:9-183:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:183:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:183:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:182:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:182:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:181:13-54
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:181:13-54
 activity#marcelin.thierry.chatapp.activities.ForwardMessageActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:185:9-188:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:185:9-188:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:188:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:188:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:187:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:187:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:186:13-62
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:186:13-62
 activity#marcelin.thierry.chatapp.activities.SharedActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:190:9-193:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:190:9-193:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:193:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:193:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:192:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:192:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:191:13-54
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:191:13-54
 activity#marcelin.thierry.chatapp.activities.WelcomeActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:195:9-207:20
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:195:9-207:20
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:197:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:197:13-49
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:196:13-55
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:196:13-55
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:199:13-205:29
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:199:13-205:29
 action#android.intent.action.MAIN
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:201:17-69
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:201:17-69
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:201:25-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:201:25-66
 category#android.intent.category.LAUNCHER
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:203:17-77
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:203:17-77
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:203:27-74
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:203:27-74
 activity#marcelin.thierry.chatapp.activities.SubSettingsActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:209:9-211:69
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:209:9-211:69
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:211:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:211:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:210:13-59
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:210:13-59
 activity#marcelin.thierry.chatapp.activities.VideoPlayerActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:213:9-215:62
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:213:9-215:62
 	android:configChanges
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:215:13-59
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:215:13-59
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:214:13-59
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:214:13-59
 activity#marcelin.thierry.chatapp.activities.GroupSharedActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:217:9-220:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:217:9-220:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:220:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:220:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:219:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:219:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:218:13-59
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:218:13-59
 activity#marcelin.thierry.chatapp.activities.ChannelSharedActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:222:9-225:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:222:9-225:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:225:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:225:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:224:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:224:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:223:13-61
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:223:13-61
 activity#marcelin.thierry.chatapp.activities.BlockedUsersActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:227:9-230:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:227:9-230:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:230:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:230:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:229:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:229:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:228:13-60
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:228:13-60
 activity#marcelin.thierry.chatapp.activities.SubscriptionActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:232:9-235:52
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:232:9-235:52
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:235:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:235:13-49
 	android:parentActivityName
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:234:13-66
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:234:13-66
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:233:13-60
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:233:13-60
 activity#marcelin.thierry.chatapp.activities.LockChannelActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:237:9-68
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:237:9-68
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:237:19-65
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:237:19-65
 activity#marcelin.thierry.chatapp.activities.EditImageActivity
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:239:9-242:59
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:239:9-242:59
 	android:screenOrientation
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:241:13-49
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:241:13-49
 	android:theme
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:242:13-56
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:242:13-56
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:240:13-57
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:240:13-57
 meta-data#preloaded_fonts
-ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:244:9-246:57
+ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:244:9-246:57
 	android:resource
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:246:13-54
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:246:13-54
 	android:name
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml:245:13-43
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml:245:13-43
 uses-sdk
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 MERGED from [androidx.databinding:databinding-adapters:3.5.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ce14a416514fd7dbf76c1557d4373564\databinding-adapters-3.5.1\AndroidManifest.xml:22:5-44
 MERGED from [androidx.databinding:databinding-adapters:3.5.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ce14a416514fd7dbf76c1557d4373564\databinding-adapters-3.5.1\AndroidManifest.xml:22:5-44
 MERGED from [androidx.databinding:databinding-runtime:3.5.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\9e9a2eda460c649f3e39662a96ea8ab1\databinding-runtime-3.5.1\AndroidManifest.xml:22:5-44
@@ -667,8 +667,8 @@ MERGED from [androidx.multidex:multidex:2.0.0] C:\Users\marce\.gradle\caches\tra
 MERGED from [androidx.multidex:multidex:2.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a15fe84de7367b31914d21430706d6d3\multidex-2.0.0\AndroidManifest.xml:20:5-43
 MERGED from [com.hbb20:ccp:2.2.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0e8644592c03e9f8fb873bb38c5970cf\jetified-ccp-2.2.0\AndroidManifest.xml:7:5-9:41
 MERGED from [com.hbb20:ccp:2.2.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\0e8644592c03e9f8fb873bb38c5970cf\jetified-ccp-2.2.0\AndroidManifest.xml:7:5-9:41
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
-MERGED from [:voicemessager] C:\Users\marce\Music\BackUpChatApp\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:voicemessager] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\voicemessager\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [com.google.android.material:material:1.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ee84c36610ea98c7a9d40657129e7641\material-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [com.google.android.material:material:1.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\ee84c36610ea98c7a9d40657129e7641\material-1.0.0\AndroidManifest.xml:20:5-44
 MERGED from [com.theartofdev.edmodo:android-image-cropper:2.7.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\577e1b88e1eae558093ef28e9bb13dea\jetified-android-image-cropper-2.7.0\AndroidManifest.xml:7:5-9:41
@@ -681,8 +681,8 @@ MERGED from [com.devlomi.record-view:record-view:2.0.1] C:\Users\marce\.gradle\c
 MERGED from [com.devlomi.record-view:record-view:2.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\73c57cdc0dbb8bfae63d9266c92509f3\jetified-record-view-2.0.1\AndroidManifest.xml:5:5-7:41
 MERGED from [com.bestsoft32.tayyab:tt-fancy-gif-dialog:1.0.2] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\97ae9f154b656b809c30385fbaff857e\jetified-tt-fancy-gif-dialog-1.0.2\AndroidManifest.xml:7:5-9:41
 MERGED from [com.bestsoft32.tayyab:tt-fancy-gif-dialog:1.0.2] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\97ae9f154b656b809c30385fbaff857e\jetified-tt-fancy-gif-dialog-1.0.2\AndroidManifest.xml:7:5-9:41
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
-MERGED from [:videotrimmer] C:\Users\marce\Music\BackUpChatApp\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
+MERGED from [:videotrimmer] C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\videotrimmer\build\intermediates\library_manifest\debug\AndroidManifest.xml:7:5-9:41
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:7:5-9:41
 MERGED from [com.github.kapilmhr:Compressor:1.0.1] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\a53a47844c317ef384c06d6ffc1df91b\Compressor-1.0.1\AndroidManifest.xml:7:5-9:41
 MERGED from [com.github.shts:StoriesProgressView:3.0.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\e35d00bc02c0cb697a322196b036e8f7\jetified-StoriesProgressView-3.0.0\AndroidManifest.xml:8:5-10:41
@@ -863,16 +863,16 @@ MERGED from [com.google.firebase:firebase-analytics-license:11.8.0] C:\Users\mar
 MERGED from [com.google.firebase:firebase-analytics-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\d2296b8211e7ea89f18c30a1a13233e9\firebase-analytics-license-11.8.0\AndroidManifest.xml:4:5-43
 MERGED from [com.google.firebase:firebase-analytics-impl-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\af7e37ac76abca9d60cdb989d413bb8e\firebase-analytics-impl-license-11.8.0\AndroidManifest.xml:4:5-43
 MERGED from [com.google.firebase:firebase-analytics-impl-license:11.8.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\af7e37ac76abca9d60cdb989d413bb8e\firebase-analytics-impl-license-11.8.0\AndroidManifest.xml:4:5-43
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		ADDED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
-		INJECTED from C:\Users\marce\Music\BackUpChatApp\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\marce\Downloads\1_5096046990978973775\MyApplication2\ChatApp\app\src\main\AndroidManifest.xml
 uses-permission#android.permission.CAMERA
 ADDED from [net.alhazmy13.MediaPicker:libary:2.4.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\c9a38858c9f4047b404ccbf76b981c55\jetified-libary-2.4.0\AndroidManifest.xml:11:5-65
 MERGED from [io.agora.rtc:full-sdk:2.3.0] C:\Users\marce\.gradle\caches\transforms-2\files-2.1\fa3211a35fe6b296c391c7b5f7603a49\full-sdk-2.3.0\AndroidManifest.xml:11:5-65
