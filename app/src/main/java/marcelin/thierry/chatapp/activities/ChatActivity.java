@@ -185,17 +185,12 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private CircleImageView mProfileImage;
     private RecyclerView mMessagesList;
     private MessageAdapter mMessageAdapter;
-    //private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayoutManager mLinearLayoutManager;
 
     private Dialog mDialog;
-    //    private EmojiconEditText mTextToSend;
-//    private EmojIconActions emojIcon;
     private EmojiEditText mTextToSend;
     private EmojiPopup emojiPopup;
 
-    // private ImageButton mSend;
-    //  private ImageButton mSendVoice;
     private ImageButton mSendEmoji;
     private ImageButton mSendAttachment;
 
@@ -260,9 +255,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadLocale();
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_chat);
         mAlertDialogHelper = new AlertDialogHelper(this);
 
@@ -281,8 +274,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         close_reply = findViewById(R.id.close_reply);
         title = findViewById(R.id.title);
         linearLayout = findViewById(R.id.linearLayout);
-
-        // getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.ic_try));
 
         mChatName = getIntent().getStringExtra("user_name");
         mChatPhone = getIntent().getStringExtra("user_phone");
@@ -322,10 +313,8 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         mp1 = MediaPlayer.create(ChatActivity.this, R.raw.playsound);
 
         mProfileImage = findViewById(R.id.profileImage);
-        //mProfileName = findViewById(R.id.chat_bar_name);
 
         mMessagesList = findViewById(R.id.messages_list);
-        //mSwipeRefreshLayout = findViewById(R.id.swipe_layout);
 
         nested = findViewById(R.id.swipe_layout);
         backButton = findViewById(R.id.backButton);
@@ -335,19 +324,12 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         });
 
         nested.postDelayed(() -> {
-            // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
             nested.fling(0);
             nested.fullScroll(View.FOCUS_DOWN);
         }, 200);
 
-        //    actionBar.setTitle(mChatName);
         title.setText(mChatName);
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setDisplayShowCustomEnabled(true);
-
         mTextToSend = findViewById(R.id.send_text);
-
-        // mTextToSend.addTextChangedListener(textWatcher1);
 
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
@@ -370,51 +352,10 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         loadMessages();
 
-        // Remove comment if different behavior
-        //  mTextToSend.requestFocus();
 
         mTextToSend.addTextChangedListener(textWatcher);
 
         progressDialog = new ProgressDialog(this);
-
-        //comment: [fm] very bad idea to query the root node
-//        mRootReference.addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                if (dataSnapshot.hasChild("a")) {
-//                    mRootReference.child("a").child(mChatPhone).child("f").addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            if (dataSnapshot == null) {
-//                                return;
-//                            }
-//
-//                            String nameStored = Users.getLocalContactList().get(mCurrentUserPhone);
-//                            nameStored = nameStored != null && nameStored.length() > 0 ? nameStored :
-//                                    mChatPhone;
-//                            if (Objects.equals(dataSnapshot.getValue(), true)) {
-//                                //       actionBar.setSubtitle(nameStored);
-//                                Toast.makeText(ChatActivity.this, nameStored + " is typing...", Toast.LENGTH_SHORT).show();
-//                            } else {
-//                                actionBar.setSubtitle("");
-//                            }
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//                } else {
-//                    return;
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
 
         recyclerItemClickListener = new RecyclerItemClickListener(this, mMessagesList, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
@@ -677,9 +618,12 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         mUsersReference.child(mCurrentUserPhone).child("e").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(mChatPhone)) {
+                if (dataSnapshot.hasChild("U-"+mChatPhone)) {
                     mTextToSend.setFocusable(false);
-                    mTextToSend.setEnabled(true);
+                    mTextToSend.setEnabled(false);
+                    mSendVoice.setEnabled(false);
+                    mChatToolbar.setEnabled(false);
+                    mChatToolbar.setFocusable(false);
 
                     mBatKo.setVisibility(View.VISIBLE);
                     mBatKo.setOnClickListener(view -> {
@@ -694,7 +638,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                     progressDialog.setMessage(getString(R.string.dis_tr_));
                                     progressDialog.show();
 
-                                    mUsersReference.child(mCurrentUserPhone).child("e").child(mChatPhone)
+                                    mUsersReference.child(mCurrentUserPhone).child("e").child("U-"+mChatPhone)
                                             .removeValue().addOnCompleteListener(task -> {
                                         if (task.isSuccessful()) {
                                             progressDialog.dismiss();
@@ -762,41 +706,11 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         });
 
-//        emojIcon = new EmojIconActions(this, mRootView, mTextToSend, mSendEmoji);
-//        emojIcon.ShowEmojIcon();
-//        emojIcon.addEmojiconEditTextList(mTextToSend);
-//        emojIcon.setKeyboardListener(new EmojIconActions.KeyboardListener() {
-//            @Override
-//            public void onKeyboardOpen() {
-//                Log.e("Keyboard", "open");
-//            }
-//
-//            @Override
-//            public void onKeyboardClose() {
-//                Log.e("Keyboard", "close");
-//            }
-//        });
-
-
         // To Remove
         mSendEmoji.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
         mSendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
 
         setUpEmojiPopup();
-
-//        mSendVoice.setOnTouchListener((view14, motionEvent) -> {
-//
-//            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-//                startRecording();
-//                mTextToSend.setText(R.string.recording);
-//            } else if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
-//                stopRecording();
-//                Toast.makeText(this, "Voice message recorded", Toast.LENGTH_SHORT).show();
-//                sendAudio();
-//            }
-//            return false;
-//        });
-
     }
 
     @Override
@@ -827,8 +741,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             mRecorder = null;
         }
 
-
-        //mMessageAdapter.stopMediaPlayers();
         Log.i("ChatActivity", "onStop() called");
 
     }
@@ -4587,7 +4499,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.trial_menu, menu);
-        inflater.inflate(R.menu.trial_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.menu_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -5055,13 +4966,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         }
     };
 
-    private String getHumanTimeText(long milliseconds) {
-        return String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
-                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
-    }
-
     @Override
     public void onRecordClick() {
 
@@ -5124,8 +5028,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             float length = imageFile.length() / 1024f; // Size in KB
 
             Uri uri = Uri.fromFile(imageFile);
-            // Uri uri = Uri.fromFile(new File(f.getAbsolutePath()));
-            // UploadTask uploadTask = filePath.putFile(mVideosData.get(0));
+
             String myReference = "ads_users/" + mCurrentUserPhone + "/" + "conversation/";
             String otherUserReference = "ads_users/" + mChatPhone + "/" + "conversation/";
 
@@ -5721,18 +5624,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
             });
 
-//
-//
-//            String value;
-//            if(length >= 1024)
-//                value = length/1024f+" MB";
-//            else
-            //         value = length+" KB";
-//            String text = String.format(Locale.US, "%s\nName: %s\nSize: %s", getString(R.string.video_compression_complete), imageFile.getName(), value);
-//            compressionMsg.setVisibility(View.GONE);
-//            picDescription.setVisibility(View.VISIBLE);
-//            picDescription.setText(text);
-//            Log.i("Silicompressor", "Path: "+compressedFilePath);
         }
     }
 
@@ -5798,11 +5689,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 senderOfMessage.setText(messagesList.get(viewHolder.getAdapterPosition()).getFrom().equals(mCurrentUserPhone) ? getString(R.string.you) :
                         nameStored != null && nameStored.length() > 0 ? nameStored : messagesList.get(viewHolder.getAdapterPosition()).getFrom());
 
-//                messageReceived.setVisibility(View.VISIBLE);
-//                imageSent.setVisibility(View.GONE);
-//                audioSent.setVisibility(View.GONE);
-//                videoSent.setVisibility(View.GONE);
-//                documentSent.setVisibility(View.GONE);
 
                 Messages.setClickedMessageId(messagesList.get(viewHolder.getAdapterPosition()).getMessageId());
 
