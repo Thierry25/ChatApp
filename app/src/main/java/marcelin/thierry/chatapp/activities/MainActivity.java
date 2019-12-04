@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             es1 = Executors.newFixedThreadPool(3);
             es2 = Executors.newFixedThreadPool(2);
             //fetchAllConversations();
-            es1.execute(this::fetchConversation);
+            es1.execute(this::fetchAllConversations);
             es2.execute(this::fetchStatus);
         }
 
