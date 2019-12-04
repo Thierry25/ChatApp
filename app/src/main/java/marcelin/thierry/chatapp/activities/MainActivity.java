@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout mLin, mLin1, mLin2, mLin3, mLin4;
     private boolean isOpen = false;
     private CircleImageView mProfilePic;
-    private android.app.AlertDialog.Builder mAlertDialog;
     private Map<String, Object> mRead = new HashMap<>();
     private StatusAdapter mStatusAdapter;
     private int isClicked = 0;
@@ -162,9 +161,6 @@ public class MainActivity extends AppCompatActivity {
     //Listeners handles
     private ChildEventListener conversationAddedListener;
     private List<ValueEventListener> conversationChangedListeners = new ArrayList<>();
-
-
-
 //    private File thumbFile;
 
     public static long getDateDiff(long date1, long date2, TimeUnit timeUnit) {
@@ -249,17 +245,6 @@ public class MainActivity extends AppCompatActivity {
         mConversationList.setHasFixedSize(true);
         mConversationList.setLayoutManager(linearLayoutManager);
 
-
-        /*
-        mUsersReference.keepSynced(true);
-        mMessageReference.keepSynced(true);
-        mChannelMessageReference.keepSynced(true);
-        mGroupMessageReference.keepSynced(true);
-        mChatReference.keepSynced(true);
-        mGroupReference.keepSynced(true);
-        mChannelReference.keepSynced(true);
-         */
-
         if (currrentUser != null) {
             mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
             //TODO: [fm] gol-a-main -> adding own phone number in the list
@@ -271,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
             es1 = Executors.newFixedThreadPool(3);
             es2 = Executors.newFixedThreadPool(2);
             //fetchAllConversations();
-            es1.execute(this::fetchConversation);
+            es1.execute(this::fetchAllConversations);
             es2.execute(this::fetchStatus);
         }
 
@@ -398,9 +383,8 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        mSettingsButton.setOnClickListener(v1 -> {
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-        });
+        mSettingsButton.setOnClickListener(v1 ->
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class)));
 
         if (currrentUser != null) {
             mUsersReference.child(mCurrentUserPhone).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -478,9 +462,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mStatusPrivacy.setOnClickListener(v->{
-            startActivity(new Intent(this, PrivacyActivity.class));
-        });
+        mStatusPrivacy.setOnClickListener(v-> startActivity(new Intent(this, PrivacyActivity.class)));
     }
 
     private void fetchConversation() {
@@ -503,12 +485,16 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Log.i("CONVERSATION_USR_RAW", dataSnapshot.getValue().toString());
                         String key = "";
-                        if (c.getType().equals("chat")) {
-                            key = "U-" + c.getPhone_number();
-                        } else if (c.getType().equals("channel")) {
-                            key = "C-" + c.getId();
-                        } else if (c.getType().equals("group")) {
-                            key = "G-" + c.getId();
+                        switch (c.getType()) {
+                            case "chat":
+                                key = "U-" + c.getPhone_number();
+                                break;
+                            case "channel":
+                                key = "C-" + c.getId();
+                                break;
+                            case "group":
+                                key = "G-" + c.getId();
+                                break;
                         }
                         Log.i("CONVERSATION_TYPE", key);
                         Query exceptQ = mUsersReference.child(mCurrentUserPhone)
@@ -1107,43 +1093,6 @@ public class MainActivity extends AppCompatActivity {
 
             // if user is among admin to channel to set channel to locked out
         }
-    }
-
-    private void showChangeLanguageDialog() {
-        final String[] listLanguages = {getString(R.string.haitian), getString(R.string.french), getString(R.string.english), getString(R.string.spanish)};
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-        mBuilder.setTitle(getString(R.string.choose_language));
-        mBuilder.setSingleChoiceItems(listLanguages, -1, (dialogInterface, i) -> {
-            switch (i) {
-                case 0:
-                    setLocale("ht");
-                    recreate();
-                    break;
-
-                case 1:
-                    setLocale("fr");
-                    recreate();
-                    break;
-
-                case 2:
-                    setLocale("en");
-                    recreate();
-                    break;
-
-                case 3:
-                    setLocale("es");
-                    recreate();
-                    break;
-
-                default:
-                    return;
-            }
-
-            dialogInterface.dismiss();
-        });
-
-        AlertDialog mDialog = mBuilder.create();
-        mDialog.show();
     }
 
     private void setLocale(String lang) {
