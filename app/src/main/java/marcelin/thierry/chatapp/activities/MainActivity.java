@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 Log.i("CONVERSATION_FETCH_MSG", "QUERYING");
                                 //TODO: add listener variable
-                                cQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                cQuery.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         Long chatStart = System.nanoTime();
@@ -592,9 +592,7 @@ public class MainActivity extends AppCompatActivity {
                                                         c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
                                                     }
 
-                                                    if (mConvoList.contains(c)) {
-                                                        mConvoList.remove(c);
-                                                    }
+                                                    mConvoList.remove(c);
                                                     mConvoList.add(c);
                                                     mChatAdapter.notifyDataSetChanged();
                                                     //mChatAdapter.submitList(mConvoList);
@@ -656,9 +654,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 c.setName(nameStored);
 
                                                                 Long addToListStart = System.nanoTime();
-                                                                if (mConvoList.contains(c)) {
-                                                                    mConvoList.remove(c);
-                                                                }
+                                                                mConvoList.remove(c);
 
                                                                 addToList(c, mConvoList);
                                                                 mChatAdapter.notifyDataSetChanged();
@@ -692,9 +688,7 @@ public class MainActivity extends AppCompatActivity {
                                                                     c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
                                                                 }
                                                                 Long addToListStart = System.nanoTime();
-                                                                if (mConvoList.contains(c)) {
-                                                                    mConvoList.remove(c);
-                                                                }
+                                                                mConvoList.remove(c);
 
                                                                 addToList(c, mConvoList);
                                                                 mChatAdapter.notifyDataSetChanged();
@@ -890,9 +884,7 @@ public class MainActivity extends AppCompatActivity {
                                                     c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
                                                 }
 
-                                                if (mConvoList.contains(c)) {
-                                                    mConvoList.remove(c);
-                                                }
+                                                mConvoList.remove(c);
                                                 mConvoList.add(c);
                                                 mChatAdapter.notifyDataSetChanged();
                                                 //mChatAdapter.submitList(mConvoList);
@@ -954,9 +946,7 @@ public class MainActivity extends AppCompatActivity {
                                                             c.setName(nameStored);
 
                                                             Long addToListStart = System.nanoTime();
-                                                            if (mConvoList.contains(c)) {
-                                                                mConvoList.remove(c);
-                                                            }
+                                                            mConvoList.remove(c);
 
                                                             addToList(c, mConvoList);
                                                             mChatAdapter.notifyDataSetChanged();
@@ -990,9 +980,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
                                                             }
                                                             Long addToListStart = System.nanoTime();
-                                                            if (mConvoList.contains(c)) {
-                                                                mConvoList.remove(c);
-                                                            }
+                                                            mConvoList.remove(c);
 
                                                             addToList(c, mConvoList);
                                                             mChatAdapter.notifyDataSetChanged();
@@ -1281,44 +1269,6 @@ public class MainActivity extends AppCompatActivity {
 
         Users.getLocalContactList().clear();
 
-        /*
-        ContentResolver contentResolver = getContentResolver();
-        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null,
-                null, null, null);
-
-        if (cursor != null && cursor.moveToFirst()) {
-            while (cursor.moveToNext()) {
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
-
-                if (hasPhoneNumber > 0) {
-                    Cursor cursor1 = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null);
-
-                    assert cursor1 != null;
-                    while (cursor1.moveToNext()) {
-                        String phoneNumber = cursor1.getString(cursor1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        //changed
-                        Users.getLocalContactList().put(phoneNumber.replace("-", "")
-                                .replace("(", "")
-                                .replace(")", "")
-                                .replace(".", "")
-                                .replace("#", "")
-                                .replace("$", "")
-                                .replace("[", "")
-                                .replace("]", "")
-                                .replaceAll("\\s+", ""), name);
-                    }
-                    cursor1.close();
-                }
-            }
-
-        }*/
-
-
         ContentResolver cr = getContentResolver();
         // Read Contacts
         Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -1342,7 +1292,6 @@ public class MainActivity extends AppCompatActivity {
                         .replaceAll("\\s+", ""), name);
             }
         }
-
 
         assert cursor != null;
         cursor.close();
@@ -1588,9 +1537,7 @@ public class MainActivity extends AppCompatActivity {
                         if (userStatus.getPhoneNumber().equals(mCurrentUserPhone)) {
                             userStatus.setNameStoredInPhone(getString(R.string.me_));
                         }
-                        if (mStatusList.contains(userStatus)) {
-                            mStatusList.remove(mStatusList.indexOf(userStatus));
-                        }
+                        mStatusList.remove(userStatus);
                         mStatusList.add(userStatus);
                     }
                     Log.i("STATUS_F_LIST_RECYCLER", Integer.toString(mStatusList.size()));
