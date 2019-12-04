@@ -221,7 +221,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         Log.i(LOG_TAG, "onRequestPermissionsResult " + grantResults[0] + " " + requestCode);
 
         switch (requestCode) {
@@ -268,7 +268,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
 
         mRtcEngine.muteLocalVideoStream(iv.isSelected());
 
-        FrameLayout container = (FrameLayout) findViewById(R.id.local_video_view_container);
+        FrameLayout container = findViewById(R.id.local_video_view_container);
         SurfaceView surfaceView = (SurfaceView) container.getChildAt(0);
         surfaceView.setZOrderMediaOverlay(!iv.isSelected());
         surfaceView.setVisibility(iv.isSelected() ? View.GONE : View.VISIBLE);
@@ -315,7 +315,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
     }
 
     private void setupLocalVideo() {
-        FrameLayout container = (FrameLayout) findViewById(R.id.local_video_view_container);
+        FrameLayout container = findViewById(R.id.local_video_view_container);
         SurfaceView surfaceView = RtcEngine.CreateRendererView(getBaseContext());
         surfaceView.setZOrderMediaOverlay(true);
         container.addView(surfaceView);
@@ -327,7 +327,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
     }
 
     private void setupRemoteVideo(int uid) {
-        FrameLayout container = (FrameLayout) findViewById(R.id.remote_video_view_container);
+        FrameLayout container = findViewById(R.id.remote_video_view_container);
 
         if (container.getChildCount() >= 1) {
             return;
@@ -365,7 +365,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
     }
 
     private void onRemoteUserLeft(int uid, int reason) {
-        FrameLayout container = (FrameLayout) findViewById(R.id.remote_video_view_container);
+        FrameLayout container = findViewById(R.id.remote_video_view_container);
         container.removeAllViews();
 
         showLongToast(String.format(Locale.US, "user %d left %d", (uid & 0xFFFFFFFFL), reason));
@@ -377,7 +377,7 @@ public class ReceiveVideoActivity extends AppCompatActivity {
     }
 
     private void onRemoteUserVideoMuted(int uid, boolean muted) {
-        FrameLayout container = (FrameLayout) findViewById(R.id.remote_video_view_container);
+        FrameLayout container = findViewById(R.id.remote_video_view_container);
 
         SurfaceView surfaceView = (SurfaceView) container.getChildAt(0);
 

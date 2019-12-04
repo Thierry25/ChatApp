@@ -222,9 +222,7 @@ public class SubscriptionActivity extends AppCompatActivity implements SearchVie
                                                                                         }
                                                                                     }
 
-                                                                                    if (mSubscriptionList.contains(c)) {
-                                                                                        mSubscriptionList.remove(c);
-                                                                                    }
+                                                                                    mSubscriptionList.remove(c);
 
                                                                                     // mConvoList.add(c);
                                                                                     mSubscriptionList.add(c);
@@ -244,9 +242,7 @@ public class SubscriptionActivity extends AppCompatActivity implements SearchVie
 
                                                                 c.setFrom("#00000000");
 
-                                                                if (mSubscriptionList.contains(c)) {
-                                                                    mSubscriptionList.remove(c);
-                                                                }
+                                                                mSubscriptionList.remove(c);
                                                                 c.setMessageTimestamp(c.getTimestamp());
                                                                 mSubscriptionList.add(c);
 

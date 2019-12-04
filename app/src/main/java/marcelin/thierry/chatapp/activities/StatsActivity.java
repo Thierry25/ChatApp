@@ -1151,7 +1151,7 @@ public class StatsActivity extends AppCompatActivity implements StoriesProgressV
      //   forward = mSeenDialog.findViewById(R.id.forward);
         seenUpdatesList = mSeenDialog.findViewById(R.id.seenUpdatesList);
 
-        textSeen.setText(getString(R.string.view__d) + " " + String.valueOf(mSeenMap.size()));
+        textSeen.setText(getString(R.string.view__d) + " " + mSeenMap.size());
 
         seenUpdatesList.setHasFixedSize(true);
         seenUpdatesList.setLayoutManager(new LinearLayoutManager(this));

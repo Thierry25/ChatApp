@@ -75,7 +75,7 @@ public class BaseActivity extends AppCompatActivity {
         if (view == null) return;
         snackbar = Snackbar.make(view, msg, LENGTH);
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(R.id.snackbar_text);
+        TextView textView = sbView.findViewById(R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         snackbar.show();
     }
@@ -94,7 +94,7 @@ public class BaseActivity extends AppCompatActivity {
             });
         }
         View sbView = snackbar.getView();
-        TextView textView = (TextView) sbView.findViewById(R.id.snackbar_text);
+        TextView textView = sbView.findViewById(R.id.snackbar_text);
         textView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.white));
         snackbar.show();
     }
@@ -108,14 +108,14 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     public void setUpToolbarWithBackArrow(String strTitle, boolean isBackArrow) {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(isBackArrow);
             actionBar.setHomeAsUpIndicator(R.drawable.ic_vector_arrow_back_black);
-            title = (TextView) toolbar.findViewById(R.id.title);
+            title = toolbar.findViewById(R.id.title);
             title.setText(strTitle);
         }
     }
@@ -162,7 +162,7 @@ public class BaseActivity extends AppCompatActivity {
             if (shouldPerformDispatchTouch) {
                 if (view instanceof EditText) {
                     View w = getCurrentFocus();
-                    int scrCords[] = new int[2];
+                    int[] scrCords = new int[2];
                     if (w != null) {
                         w.getLocationOnScreen(scrCords);
                         float x = event.getRawX() + w.getLeft() - scrCords[0];
@@ -242,10 +242,10 @@ public class BaseActivity extends AppCompatActivity {
 
 
     public interface setPermissionListener {
-        public void onPermissionGranted(int requestCode);
+        void onPermissionGranted(int requestCode);
 
-        public void onPermissionDenied(int requestCode);
+        void onPermissionDenied(int requestCode);
 
-        public void onPermissionNeverAsk(int requestCode);
+        void onPermissionNeverAsk(int requestCode);
     }
 }

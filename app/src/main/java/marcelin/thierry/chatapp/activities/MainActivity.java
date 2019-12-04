@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
         if (currrentUser != null) {
             es1.shutdown();
             es2.shutdown();
-            mUsersReference.removeEventListener(conversationAddedListener);
+            //mUsersReference.removeEventListener(conversationAddedListener);
         }
     }
 
@@ -487,9 +487,11 @@ public class MainActivity extends AppCompatActivity {
         Log.i("CONVERSATION", "FUNCTION CALLED");
         mConvoList.clear();
         mUsersReference.child(mCurrentUserPhone).child(Constant.CONV_NODE)
-                .addChildEventListener(new ChildEventListener() {
+                //.addChildEventListener(new ChildEventListener() {
+                .addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    public  void onDataChange(DataSnapshot dataSnapshot) {
+                    //public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                         if (!dataSnapshot.exists()) {
                             Toast.makeText(getApplicationContext(), "You have no conversation at this time, " +
                                     "please start a new conversation", Toast.LENGTH_SHORT).show();
@@ -544,7 +546,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 Log.i("CONVERSATION_FETCH_MSG", "QUERYING");
                                 //TODO: add listener variable
-                                cQuery.addValueEventListener(new ValueEventListener() {
+                                cQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         Long chatStart = System.nanoTime();
@@ -729,20 +731,19 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
 
+                    /*
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
                     }
 
                     @Override
                     public void onChildRemoved(DataSnapshot dataSnapshot) {
-
                     }
 
                     @Override
                     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
                     }
+                    */
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {

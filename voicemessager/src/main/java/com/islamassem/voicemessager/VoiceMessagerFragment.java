@@ -93,7 +93,7 @@ public class VoiceMessagerFragment extends Fragment {
 
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-            Log.i(TAG, "onPlayerStateChanged: playWhenReady = " + String.valueOf(playWhenReady)
+            Log.i(TAG, "onPlayerStateChanged: playWhenReady = " + playWhenReady
                     + " playbackState = " + playbackState);
             switch (playbackState) {
                 case ExoPlayer.STATE_ENDED:
@@ -345,7 +345,7 @@ public class VoiceMessagerFragment extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case RequestPermissionCode:
                 if (grantResults.length > 0) {

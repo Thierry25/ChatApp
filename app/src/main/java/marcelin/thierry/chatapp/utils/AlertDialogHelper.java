@@ -199,9 +199,9 @@ public class AlertDialogHelper
 
     public interface AlertDialogListener
     {
-        public void onPositiveClick(int from);
-        public void onNegativeClick(int from);
-        public void onNeutralClick(int from);
+        void onPositiveClick(int from);
+        void onNegativeClick(int from);
+        void onNeutralClick(int from);
     }
 
 }
