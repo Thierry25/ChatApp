@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity {
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
     private static final DatabaseReference mStatusReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_status");
-
+    private static final DatabaseReference mExceptReference = FirebaseDatabase.getInstance().getReference()
+            .child("ads_except");
     private static final DatabaseReference mRootReference = FirebaseDatabase.getInstance().getReference();
     private final String[] WALK_THROUGH = new String[]{
             Manifest.permission.READ_CONTACTS,
@@ -160,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
     //Listeners handles
     private ChildEventListener conversationAddedListener;
     private List<ValueEventListener> conversationChangedListeners = new ArrayList<>();
-
 //    private File thumbFile;
 
     public static long getDateDiff(long date1, long date2, TimeUnit timeUnit) {
@@ -244,17 +244,6 @@ public class MainActivity extends AppCompatActivity {
 
         mConversationList.setHasFixedSize(true);
         mConversationList.setLayoutManager(linearLayoutManager);
-
-
-        /*
-        mUsersReference.keepSynced(true);
-        mMessageReference.keepSynced(true);
-        mChannelMessageReference.keepSynced(true);
-        mGroupMessageReference.keepSynced(true);
-        mChatReference.keepSynced(true);
-        mGroupReference.keepSynced(true);
-        mChannelReference.keepSynced(true);
-         */
 
         if (currrentUser != null) {
             mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
