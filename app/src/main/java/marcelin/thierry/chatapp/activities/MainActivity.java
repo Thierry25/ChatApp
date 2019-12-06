@@ -403,7 +403,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-//
+
+        mUsersReference.keepSynced(true);
+        mMessageReference.keepSynced(true);
+        mChannelMessageReference.keepSynced(true);
+        mGroupMessageReference.keepSynced(true);
+        mChatReference.keepSynced(true);
+        mGroupReference.keepSynced(true);
+        mChannelReference.keepSynced(true);
 
         myStatusLayout.setOnClickListener(v -> {
             backgroundLayoutForStatus.setVisibility(View.VISIBLE);
@@ -608,6 +615,7 @@ public class MainActivity extends AppCompatActivity {
                                                         Log.i("STOPWATCH_MSG_FETCH", Long.toString((msgEnd - msgStart) / 1000000));
                                                         Log.i("CONVERSATION_DECORATION", "CALLING DECORATION");
                                                         String content = getMessageDecoration(m);
+                                                        Log.i("CONVERSATION_DECOR_MSG", content);
 
                                                         c.setMessageTimestamp(m.getTimestamp());
                                                         c.setLastMessage(content);
@@ -899,6 +907,7 @@ public class MainActivity extends AppCompatActivity {
                                                     Log.i("STOPWATCH_MSG_FETCH", Long.toString((msgEnd - msgStart) / 1000000));
                                                     Log.i("CONVERSATION_DECORATION", "CALLING DECORATION");
                                                     String content = getMessageDecoration(m);
+                                                    Log.i("CONVERSATION_DECOR_MSG", content);
 
                                                     c.setMessageTimestamp(m.getTimestamp());
                                                     c.setLastMessage(content);

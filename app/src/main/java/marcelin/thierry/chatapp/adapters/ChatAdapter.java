@@ -53,7 +53,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
 
 // TODO:
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserviewHolder> implements AdapterView.OnItemSelectedListener {
+  public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.UserviewHolder> implements AdapterView.OnItemSelectedListener {
 
   private List<Conversation> mUserConv;
   private Activity mContext;

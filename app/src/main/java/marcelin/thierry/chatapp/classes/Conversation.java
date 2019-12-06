@@ -19,13 +19,16 @@ public class Conversation implements Comparable<Conversation> {
     @Exclude
     private boolean isSent;
 
-    public Conversation(){}
+    public Conversation(){
+        unreadMessages = 0;
+    }
 
     public Conversation(String id, String type, String phone_number, long timestamp) {
         this.id = id;
         this.type = type;
         this.phone_number = phone_number;
         this.timestamp = timestamp;
+        unreadMessages = 0;
     }
 
     public String getId() {
@@ -153,7 +156,7 @@ public class Conversation implements Comparable<Conversation> {
     @Exclude
     @Override
     public int compareTo(Conversation c) {
-        return this.getMessageTimestamp() > c.getMessageTimestamp() ? 1 : -1;
+        return Long.compare(this.getMessageTimestamp(), c.getMessageTimestamp());
     }
 
 }
