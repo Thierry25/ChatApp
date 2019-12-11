@@ -184,6 +184,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Conversation c = mChatAdapter.getCurrent();
+        if (c != null) {
+            Log.i("CONVERSATION_ON_RES", c.getId());
+            if (mConvoList.isEmpty()) { return; }
+            if (mConvoList.contains(c)) {
+                Log.i("CONVERSATION_ON_RES", "CONVERSATION TO UPDATE");
+                int pos = mConvoList.indexOf(c);
+                Conversation conversation = mConvoList.get(pos);
+                conversation.setUnreadMessages(0);
+                mConvoList.remove(c);
+                mConvoList.add(pos, conversation);
+                mChatAdapter.notifyDataSetChanged();
+            }
+        }
     }
 
     @Override
@@ -539,7 +553,8 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 Log.i("CONVERSATION_FETCH_MSG", "QUERYING");
                                 //TODO: add listener variable
-                                cQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                cQuery.addValueEventListener(new ValueEventListener() {
+                                //cQuery.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(DataSnapshot dataSnapshot) {
                                         Long chatStart = System.nanoTime();
@@ -918,9 +933,12 @@ public class MainActivity extends AppCompatActivity {
                                                         //TODO: adding logic for unseen messages
                                                         int count = 0;
                                                         if (mConvoList.contains(c) ) {
-                                                            count = mConvoList.get(mConvoList.indexOf(c)).getUnreadMessages();
+                                                            count = getUnreadMessageCount(c.getId());
                                                         }
-                                                        if (!m.isSeen()) { count++; }
+                                                        if (!m.isSeen()) {
+                                                            count++;
+                                                            setUnreadMessageCount(c.getId(), count);
+                                                        }
                                                         c.setUnreadMessages(count);
                                                     }
                                                 }
@@ -1121,6 +1139,18 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
         String language = preferences.getString("My_Lang", "");
         setLocale(language);
+    }
+
+    //TODO: [fm] Remove sharedPreference occurence in future version
+    private int getUnreadMessageCount(String conversationId) {
+        SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        return prefs.getInt(conversationId, 0);
+    }
+
+    private void setUnreadMessageCount(String conversationId, int count) {
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putInt(conversationId, count);
+        editor.apply();
     }
 
     @Override

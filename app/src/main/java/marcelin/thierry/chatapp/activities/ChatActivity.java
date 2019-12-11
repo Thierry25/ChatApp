@@ -3409,9 +3409,10 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
     private void loadMessages() {
 
-        if(mChatId == null){
-            return;
-        }
+        if(mChatId == null) { return; }
+
+        //[fm] setting unread message to 0
+        setUnreadMessageCount(mChatId, 0);
 
         Query conversationQ = mRootReference.child("ads_chat").child(mChatId).child("messages")
                 .limitToLast(TOTAL_ITEMS_TO_LOAD);
@@ -5625,6 +5626,13 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             });
 
         }
+    }
+
+    private void setUnreadMessageCount(String conversationId, int count) {
+        Log.i("UNREAD_MSG", "CALLED");
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putInt(conversationId, count);
+        editor.apply();
     }
 
 

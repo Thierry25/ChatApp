@@ -63,6 +63,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
   private Button mUnlockButton;
 
   private String mItemSelected;
+  private  Conversation lastSelectedConv;
 
   private FirebaseAuth mAuth = FirebaseAuth.getInstance();
   public boolean isClickable = true;
@@ -88,7 +89,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
   public void onBindViewHolder(@NonNull UserviewHolder holder, final int position) {
 
     Conversation currentConv = mUserConv.get(position);
-
+    lastSelectedConv = currentConv;
     String mCurrentPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
     holder.mContactName.setText(currentConv.getName());
@@ -470,6 +471,10 @@ import marcelin.thierry.chatapp.classes.Conversation;
   @Override
   public void onNothingSelected(AdapterView<?> adapterView) {
 
+  }
+
+  public Conversation getCurrent() {
+    return lastSelectedConv;
   }
 
   public static class UserviewHolder extends RecyclerView.ViewHolder {
