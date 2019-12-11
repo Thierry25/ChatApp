@@ -1,0 +1,13 @@
+.idea
+.gradle
+/local.properties
+*.iml
+app/build
+app/*.iml
+.externalNativeBuild
+videotrimmer/build
+videotrimmer/*.iml
+voicemessager/build
+voicemessager/*.iml
+/captures
+build
