@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="marcelin.thierry.chatapp">
@@ -16,7 +15,6 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-
     <application
         android:name=".classes.ChatApp"
         android:allowBackup="true"
@@ -26,8 +24,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.PrivacyActivity" />
-        <activity android:name=".activities.videotrimming.VideoTrimmerActivity" />
+        <activity android:name=".activities.SplashScreenActivity"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.PrivacyActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.videotrimming.VideoTrimmerActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.SendContactActivity"
             android:screenOrientation="portrait" />
@@ -40,20 +48,18 @@
         <activity
             android:name=".activities.UnwantedActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.MoodActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".activities.VideoCallActivity" />
-
-        <activity android:name=".activities.ReceiveVideoActivity" />
-
-        <activity android:name=".activities.ReceiveActivity" />
-
-        <activity android:name=".activities.CallScreenActivity" />
-
+        <activity android:name=".activities.VideoCallActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ReceiveVideoActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ReceiveActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.CallScreenActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.ChannelReconnectActivity"
             android:parentActivityName=".activities.MainActivity"
@@ -71,171 +77,135 @@
             android:name=".activities.MainActivity"
             android:configChanges="locale"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.LoginActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SettingsActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat" />
-
         <activity
             android:name=".activities.ContactsActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ProfilePictureActivity"
             android:parentActivityName=".activities.ContactsActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChatActivity"
             android:parentActivityName=".activities.MainActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".activities.ForwardListMessageActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.FullScreenImageActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.GroupActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.GroupCreationActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.GroupChatActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.GroupSettings"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChannelActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChannelSettingsActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.UserSelectionActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChannelAdminChatActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.OneToOneChatSettings"
             android:parentActivityName=".activities.ChatActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChannelSubscriberActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SettingsChannelActivity"
             android:parentActivityName=".activities.ChannelAdminChatActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ForwardActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.GroupForwardActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SearchActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ForwardMessageActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SharedActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.WelcomeActivity"
             android:screenOrientation="portrait">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
-            <intent-filter>
-
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-
-            </intent-filter>
-
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
-
         <activity
             android:name=".activities.SubSettingsActivity"
-            android:parentActivityName=".activities.MainActivity" />
-
+            android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.VideoPlayerActivity"
-            android:configChanges="orientation|screenSize" />
-
+            android:configChanges="orientation|screenSize"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.GroupSharedActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.ChannelSharedActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.BlockedUsersActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
         <activity
             android:name=".activities.SubscriptionActivity"
             android:parentActivityName=".activities.MainActivity"
             android:screenOrientation="portrait" />
-
-        <activity android:name=".activities.LockChannelActivity" />
-
+        <activity android:name=".activities.LockChannelActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.EditImageActivity"
             android:screenOrientation="portrait"
@@ -244,7 +214,6 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-
     </application>
 
 </manifest>

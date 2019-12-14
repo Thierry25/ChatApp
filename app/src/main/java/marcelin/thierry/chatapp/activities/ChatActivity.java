@@ -323,10 +323,10 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             finish();
         });
 
-        nested.postDelayed(() -> {
-            nested.fling(0);
-            nested.fullScroll(View.FOCUS_DOWN);
-        }, 200);
+//        nested.postDelayed(() -> {
+//            nested.fling(0);
+//            nested.fullScroll(View.FOCUS_DOWN);
+//        }, 200);
 
         title.setText(mChatName);
         mTextToSend = findViewById(R.id.send_text);
