@@ -112,6 +112,12 @@ dependencies {
 
 //    implementation 'com.github.bumptech.glide:glide:4.8.0'
 //    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
+    // Room Components
+    def room_version = "2.2.2"
+    implementation "androidx.room:room-runtime:$room_version"
+    annotationProcessor "androidx.room:room-compiler:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

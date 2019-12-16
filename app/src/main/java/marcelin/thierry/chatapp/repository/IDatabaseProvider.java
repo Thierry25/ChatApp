@@ -1,5 +1,7 @@
 package marcelin.thierry.chatapp.repository;
 
+import androidx.lifecycle.LiveData;
+
 import java.util.List;
 
 /**
@@ -9,24 +11,11 @@ import java.util.List;
  */
 public interface IDatabaseProvider<T> {
 
-    T get();
-
-    T getById(String id);
-
-    List<T> getAll();
-
-    List<T> getAllById(String id);
+    LiveData<List<T>> get();
 
     void save(T t);
 
-    void save(T t, String id);
-
     void update(T t);
 
-    void update(T t, String id);
-
     void delete(T t);
-
-    void delete(T t, String id);
-
 }
