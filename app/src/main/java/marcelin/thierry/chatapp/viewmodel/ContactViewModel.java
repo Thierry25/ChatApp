@@ -29,11 +29,11 @@ public class ContactViewModel extends AndroidViewModel {
         return contactDao.get();
     }
 
-    public LiveData<Contact> getPhoneUserByName(String contactName) {
+    public Contact getPhoneUserByName(String contactName) {
         return contactDao.getOneByName(contactName);
     }
 
-    public LiveData<Contact> getPhoneUserByNumber(String number) {
+    public Contact getPhoneUserByNumber(String number) {
         return contactDao.getOneByPhone(number);
     }
 

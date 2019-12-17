@@ -17,6 +17,7 @@ public interface ConversationAndMessageDao extends IDatabaseProvider<Conversatio
     @Override
     LiveData<List<ConversationAndMessage>> get();
 
+    @Transaction
     @Query("SELECT * FROM conversations WHERE conversationId = :conversationId")
-    LiveData<List<ConversationAndMessage>> getOneById(String conversationId);
+    LiveData<ConversationAndMessage> getOneById(String conversationId);
 }

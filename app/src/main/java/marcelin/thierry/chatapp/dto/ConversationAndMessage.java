@@ -11,5 +11,5 @@ public class ConversationAndMessage {
             parentColumn = "conversationId",
             entityColumn = "conversation"
     )
-    public List<Message> message;
+    public List<Message> messages;
 }

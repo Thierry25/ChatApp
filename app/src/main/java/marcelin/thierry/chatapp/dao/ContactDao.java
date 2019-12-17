@@ -20,10 +20,10 @@ public interface ContactDao extends IDatabaseProvider<Contact> {
     LiveData<List<Contact>> get();
 
     @Query("SELECT * FROM contacts WHERE phoneNumber = :phoneNumber")
-    LiveData<Contact> getOneByPhone(String phoneNumber);
+    Contact getOneByPhone(String phoneNumber);
 
     @Query("SELECT * FROM contacts WHERE contactName = :contactName")
-    LiveData<Contact> getOneByName(String contactName);
+    Contact getOneByName(String contactName);
 
     @Insert
     @Override
