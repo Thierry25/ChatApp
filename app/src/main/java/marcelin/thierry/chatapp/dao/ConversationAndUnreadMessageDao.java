@@ -7,17 +7,16 @@ import androidx.room.Transaction;
 
 import java.util.List;
 
-import marcelin.thierry.chatapp.dto.ConversationAndMessage;
-import marcelin.thierry.chatapp.repository.IDatabaseProvider;
+import marcelin.thierry.chatapp.dto.ConversationAndUnreadMessage;
 
 @Dao
-public interface ConversationAndMessageDao extends IDatabaseProvider<ConversationAndMessage> {
+public interface ConversationAndUnreadMessageDao {
+
     @Transaction
     @Query("SELECT * FROM conversations")
-    @Override
-    LiveData<List<ConversationAndMessage>> get();
+    LiveData<List<ConversationAndUnreadMessage>> getAllUnreadMessages();
 
     @Transaction
     @Query("SELECT * FROM conversations WHERE conversationId = :conversationId")
-    LiveData<ConversationAndMessage> getOneById(String conversationId);
+    LiveData<ConversationAndUnreadMessage> getUnreadMessagesForOne(String conversationId);
 }

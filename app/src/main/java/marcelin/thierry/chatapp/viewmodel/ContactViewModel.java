@@ -1,7 +1,6 @@
 package marcelin.thierry.chatapp.viewmodel;
 
 import android.app.Application;
-import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -9,56 +8,34 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import marcelin.thierry.chatapp.dao.ContactDao;
 import marcelin.thierry.chatapp.dto.Contact;
-import marcelin.thierry.chatapp.persistance.ContactsDatabase;
+import marcelin.thierry.chatapp.repository.LocalContactRepo;
 
 public class ContactViewModel extends AndroidViewModel {
-    private ContactDao contactDao;
-    private final InsertAsyncTask insertAsyncTask = new InsertAsyncTask();
-    private final UpdateAsyncTask updateAsyncTask = new UpdateAsyncTask();
+    private LocalContactRepo localContactRepo;
 
     public ContactViewModel(@NonNull Application application) {
         super(application);
-
-        ContactsDatabase contactsDb = ContactsDatabase.getInstance(application);
-        contactDao = contactsDb.contactDao();
+        localContactRepo = new LocalContactRepo(application);
     }
 
     public LiveData<List<Contact>> getPhoneUsers() {
-        return contactDao.get();
+        return localContactRepo.getAll();
     }
 
     public Contact getPhoneUserByName(String contactName) {
-        return contactDao.getOneByName(contactName);
+        return localContactRepo.getOneByName(contactName);
     }
 
     public Contact getPhoneUserByNumber(String number) {
-        return contactDao.getOneByPhone(number);
+        return localContactRepo.getOneByPhone(number);
     }
 
     public void insertContact(Contact contact) {
-        insertAsyncTask.execute(contact);
+        localContactRepo.save(contact);
     }
 
     public void updateContact(Contact contact) {
-        updateAsyncTask.execute(contact);
-    }
-
-    private class InsertAsyncTask extends AsyncTask<Contact, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Contact... contacts) {
-            contactDao.save(contacts[0]);
-            return null;
-        }
-    }
-
-    private class UpdateAsyncTask extends AsyncTask<Contact, Void, Void> {
-        @Override
-        protected Void doInBackground(Contact... contacts) {
-            contactDao.update(contacts[0]);
-            return null;
-        }
+        localContactRepo.save(contact);
     }
 }

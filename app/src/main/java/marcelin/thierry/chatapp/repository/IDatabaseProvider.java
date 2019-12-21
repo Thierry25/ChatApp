@@ -11,7 +11,17 @@ import java.util.List;
  */
 public interface IDatabaseProvider<T> {
 
-    LiveData<List<T>> get();
+    LiveData<List<T>> getAll();
+
+    LiveData<List<T>> getAllById(String id);
+
+    LiveData<List<T>> getAllForParam(String param, String id);
+
+    LiveData<T> getOne(String id);
+
+    LiveData<T> getOne();
+
+    LiveData<T> getOneByParam(String param, String id);
 
     void save(T t);
 

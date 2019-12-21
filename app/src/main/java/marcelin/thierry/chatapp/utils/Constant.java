@@ -10,4 +10,7 @@ public class Constant {
     public static final String CONV_NODE = "conversation";
     public static final String MSG_NODE = "messages";
     public static final String USR_MOOD_EXCEPT_NODE = "e";
+
+    public static final String UNSEEN_MSG = "unseen_msg";
+    public static final String LAST_MSG = "last_msg";
 }

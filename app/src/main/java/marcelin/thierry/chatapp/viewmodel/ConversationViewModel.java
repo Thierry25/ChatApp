@@ -9,64 +9,35 @@ import androidx.lifecycle.LiveData;
 
 import java.util.List;
 
-import marcelin.thierry.chatapp.dao.ConversationDao;
 import marcelin.thierry.chatapp.dto.Conversation;
-import marcelin.thierry.chatapp.persistance.ConversationsDatabase;
+import marcelin.thierry.chatapp.repository.LocalConversationRepo;
 
 public class ConversationViewModel extends AndroidViewModel {
-    private ConversationDao conversationDao;
-    private final InsertAsyncTask insertAsyncTask = new InsertAsyncTask();
-    private final UpdateAsyncTask updateAsyncTask = new UpdateAsyncTask();
-    private final DeleteAsynTask deleteAsynTask = new DeleteAsynTask();
+    private LocalConversationRepo localConversationRepo;
 
     public ConversationViewModel(@NonNull Application application) {
         super(application);
-
-        ConversationsDatabase conversationsDb = ConversationsDatabase.getInstance(application);
-        conversationDao = conversationsDb.conversationDao();
+        localConversationRepo = new LocalConversationRepo(application);
     }
 
     public LiveData<List<Conversation>> getAllConversations() {
-        return conversationDao.get();
+        return localConversationRepo.getAll();
     }
 
     public LiveData<Conversation> getConversationById(String conversationId) {
-        return conversationDao.getOneById(conversationId);
+        return localConversationRepo.getOne(conversationId);
     }
 
     public void insertConversation(Conversation conversation) {
-        insertAsyncTask.execute(conversation);
+        localConversationRepo.save(conversation);
     }
 
     public void deleteConversation(Conversation conversation) {
-        deleteAsynTask.execute(conversation);
+        localConversationRepo.delete(conversation);
     }
 
     public void updateConversation(Conversation conversation) {
-        updateAsyncTask.execute(conversation);
+        localConversationRepo.update(conversation);
     }
 
-    private class InsertAsyncTask extends AsyncTask<Conversation, Void, Void> {
-        @Override
-        protected Void doInBackground(Conversation... conversations) {
-            conversationDao.save(conversations[0]);
-            return null;
-        }
-    }
-
-    private class UpdateAsyncTask extends AsyncTask<Conversation, Void, Void> {
-        @Override
-        protected Void doInBackground(Conversation... conversations) {
-            conversationDao.update(conversations[0]);
-            return null;
-        }
-    }
-
-    private class DeleteAsynTask extends AsyncTask<Conversation, Void, Void> {
-        @Override
-        protected Void doInBackground(Conversation... conversations) {
-            conversationDao.delete(conversations[0]);
-            return null;
-        }
-    }
 }

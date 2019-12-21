@@ -13,7 +13,7 @@ public class Contact {
     @NonNull
     @PrimaryKey
     @ColumnInfo(name = "contactId")
-    private String cId;
+    private String contactId;
 
     @NonNull
     @ColumnInfo(name = "contactName")
@@ -28,21 +28,21 @@ public class Contact {
 
     @Ignore
     public Contact(String contactName, String phoneNumber, String handleName) {
-        cId = UUID.randomUUID().toString();
+        contactId = UUID.randomUUID().toString();
         this.contactName = contactName;
         this.phoneNumber = phoneNumber;
         this.handleName = handleName;
     }
 
-    public Contact(String cId, String contactName, String phoneNumber, String handleName) {
-        this.cId = cId;
+    public Contact(String contactId, String contactName, String phoneNumber, String handleName) {
+        this.contactId = contactId;
         this.contactName = contactName;
         this.phoneNumber = phoneNumber;
         this.handleName = handleName;
     }
 
     public String getContactId() {
-        return cId;
+        return contactId;
     }
 
     public String getContactName() {

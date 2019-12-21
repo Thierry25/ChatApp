@@ -3,21 +3,19 @@ package marcelin.thierry.chatapp.dao;
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Query;
-import androidx.room.Transaction;
 
 import java.util.List;
 
 import marcelin.thierry.chatapp.dto.ConversationAndLastMessage;
-import marcelin.thierry.chatapp.repository.IDatabaseProvider;
 
 @Dao
-public interface ConversationAndLastMessageDao extends IDatabaseProvider<ConversationAndLastMessage> {
-    @Transaction
-    @Query("SELECT * FROM conversations")
-    @Override
-    LiveData<List<ConversationAndLastMessage>> get();
+public interface ConversationAndLastMessageDao {
+    @Query("SELECT conversations.*, messageContent, messageTimestamp, seen FROM conversations " +
+            "LEFT JOIN messages ON conversations.lastMessageId = messages.messageId")
+    LiveData<List<ConversationAndLastMessage>> getAll();
 
-    @Transaction
-    @Query("SELECT * FROM conversations where conversationId = :conversationId")
-    LiveData<ConversationAndLastMessage> getOneById(String conversationId);
+    @Query("SELECT conversations.*, messageContent, messageTimestamp, seen FROM conversations " +
+            "LEFT JOIN messages ON conversations.lastMessageId = messages.messageId " +
+            "AND conversations.conversationId = :id")
+    LiveData<List<ConversationAndLastMessage>> getAllById(String id);
 }

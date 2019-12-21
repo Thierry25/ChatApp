@@ -48,8 +48,8 @@ public class Message {
     private String parentMessageId;
 
     @Ignore
-    public Message(String messageType, String messageContent, long messageTimestamp,
-                   String messageFrom, boolean visible, boolean seen, String conversationId,
+    public Message(@NonNull String messageType, @NonNull String messageContent, long messageTimestamp,
+                   @NonNull String messageFrom, boolean visible, boolean seen, @NonNull String conversationId,
                    String parentMessageId) {
         this.messageId = UUID.randomUUID().toString();
         this.messageType = messageType;
@@ -62,9 +62,9 @@ public class Message {
         this.parentMessageId = parentMessageId;
     }
 
-    public Message(String messageId, String messageType, String messageContent, long messageTimestamp,
-                   String messageFrom, boolean visible, boolean seen, String conversationId,
-                   String parentMessageId) {
+    public Message(@NonNull String messageId, @NonNull String messageType, @NonNull String messageContent,
+                   long messageTimestamp, @NonNull String messageFrom, boolean visible, boolean seen,
+                   @NonNull String conversationId, String parentMessageId) {
         this.messageId = messageId;
         this.messageType = messageType;
         this.messageContent = messageContent;
@@ -123,5 +123,33 @@ public class Message {
 
     public String getParentMessageId() {
         return parentMessageId;
+    }
+
+    public void setMessageId(@NonNull String messageId) {
+        this.messageId = messageId;
+    }
+
+    public void setMessageType(@NonNull String messageType) {
+        this.messageType = messageType;
+    }
+
+    public void setMessageContent(@NonNull String messageContent) {
+        this.messageContent = messageContent;
+    }
+
+    public void setMessageTimestamp(long messageTimestamp) {
+        this.messageTimestamp = messageTimestamp;
+    }
+
+    public void setMessageFrom(@NonNull String messageFrom) {
+        this.messageFrom = messageFrom;
+    }
+
+    public void setConversationId(@NonNull String conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public void setParentMessageId(String parentMessageId) {
+        this.parentMessageId = parentMessageId;
     }
 }

@@ -37,7 +37,7 @@ public class Conversation {
     private int unreadMessageCount;
 
     @Ignore
-    public Conversation(String conversationType, String interlocutor, String imgPath,
+    public Conversation(@NonNull String conversationType, @NonNull String interlocutor, String imgPath,
                         long conversationTimestamp, String lastMessageId, int unreadMessageCount) {
         this.conversationId = UUID.randomUUID().toString();
         this.conversationType = conversationType;
@@ -48,9 +48,9 @@ public class Conversation {
         this.unreadMessageCount = unreadMessageCount;
     }
 
-    public Conversation(String conversationId, String conversationType, String interlocutor,
-                        String imgPath, long conversationTimestamp, String lastMessageId,
-                        int unreadMessageCount) {
+    public Conversation(@NonNull String conversationId, @NonNull String conversationType,
+                        @NonNull String interlocutor, String imgPath, long conversationTimestamp,
+                        String lastMessageId, int unreadMessageCount) {
         this.conversationId = conversationId;
         this.conversationType = conversationType;
         this.interlocutor = interlocutor;
@@ -102,5 +102,21 @@ public class Conversation {
 
     public void setUnreadMessageCount(int unreadMessageCount) {
         this.unreadMessageCount = unreadMessageCount;
+    }
+
+    public void setConversationId(@NonNull String conversationId) {
+        this.conversationId = conversationId;
+    }
+
+    public void setConversationType(@NonNull String conversationType) {
+        this.conversationType = conversationType;
+    }
+
+    public void setInterlocutor(@NonNull String interlocutor) {
+        this.interlocutor = interlocutor;
+    }
+
+    public void setConversationTimestamp(long conversationTimestamp) {
+        this.conversationTimestamp = conversationTimestamp;
     }
 }
