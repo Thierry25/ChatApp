@@ -259,6 +259,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         questionDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
 
         mRootView = findViewById(R.id.rootView);
+        mRootView.setBackgroundColor(ContextCompat.getColor(this, R.color.channel_background));
         mSendVoice = findViewById(R.id.send_voice);
 
 //        recordView =  findViewById(R.id.record_view);
@@ -292,9 +293,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 }else{
                     Toast.makeText(ChannelAdminChatActivity.this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         });

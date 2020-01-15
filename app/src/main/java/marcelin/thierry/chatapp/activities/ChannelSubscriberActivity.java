@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.core.content.ContextCompat;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -99,6 +102,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         mSwipeRefreshLayout = findViewById(R.id.swipe_layout);
 
         mRootView = findViewById(R.id.rootView);
+        mRootView.setBackgroundColor(ContextCompat.getColor(this, R.color.channel_background));
         title = findViewById(R.id.title);
         backButton = findViewById(R.id.backButton);
         // actionBar.setTitle(mChannelName);
