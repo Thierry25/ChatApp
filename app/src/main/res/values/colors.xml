@@ -78,6 +78,7 @@
   <!-- video trimming colors -->
   <color name="blackOverlay">#80000000</color>
   <item name="tooltip_mask" type="color">#CC4f5355</item>
+  <color name="channel_background">#FAFAFA</color>
 
 
 </resources>
