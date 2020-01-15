@@ -1,10 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp">
+
+<!--    <com.google.android.material.card.MaterialCardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="4dp"-->
+<!--        android:layout_marginEnd="4dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:layout_editor_absoluteX="8dp">-->
+
+    <RelativeLayout
+        android:id="@+id/reLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/channel_border"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:layout_marginStart="12dp"
+            android:id="@+id/channel_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/channel_image"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baz" />
+
+            <com.vanniktech.emoji.EmojiTextView
+                android:id="@+id/channel_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:maxLength="35"
+                android:text="@string/channel_name"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/channel_name"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:text="@string/time_created"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/more_settings"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:src="@drawable/ic_more_horiz"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/messageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/channel_profile"
+            android:layout_marginTop="16dp">
+
+            <com.vanniktech.emoji.EmojiTextView
+                android:id="@+id/textEntered"
+                android:layout_marginStart="14dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:text="@string/lock_channel_message"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+        </RelativeLayout>
+
+            <TextView
+                android:layout_centerVertical="true"
+                android:id="@+id/numberOfLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="8dp"
+                android:textSize="16sp"
+                android:layout_below="@id/messageLayout"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:drawableStart="@drawable/ic_favorite_border"
+                android:text="@string/_333l" />
+
+            <TextView
+                android:layout_toEndOf="@id/numberOfLikes"
+                android:layout_below="@id/messageLayout"
+                android:id="@+id/numberOfComments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:drawablePadding="8dp"
+                android:textSize="16sp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:drawableStart="@drawable/ic_chat_bubble_outline"
+                android:text="@string/_210c" />
+
+            <TextView
+                android:layout_centerHorizontal="true"
+                android:id="@+id/numberOfSeen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="12dp"
+                android:gravity="end"
+                android:layout_alignParentEnd="true"
+                android:textSize="16sp"
+                android:layout_below="@id/messageLayout"
+                android:drawableStart="@drawable/ic_visibility"
+                android:layout_centerVertical="true"
+                android:drawablePadding="8dp"
+                android:text="@string/_210c" />
+
+
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/messageLinearLayout"
@@ -12,10 +148,11 @@
         android:layout_height="wrap_content"
         android:background="@drawable/message_text_background"
         android:clickable="true"
+        android:focusable="true"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:focusable="true">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/senderOfMessage"
@@ -34,9 +171,9 @@
 
 
         <LinearLayout
-            android:layout_below="@id/senderOfMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/senderOfMessage"
             android:orientation="vertical">
 
             <TextView
@@ -45,18 +182,18 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:maxWidth="250dp"
-                android:paddingBottom="3dp"
                 android:paddingLeft="8dp"
-                android:paddingRight="8dp"
                 android:paddingTop="4dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="3dp"
                 android:text="@string/textview"
                 android:textColor="@android:color/background_dark" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:gravity="right"
+                android:layout_gravity="end"
+                android:gravity="end"
                 android:orientation="horizontal">
 
                 <TextView
@@ -65,10 +202,10 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-light"
                     android:foregroundGravity="bottom"
-                    android:paddingLeft="8dp"
-                    android:paddingRight="8dp"
                     android:paddingStart="8dp"
+                    android:paddingLeft="8dp"
                     android:paddingTop="3dp"
+                    android:paddingRight="8dp"
                     android:text="@string/time_created"
                     android:textColor="@android:color/background_dark"
                     android:textSize="9sp" />
@@ -77,10 +214,9 @@
 
                 <TextView
                     android:id="@+id/amount_seen"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:drawableStart="@drawable/ic_seen"
-                    android:drawableLeft="@drawable/ic_seen"
                     android:drawablePadding="4dp"
                     android:paddingRight="8dp"
                     android:paddingBottom="2dp"
