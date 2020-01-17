@@ -298,7 +298,7 @@
     <string name="sux__saq_">Salvados con éxito</string>
     <string name="sv_info">Por favor, espere, guardando su información</string>
     <string name="text_channel">El nombre de los canales públicos se puede encontrar en la búsqueda</string>
-    <string name="text_translation">Hola y bienvenidos, aquí aprenderás a desarrollar la aplicación android.</string>
+<!--    <string name="text_translation">Hola y bienvenidos, aquí aprenderás a desarrollar la aplicación android.</string>-->
     <string name="textview">Vista de texto</string>
     <string name="that_is_the_document_name_on_firebase">Ese es el nombre del documento en firebase</string>
     <string name="there_was_an_error">Hubo un error</string>
@@ -391,5 +391,8 @@
     <string name="add_new_status">Agregar nuevo estado</string>
 
     <string name="status_pri">Haga clic en esto para cambiar la privacidad de sus estados</string>
+    <string name="like">Gusta</string>
+    <string name="_333l">333l</string>
+    <string name="_210c">210c</string>
 
 </resources>

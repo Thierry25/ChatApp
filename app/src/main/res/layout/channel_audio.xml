@@ -3,93 +3,178 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp">
 
     <RelativeLayout
         android:id="@+id/rLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/message_text_background"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/channel_border"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.015"
-        android:layout_marginStart="4dp">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RelativeLayout
+            android:id="@+id/channel_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/channel_image"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baz" />
+
+            <com.vanniktech.emoji.EmojiTextView
+                android:id="@+id/channel_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:maxLength="35"
+                android:text="@string/channel_name"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/channel_name"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:text="@string/time_created"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/more_settings"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_more_horiz" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/messageLayout"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/channel_profile"
+            android:background="@color/black"
+            android:layout_marginTop="16dp">
+
+            <ImageButton
+                android:layout_centerVertical="true"
+                android:layout_marginStart="110dp"
+                android:id="@+id/play_audio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:padding="8dp"
+                android:src="@drawable/ic_channel_play" />
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/btf_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
+                android:background="@drawable/audio"/>
+
+            <ImageView
+                android:id="@+id/pause_voice"
+                android:layout_marginTop="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:src="@drawable/ic_channel_pause"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"/>
+
+
+            <SeekBar
+                android:id="@+id/audio_seekbar"
+                android:layout_centerVertical="true"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:padding="14dp"
+                android:layout_toEndOf="@id/play_audio" />
+
+
+            <TextView
+                android:id="@+id/audio_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/audio_seekbar"
+                android:layout_marginLeft="-9dp"
+                android:layout_marginBottom="17dp"
+                android:layout_toRightOf="@id/audio_seekbar"
+                android:gravity="center"
+                android:paddingEnd="4dp"
+                android:paddingRight="8dp"
+                android:text="@string/_00_00"
+                android:textColor="@android:color/white"
+                android:textSize="9sp"
+                android:visibility="visible"
+                android:layout_marginStart="-9dp"
+                android:layout_toEndOf="@id/audio_seekbar" />
+
+        </RelativeLayout>
+
 
         <TextView
-            android:id="@+id/audio_time"
+            android:id="@+id/numberOfLikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/audio_seekbar"
-            android:layout_marginLeft="-9dp"
-            android:layout_marginBottom="17dp"
-            android:layout_toRightOf="@id/audio_seekbar"
-            android:gravity="center"
-            android:paddingEnd="4dp"
-            android:paddingRight="8dp"
-            android:text="@string/_00_00"
-            android:textColor="@android:color/black"
-            android:textSize="9sp"
-            android:visibility="visible"
-            android:layout_marginStart="-9dp"
-            android:layout_toEndOf="@id/audio_seekbar" />
+            android:layout_below="@id/messageLayout"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp"
+            android:drawableStart="@drawable/ic_favorite_border"
+            android:drawablePadding="8dp"
+            android:text="@string/_333l"
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/senderOfMessage"
+            android:id="@+id/numberOfComments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
-            android:layout_marginTop="4dp"
-            android:padding="4dp"
-            android:text="@string/sender"
-            android:textColor="@android:color/black"
-            android:visibility="gone"
-            android:layout_marginStart="4dp" />
-
-        <ImageButton
-            android:id="@+id/play_audio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/senderOfMessage"
-            android:background="?android:attr/selectableItemBackground"
-            android:padding="8dp"
-            android:src="@drawable/ic_play_copy" />
-
-        <SeekBar
-            android:id="@+id/audio_seekbar"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/senderOfMessage"
-            android:layout_toRightOf="@id/play_audio"
-            android:padding="14dp"
-            android:layout_toEndOf="@id/play_audio" />
+            android:layout_below="@id/messageLayout"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_toEndOf="@id/numberOfLikes"
+            android:drawableStart="@drawable/ic_chat_bubble_outline"
+            android:drawablePadding="8dp"
+            android:text="@string/_210c"
+            android:textSize="16sp" />
 
         <TextView
-
-            android:id="@+id/amount_seen"
+            android:id="@+id/numberOfSeen"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/audio_seekbar"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginBottom="16dp"
-            android:layout_toRightOf="@id/audio_time"
-            android:drawableStart="@drawable/ic_listen"
-            android:drawableLeft="@drawable/ic_listen"
-            android:drawablePadding="4dp"
-            android:text="@string/_1"
-            android:textColor="@android:color/black"
-            android:textSize="9sp"
-            android:visibility="visible"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="6dp"
-            android:layout_toEndOf="@id/audio_time" />
+            android:layout_below="@id/messageLayout"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:drawableStart="@drawable/ic_headset"
+            android:drawablePadding="8dp"
+            android:gravity="end"
+            android:text="@string/_210c"
+            android:textSize="16sp" />
+
     </RelativeLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

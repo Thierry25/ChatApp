@@ -487,4 +487,7 @@
     <string name="add_new_status">Add new Status</string>
 
     <string name="status_pri">Click on this to change the privacy of your statuses</string>
+    <string name="like">Like</string>
+    <string name="_333l">333l</string>
+    <string name="_210c">210c</string>
 </resources>

@@ -167,7 +167,7 @@
     <string name="lock_m_1">Èske ou sèten ou vle anrejistre kanal ou a ak</string>
     <string name="lock_m_2">kòm modpas ak</string>
     <string name="lock_m_3">kòm kesyon?</string>
-    <string name="text_translation">"Bonjou ak Byenvini,isit la ou pral aprann ki jan yo devlope aplikasyon android "</string>
+<!--    <string name="text_translation">"Bonjou ak Byenvini,isit la ou pral aprann ki jan yo devlope aplikasyon android "</string>-->
     <string name="phone_number">Nimewo telefòn</string>
     <string name="send_verification">Voye Verifikasyon</string>
     <string name="settings">Anviwònman</string>
@@ -388,5 +388,9 @@
     <string name="add_new_status">Mete on nouvo estati</string>
     <string name="status_pri">Klike sou bouton sa pou chanje konfidansyalite estati ou yo</string>
     <string name="add_new_status_">Nouvo\estati</string>
+
+    <string name="like">Renmen</string>
+    <string name="_333l">333l</string>
+    <string name="_210c">210c</string>
 
 </resources>

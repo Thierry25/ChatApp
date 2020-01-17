@@ -388,4 +388,8 @@
     <string name="add_new_status">Ajoutez un nouveau status</string>
     <string name="status_pri">Cliquez dessus pour changer la confidentialité de vos statuts</string>
     <string name="add_new_status_">Nouveau\nStatus</string>
+
+    <string name="like">Aimer</string>
+    <string name="_333l">333l</string>
+    <string name="_210c">210c</string>
 </resources>

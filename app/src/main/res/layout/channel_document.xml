@@ -2,74 +2,132 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginStart="3dp"
+    android:layout_marginEnd="3dp">
 
     <RelativeLayout
         android:id="@+id/mainDoc"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/message_text_background"
-        android:maxWidth="250dp"
-        android:orientation="horizontal"
+        android:background="@drawable/channel_border"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent" >
 
-        <ImageView
-            android:id="@+id/img_view"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/channel_profile"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
-            android:src="@drawable/ic_message_from_other" />
+            android:layout_marginStart="12dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/channel_image"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/baz" />
+
+            <com.vanniktech.emoji.EmojiTextView
+                android:id="@+id/channel_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:maxLength="35"
+                android:text="@string/channel_name"
+                android:textColor="@color/black"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/channel_name"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/channel_image"
+                android:text="@string/time_created"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/more_settings"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_more_horiz" />
+
+        </RelativeLayout>
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/documentGif"
+            android:layout_below="@id/channel_profile"
+            android:layout_width="match_parent"
+            android:layout_marginTop="12dp"
+            android:layout_height="180dp"
+            android:src="@drawable/documentgif"/>
 
         <TextView
-            android:id="@+id/documentName"
-            android:layout_width="wrap_content"
+            android:id="@+id/documentLink"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/img_view"
-            android:padding="12dp"
-            android:text="@string/that_is_the_document_name_on_firebase"
-            android:textColor="@android:color/background_dark" />
+            android:maxLength="250"
+            android:layout_below="@id/documentGif"
+            android:layout_marginStart="12dp"
+            android:text="@string/scroll_horizontally_to_see_the_users_in_the_group"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/timeMessage"
+            android:id="@+id/numberOfLikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:layout_toRightOf="@id/documentName"
-            android:paddingRight="4dp"
-            android:text="@string/_00_00"
-            android:textColor="@android:color/background_dark"
-            android:textSize="9sp" />
+            android:layout_below="@id/documentLink"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="4dp"
+            android:drawableStart="@drawable/ic_favorite_border"
+            android:drawablePadding="8dp"
+            android:text="@string/_333l"
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/amount_seen"
+            android:id="@+id/numberOfComments"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/timeMessage"
-            android:drawableStart="@drawable/ic_download"
-            android:drawableLeft="@drawable/ic_download"
-            android:drawablePadding="4dp"
-            android:paddingTop="14dp"
-            android:paddingRight="4dp"
-            android:text="@string/_1"
-            android:textColor="@android:color/white"
-            android:textSize="9sp"
-            android:visibility="gone" />
+            android:layout_below="@id/documentLink"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:layout_toEndOf="@id/numberOfLikes"
+            android:drawableStart="@drawable/ic_chat_bubble_outline"
+            android:drawablePadding="8dp"
+            android:text="@string/_210c"
+            android:textSize="16sp" />
 
+        <TextView
+            android:id="@+id/numberOfSeen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/documentLink"
+            android:layout_alignParentEnd="true"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="12dp"
+            android:drawableStart="@drawable/ic_visibility"
+            android:drawablePadding="8dp"
+            android:gravity="end"
+            android:text="@string/_210c"
+            android:textSize="16sp" />
 
     </RelativeLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:text="@string/sender"
-        android:id="@+id/senderOfMessage"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
