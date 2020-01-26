@@ -53,11 +53,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.devlomi.record_view.OnBasketAnimationEnd;
-import com.devlomi.record_view.OnRecordClickListener;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -98,7 +93,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
-import droidninja.filepicker.utils.Orientation;
+//import droidninja.filepicker.utils.Orientation;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import marcelin.thierry.chatapp.R;
@@ -1050,7 +1045,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                     .enableDocSupport(false)
                     .enableSelectAll(true)
                     .sortDocumentsBy(SortingTypes.name)
-                    .withOrientation(Orientation.UNSPECIFIED)
+//                    .withOrientation(Orientation.UNSPECIFIED)
                     .pickFile(this);
         }
     }

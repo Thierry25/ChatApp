@@ -13,13 +13,14 @@ import android.net.Uri;
 import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -27,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -39,6 +39,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import com.vanniktech.emoji.EmojiTextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +55,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.activities.ForwardMessageActivity;
 import marcelin.thierry.chatapp.activities.FullScreenImageActivity;
@@ -62,6 +64,7 @@ import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Group;
 import marcelin.thierry.chatapp.classes.Messages;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
+import pl.droidsonroids.gif.GifImageView;
 
 public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -121,30 +124,53 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         switch (holder.getItemViewType()) {
 
-
-            case 1:
             case 0:
 
                 if(!message.isVisible()){
-                    ((MessageViewHolder) holder).messageText.setTypeface(null, Typeface.ITALIC);
-                    ((MessageViewHolder) holder).messageText.setTextColor(Color.parseColor(("#A9A9A9")));
-                    ((MessageViewHolder)holder).messageText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
+                    ((MessageViewHolder) holder).textEntered.setTypeface(null, Typeface.ITALIC);
+                    ((MessageViewHolder) holder).textEntered.setTextColor(Color.parseColor(("#A9A9A9")));
+                    ((MessageViewHolder)holder).textEntered.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
                             0, 0, 0);
-                    ((MessageViewHolder) holder).messageText.setCompoundDrawablePadding(20);
-                    ((MessageViewHolder) holder).messageText.setText(R.string.msg_dell);
-                    ((MessageViewHolder) holder).messageLinearLayout.setEnabled(false);
-                    ((MessageViewHolder) holder).messageText.setEnabled(false);
-                    ((MessageViewHolder) holder).messageTime.setVisibility(View.GONE);
+                    ((MessageViewHolder) holder).textEntered.setCompoundDrawablePadding(50);
+                    ((MessageViewHolder) holder).textEntered.setText(R.string.msg_dell);
+                    ((MessageViewHolder) holder).textEntered.setEnabled(false);
+                    ((MessageViewHolder) holder).numberOfSeen.setVisibility(View.GONE);
+                    ((MessageViewHolder) holder).numberOfLikes.setVisibility(View.GONE);
+                    ((MessageViewHolder) holder).numberOfComments.setVisibility(View.GONE);
 //                    ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
+
+                    ((MessageViewHolder) holder).main.setEnabled(false);
                 }
-                ((MessageViewHolder) holder).messageText.setText(message.getContent());
+                ((MessageViewHolder) holder).textEntered.setText(message.getContent());
+
+                if(message.getContent().length() < 50){
+                    ((MessageViewHolder) holder).textEntered.setTextSize(20);
+                }else{
+                    ((MessageViewHolder) holder).textEntered.setTextSize(16);
+                }
+
+                ((MessageViewHolder) holder).channelName.setText(message.getChannelName());
+                ((MessageViewHolder) holder).setProfilePic(message.getChannelImage());
+
+                if(message.getColor().equals("#7016a8") || message.getColor().equals("#FFFFFF") || !message.isVisible() ){
+                //    ((MessageViewHolder) holder).messageLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    ((MessageViewHolder) holder).textEntered.setTextColor(Color.parseColor("#000000"));
+                    ((MessageViewHolder) holder).messageLayout.setGravity(Gravity.START);
+                }
+                if(!message.getColor().equals("#7016a8") && (!message.getColor().equals("#FFFFFF")&& message.getContent().length() < 150 && message.isVisible())){
+                    ((MessageViewHolder) holder).messageLayout.setBackgroundColor(Color.parseColor(message.getColor()));
+                    ViewGroup.LayoutParams params = ((MessageViewHolder) holder).messageLayout.getLayoutParams();
+                    params.height = 500;
+                    ((MessageViewHolder) holder).messageLayout.setLayoutParams(params);
+                    ((MessageViewHolder) holder).textEntered.setTextColor(Color.parseColor("#FFFFFF"));
+                }
 
 //                if (message.getContent().length() > 40) {
 //                    ((MessageViewHolder) holder).messageText.setWidth(250);
 //                }
 
-                ((MessageViewHolder) holder).messageTime.setText(dateMessageSend);
-                ((MessageViewHolder) holder).messageLinearLayout.setOnClickListener(view -> {
+                ((MessageViewHolder) holder).timestamp.setText(dateMessageSend);
+                ((MessageViewHolder) holder).moreSettings.setOnClickListener(view -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.message_options, (dialog, which) -> {
@@ -216,11 +242,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
 
 
-                if (message.getType().equals("channel_link")) {
-                    ((MessageViewHolder) holder).messageText.setTextColor(Color.rgb(0, 100, 0));
-                }
+//                if (message.getType().equals("channel_link")) {
+//                    ((MessageViewHolder) holder).messageText.setTextColor(Color.rgb(0, 100, 0));
+//                }
 
-                ((MessageViewHolder) holder).messageText.setOnClickListener(view -> {
+                ((MessageViewHolder) holder).textEntered.setOnClickListener(view -> {
                     String st = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
                     if(message.getType().equals("channel_link")){
                         mLinkReference.addChildEventListener(new ChildEventListener() {
@@ -404,35 +430,16 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                     }
                 });
+                
+                ((MessageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
 
-
-                /**
-                 * Test tonight
-                 */
-                ((MessageViewHolder) holder).amountOfSeen.setText(String.valueOf(message.getRead_by().size()));
-
-//                if (!message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((MessageViewHolder) holder).sender.setVisibility(View.VISIBLE);
-//
-//                    String nameStored = Users.getLocalContactList().get(message.getFrom());
-//
-//                    if(nameStored != null && nameStored.length() > 0){
-//                        ((MessageViewHolder) holder).sender.setText(Users.getLocalContactList()
-//                                .get(message.getFrom()));
-//                        ((MessageViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }else{
-//                        ((MessageViewHolder) holder).sender.setText(message.getFrom());
-//                        ((MessageViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }
-//
-//                }
                 break;
 
-            case 2:
-            case 3:
-                ((ImageViewHolder) holder).messageTime.setText(dateMessageSend);
+            case 1:
+                ((ImageViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((ImageViewHolder) holder).messageProgress.setVisibility(View.VISIBLE);
+                ((ImageViewHolder) holder).channelName.setText(message.getChannelName());
+                ((ImageViewHolder) holder).setProfilePic(message.getChannelImage());
                 Picasso.get().load(message.getContent())
                         .placeholder(R.drawable.ic_avatar)
                         .into(((ImageViewHolder) holder).messageImage, new Callback() {
@@ -459,25 +466,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 });
 
-                ((ImageViewHolder) holder).amountOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((ImageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
 
-//                if (!message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((ImageViewHolder) holder).sender.setVisibility(View.VISIBLE);
-//                    String nameStored = Users.getLocalContactList().get(message.getFrom());
-//
-//                    if(nameStored != null && nameStored.length() > 0){
-//                        ((ImageViewHolder) holder).sender.setText(Users.getLocalContactList()
-//                                .get(message.getFrom()));
-//                        ((ImageViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }else{
-//                        ((ImageViewHolder) holder).sender.setText(message.getFrom());
-//                        ((ImageViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }
-//
-//                }
-
-                ((ImageViewHolder) holder).rLayout.setOnClickListener(view -> {
+                showTextEntered(message, ((ImageViewHolder) holder).textEntered);
+              
+                ((ImageViewHolder) holder).moreSettings.setOnClickListener(view -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.channel_options, (dialog, which) -> {
@@ -503,7 +496,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         mMessageReference.child(message.getMessageId())
                                                 .child("content").setValue("Message Deleted");
 
-                                        ((ImageViewHolder) holder).rLayout.setEnabled(false);
+                                    //    ((ImageViewHolder) holder).rLayout.setEnabled(false);
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
@@ -530,37 +523,36 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 break;
 
-            case 4:
-            case 5:
+            case 2:
 
-                ((VideoViewHolder) holder).messageTime.setText(dateMessageSend);
-                ((VideoViewHolder) holder).playButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent i = new Intent(view.getContext(), VideoPlayerActivity.class);
-                        File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
-                        if (f.mkdirs() || f.isDirectory()) {
-                            String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".mp4";
-                            String vid = message.getMessageId() + ".mp4";
-                            String[] videoList = f.list();
-                            List<String> list = new ArrayList<>(Arrays.asList(videoList));
-                            if (list.contains(vid)) {
-                                i.putExtra("video", alreadyThere);
-                            } else {
+                ((VideoViewHolder) holder).timestamp.setText(dateMessageSend);
+                ((VideoViewHolder) holder).setProfilePic(message.getChannelImage());
+                ((VideoViewHolder) holder).channelName.setText(message.getChannelName());
+                ((VideoViewHolder) holder).messageLayout.setOnClickListener(view -> {
+                    Intent i = new Intent(view.getContext(), VideoPlayerActivity.class);
+                    File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
+                    if (f.mkdirs() || f.isDirectory()) {
+                        String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".mp4";
+                        String vid = message.getMessageId() + ".mp4";
+                        String[] videoList = f.list();
+                        List<String> list = new ArrayList<>(Arrays.asList(videoList));
+                        if (list.contains(vid)) {
+                            i.putExtra("video", alreadyThere);
+                        } else {
 //                            String fileName = downloadFile(mContext, message.getMessageId(),
 //                                    ".mp4", f.getAbsolutePath(), message.getContent());
 //                            i.putExtra("video", f.getAbsolutePath() + "/" + fileName);
-                                i.putExtra("video", message.getContent());
-                            }
+                            i.putExtra("video", message.getContent());
                         }
-                        //  i.putExtra("time", getDate(message.getTimestamp()));
-                        view.getContext().startActivity(i);
                     }
+                    //  i.putExtra("time", getDate(message.getTimestamp()));
+                    view.getContext().startActivity(i);
                 });
 
-                ((VideoViewHolder) holder).amountOfSeen.setText(String.valueOf(message.getRead_by().size()));
-
-                ((VideoViewHolder) holder).rLayout.setOnClickListener(view -> {
+                ((VideoViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                
+                showTextEntered(message, ((VideoViewHolder) holder).textEntered);
+                ((VideoViewHolder) holder).moreSettings.setOnClickListener(view -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.channel_options, (dialog, which) -> {
@@ -573,8 +565,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         i.putExtra("type", s);
                                         i.putExtra("message", message.getContent());
                                         view.getContext().startActivity(i);
-
-
+                                        
                                         break;
 
                                     case 1:
@@ -587,7 +578,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         mMessageReference.child(message.getMessageId())
                                                 .child("content").setValue("Message Deleted");
 
-                                        ((VideoViewHolder) holder).rLayout.setEnabled(false);
+                                  //      ((VideoViewHolder) holder).rLayout.setEnabled(false);
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
@@ -614,14 +605,21 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
                 break;
 
-            case 6:
-            case 7:
+            case 3:
+
+                ((AudioViewHolder) holder).timestamp.setText(dateMessageSend);
+                ((AudioViewHolder) holder).setProfilePic(message.getChannelImage());
+                ((AudioViewHolder) holder).channelName.setText(message.getChannelName());
+                
+
                 //TODO: Investigate dead thread on first media
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 final boolean[] isReady = {false};
                 final int[] duration = {0};
                 mediaPlayers.add(mediaPlayer);
 
+                showTextEntered(message, ((AudioViewHolder) holder).textEntered);
+                
                 try {
                     Log.i("((MediaPlayer))", "MediaPlayer called");
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -654,24 +652,22 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                         ((AudioViewHolder) holder).audioTime.setText(time);
 
-                        ((AudioViewHolder) holder).seekBarAudio.setMax(duration[0]);
+                        ((AudioViewHolder) holder).audioSeekbar.setMax(duration[0]);
 
                         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-                        service.scheduleWithFixedDelay(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                ((AudioViewHolder)holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
-                            }
-                        }, 1, 1, TimeUnit.MICROSECONDS);
+                        service.scheduleWithFixedDelay(() ->
+                                ((AudioViewHolder)holder).audioSeekbar.setProgress(mediaPlayer12.getCurrentPosition()), 1, 1, TimeUnit.MICROSECONDS);
 
                         // ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
                     });
 
                     mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
                         mediaPlayer1.pause();
-                        ((AudioViewHolder) holder).playAudioFile.setImageResource(R.drawable.ic_play_copy);
+                        //((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_play_copy);
+                        ((AudioViewHolder) holder).pauseAudio.setVisibility(View.GONE);
+                        ((AudioViewHolder) holder).btfBackground.setVisibility(View.GONE);
+                        ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_play);
+                        ((AudioViewHolder) holder).playAudio.setVisibility(View.VISIBLE);
 
                     });
 
@@ -685,14 +681,28 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                         return true;
                     });
 
-                    ((AudioViewHolder) holder).playAudioFile.setOnClickListener((View view) -> {
+                    ((AudioViewHolder) holder).pauseAudio.setOnClickListener(v ->{
+                        if(isReady[0]){
+                            if (mediaPlayer.isPlaying()) {
+                                ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_play);
+                                ((AudioViewHolder) holder).pauseAudio.setVisibility(View.GONE);
+                                ((AudioViewHolder) holder).btfBackground.setVisibility(View.GONE);
+                                ((AudioViewHolder) holder).audioTime.setVisibility(View.GONE);
+                                ((AudioViewHolder) holder).audioSeekbar.setVisibility(View.GONE);
+                                mediaPlayer.pause();
+                            }
+                        }
+                    });
+
+                    ((AudioViewHolder) holder).playAudio.setOnClickListener((View view) -> {
                         Log.i("((MediaPlayer))", "Play Button clicked");
                         if (isReady[0]) {
-                            if (mediaPlayer.isPlaying()) {
-                                ((AudioViewHolder) holder).playAudioFile.setImageResource(R.drawable.ic_play_copy);
-                                mediaPlayer.pause();
-                            } else {
-                                ((AudioViewHolder) holder).playAudioFile.setImageResource(R.drawable.ic_pause_copy);
+                            if (!mediaPlayer.isPlaying()) {
+                                ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_pause);
+                                ((AudioViewHolder) holder).pauseAudio.setVisibility(View.VISIBLE);
+                                ((AudioViewHolder) holder).btfBackground.setVisibility(View.VISIBLE);
+                                ((AudioViewHolder) holder).audioTime.setVisibility(View.GONE);
+                                ((AudioViewHolder) holder).audioSeekbar.setVisibility(View.GONE);
                                 for (MediaPlayer m : mediaPlayers) {
                                     if (m == null || !m.isPlaying()) {
                                         continue;
@@ -705,7 +715,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                     });
 
-                    ((AudioViewHolder) holder).seekBarAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    ((AudioViewHolder) holder).audioSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean input) {
 
@@ -731,109 +741,80 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     Log.e("MediaPlayerException", e.getMessage());
                     e.printStackTrace();
                 }
+                ((AudioViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
 
-//                ((AudioViewHolder) holder).messageCheck.setVisibility(View.GONE);
-//                if (message.isSeen() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((AudioViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
+                ((AudioViewHolder) holder).moreSettings.setOnClickListener(view -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle(R.string.choose_option)
+                            .setItems(R.array.channel_options, (dialog, which) -> {
+                                switch (which){
+                                    case 0:
 
-//                if (message.isSent() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((AudioViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
-
-                ((AudioViewHolder) holder).amountOfSeen.setText(String.valueOf(message.getRead_by().size()));
-
-//                if (!message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((AudioViewHolder) holder).sender.setVisibility(View.VISIBLE);
-//                    String nameStored = Users.getLocalContactList().get(message.getFrom());
-//
-//                    if(nameStored != null && nameStored.length() > 0){
-//                        ((AudioViewHolder) holder).sender.setText(Users.getLocalContactList()
-//                                .get(message.getFrom()));
-//                        ((AudioViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }else{
-//                        ((AudioViewHolder) holder).sender.setText(message.getFrom());
-//                        ((AudioViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }
-//
-//                }
+                                        Intent i = new Intent(view.getContext(),
+                                                ForwardMessageActivity.class);
+                                        String s = "audio";
+                                        i.putExtra("type", s);
+                                        i.putExtra("message", message.getContent());
+                                        view.getContext().startActivity(i);
 
 
-                ((AudioViewHolder) holder).rLayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setTitle(R.string.choose_option)
-                                .setItems(R.array.channel_options, (dialog, which) -> {
-                                    switch (which){
-                                        case 0:
+                                        break;
 
-                                            Intent i = new Intent(view.getContext(),
-                                                    ForwardMessageActivity.class);
-                                            String s = "audio";
-                                            i.putExtra("type", s);
-                                            i.putExtra("message", message.getContent());
-                                            view.getContext().startActivity(i);
+                                    case 1:
 
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("visible").setValue(false);
 
-                                            break;
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("content").setValue("Message Deleted");
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("type").setValue("text");
 
-                                        case 1:
+                               //         ((AudioViewHolder) holder).rLayout.setEnabled(false);
 
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("visible").setValue(false);
+                                        Toast.makeText(view.getContext(), "Message deleted",
+                                                Toast.LENGTH_SHORT).show();
+                                        break;
 
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("content").setValue("Message Deleted");
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("type").setValue("text");
+                                    case 2:
 
-                                            ((AudioViewHolder) holder).rLayout.setEnabled(false);
+                                        File rootFolder= new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
+                                        File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                        if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()){
+                                            askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
+                                            askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
+                                        }
+                                        break;
 
-                                            Toast.makeText(view.getContext(), "Message deleted",
-                                                    Toast.LENGTH_SHORT).show();
-                                            break;
-
-                                        case 2:
-
-                                            File rootFolder= new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
-                                            File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                            if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()){
-                                                askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
-                                                askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
-                                            }
-                                            break;
-
-                                        default:
-                                            return;
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
+                                    default:
+                                        return;
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
 
 
-                    }
                 });
 
 
                 break;
 
-            case 8:
-            case 9:
-
-                ((DocumentViewHolder) holder).timeMessage.setText(dateMessageSend);
+            case 4:
+                ((DocumentViewHolder) holder).timestamp.setText(dateMessageSend);
+                ((DocumentViewHolder) holder).setProfilePic(message.getChannelImage());
+                ((DocumentViewHolder) holder).channelName.setText(message.getChannelName());
+             //   ((DocumentViewHolder) holder).textEntered()
                 String s = message.getContent();
 
-                if(s.length() > 25){
-                    s = s.substring(0, 21) + "...";
-                    ((DocumentViewHolder) holder).documentName.setText(s);
+                showTextEntered(message, ((DocumentViewHolder) holder).textEntered);
+                
+                if(s.length() >60){
+                    s = s.substring(0, 56) + "...";
+                    ((DocumentViewHolder) holder).documentLink.setText(s);
                 }else{
-                    ((DocumentViewHolder) holder).documentName.setText(message.getContent());
+                    ((DocumentViewHolder) holder).documentLink.setText(message.getContent());
                 }
-                ((DocumentViewHolder) holder).mainDoc.setOnClickListener(view -> {
+                ((DocumentViewHolder) holder).documentGif.setOnClickListener(view -> {
 
                     Intent myIntent = new Intent(Intent.ACTION_VIEW);
                     myIntent.setData(Uri.parse(message.getContent()));
@@ -842,80 +823,48 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     view.getContext().startActivity(docToOpen);
 
                 });
+                ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((DocumentViewHolder) holder).moreSettings.setOnClickListener(view -> {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle(R.string.choose_option)
+                            .setItems(R.array.message_options, (dialog, which) -> {
+                                switch (which){
+                                    case 0:
 
-//                ((DocumentViewHolder) holder).messageCheck.setVisibility(View.GONE);
-//                if (message.isSeen() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((DocumentViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
+                                        Intent i = new Intent(view.getContext(),
+                                                ForwardMessageActivity.class);
+                                        String s1 = "document";
+                                        i.putExtra("type", s1);
+                                        i.putExtra("message", message.getContent());
+                                        view.getContext().startActivity(i);
 
-//                if (message.isSent() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((DocumentViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
+                                        break;
 
-                ((DocumentViewHolder) holder).amountOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                                    case 1:
 
-//                if (!message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((DocumentViewHolder) holder).sender.setVisibility(View.VISIBLE);
-//                    String nameStored = Users.getLocalContactList().get(message.getFrom());
-//
-//                    if(nameStored != null && nameStored.length() > 0){
-//                        ((DocumentViewHolder) holder).sender.setText(Users.getLocalContactList()
-//                                .get(message.getFrom()));
-//                        ((DocumentViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }else{
-//                        ((DocumentViewHolder) holder).sender.setText(message.getFrom());
-//                        ((DocumentViewHolder) holder).sender.setTextColor(Color.parseColor(message.getColor()));
-//                    }
-//
-//                }
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("visible").setValue(false);
 
-                ((DocumentViewHolder) holder).mainDoc.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setTitle(R.string.choose_option)
-                                .setItems(R.array.message_options, (dialog, which) -> {
-                                    switch (which){
-                                        case 0:
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("content").setValue("Message Deleted");
 
-                                            Intent i = new Intent(view.getContext(),
-                                                    ForwardMessageActivity.class);
-                                            String s = "document";
-                                            i.putExtra("type", s);
-                                            i.putExtra("message", message.getContent());
-                                            view.getContext().startActivity(i);
+                                        mMessageReference.child(message.getMessageId())
+                                                .child("type").setValue("text");
 
-                                            break;
+                                       // ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
 
-                                        case 1:
+                                        Toast.makeText(view.getContext(), "Message deleted",
+                                                Toast.LENGTH_SHORT).show();
+                                        break;
 
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("visible").setValue(false);
-
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("content").setValue("Message Deleted");
-
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("type").setValue("text");
-
-                                            ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
-
-                                            Toast.makeText(view.getContext(), "Message deleted",
-                                                    Toast.LENGTH_SHORT).show();
-                                            break;
-
-                                        default:
-                                            return;
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
+                                    default:
+                                        return;
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
 
 
-                    }
                 });
 
                 break;
@@ -942,48 +891,27 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 
-
         switch (viewType) {
 
             case 0:
-                View view1 = inflater.inflate(R.layout.channel_message, parent, false);
-                return new MessageViewHolder(view1);
+                View view = inflater.inflate(R.layout.channel_message, parent, false);
+                return new MessageViewHolder(view);
 
             case 1:
-                View view2 = inflater.inflate(R.layout.channel_message_from_me, parent, false);
-                return new MessageViewHolder(view2);
+                View view1 = inflater.inflate(R.layout.channel_image, parent, false);
+                return new ImageViewHolder(view1);
 
             case 2:
-                View view3 = inflater.inflate(R.layout.channel_image_from_me, parent, false);
-                return new ImageViewHolder(view3);
+                View view2 = inflater.inflate(R.layout.channel_video, parent, false);
+                return new VideoViewHolder(view2);
 
             case 3:
-                View view4 = inflater.inflate(R.layout.channel_image, parent, false);
-                return new ImageViewHolder(view4);
+                View view3 = inflater.inflate(R.layout.channel_audio, parent, false);
+                return new AudioViewHolder(view3);
 
             case 4:
-                View view5 = inflater.inflate(R.layout.channel_video_from_me, parent, false);
-                return new VideoViewHolder(view5);
-
-            case 5:
-                View view6 = inflater.inflate(R.layout.channel_video, parent, false);
-                return new VideoViewHolder(view6);
-
-            case 6:
-                View view7 = inflater.inflate(R.layout.channel_audio_from_me, parent, false);
-                return new AudioViewHolder(view7);
-
-            case 7:
-                View view8 = inflater.inflate(R.layout.channel_audio, parent, false);
-                return new AudioViewHolder(view8);
-
-            case 8:
-                View view9 = inflater.inflate(R.layout.channel_document_from_me, parent, false);
-                return new DocumentViewHolder(view9);
-
-            case 9:
-                View view10 = inflater.inflate(R.layout.channel_document, parent, false);
-                return new DocumentViewHolder(view10);
+                View view4 = inflater.inflate(R.layout.channel_document, parent, false);
+                return new DocumentViewHolder(view4);
         }
         return viewHolder;
     }
@@ -993,39 +921,26 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         mAuth = FirebaseAuth.getInstance();
 
-        String user_phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+        //String user_phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
         final Messages message = mMessagesList.get(position);
 
-        String from_user = message.getFrom();
+      //  String from_user = message.getFrom();
 
         String type = message.getType();
 
-        if (from_user.equals(user_phone) && type.equals("text") || type.equals("channel_link")
-                || type.equals("group_link"))
-            return 1;
-        else if (!from_user.equals(user_phone) && type.equals("text") || type.equals("channel_link")
+        if (type.equals("text") || type.equals("channel_link")
                 || type.equals("group_link"))
             return 0;
-        else if (from_user.equals(user_phone) && type.equals("image"))
+        else if (type.equals("image"))
+            return 1;
+        else if (type.equals("video"))
             return 2;
-        else if (!from_user.equals(user_phone) && type.equals("image"))
+        else if (type.equals("audio"))
             return 3;
-        else if (from_user.equals(user_phone) && type.equals("video"))
+        else if (type.equals("document"))
             return 4;
-        else if (!from_user.equals(user_phone) && type.equals("video"))
-            return 5;
-        else if (from_user.equals(user_phone) && type.equals("audio"))
-            return 6;
-        else if (!from_user.equals(user_phone) && type.equals("audio"))
-            return 7;
-        else if (from_user.equals(user_phone) && type.equals("document"))
-            return 8;
-        else if (!from_user.equals(user_phone) && type.equals("document"))
-            return 9;
-
         return -1;
-
 
     }
 
@@ -1037,121 +952,181 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
 
-        TextView messageText;
-        TextView messageTime;
-        TextView sender;
-
-        RelativeLayout messageLinearLayout;
-
-        TextView amountOfSeen;
+        CircleImageView channelImage;
+        EmojiTextView channelName, textEntered;
+        TextView timestamp, numberOfLikes, numberOfComments, numberOfSeen;
+        ImageView moreSettings;
+        ConstraintLayout main;
+        LinearLayout messageLayout;
 
         public MessageViewHolder(View itemView) {
             super(itemView);
 
-            messageText = itemView.findViewById(R.id.message_text_layout);
-            messageTime = itemView.findViewById(R.id.message_time_layout);
-            messageLinearLayout = itemView.findViewById(R.id.messageLinearLayout);
-            amountOfSeen = itemView.findViewById(R.id.amount_seen);
+            channelImage = itemView.findViewById(R.id.channel_image);
+            channelName = itemView.findViewById(R.id.channel_name);
+            textEntered = itemView.findViewById(R.id.textEntered);
 
-            sender = itemView.findViewById(R.id.senderOfMessage);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            numberOfComments = itemView.findViewById(R.id.numberOfComments);
+            numberOfLikes = itemView.findViewById(R.id.numberOfLikes);
+            numberOfSeen = itemView.findViewById(R.id.numberOfSeen);
+
+            moreSettings = itemView.findViewById(R.id.more_settings);
+            main = itemView.findViewById(R.id.main);
+            messageLayout = itemView.findViewById(R.id.messageLayout);
+
+        }
+
+        public void setProfilePic(String thumbnail){
+
+            channelImage = itemView.findViewById(R.id.channel_image);
+
+            Picasso.get().load(thumbnail).placeholder(R.drawable.ic_avatar).into(channelImage);
 
         }
     }
 
     public static class ImageViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView messageImage;
-        TextView messageTime;
+        CircleImageView channelImage;
+        EmojiTextView channelName, textEntered;
+        TextView timestamp, numberOfLikes, numberOfComments, numberOfSeen;
+        ImageView moreSettings, messageImage;
         ProgressBar messageProgress;
-        TextView amountOfSeen;
-
-        TextView sender;
-        RelativeLayout rLayout;
 
 
         public ImageViewHolder(View itemView) {
             super(itemView);
 
+            channelImage = itemView.findViewById(R.id.channel_image);
+            channelName = itemView.findViewById(R.id.channel_name);
+            textEntered = itemView.findViewById(R.id.textEntered);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            numberOfLikes = itemView.findViewById(R.id.numberOfLikes);
+            numberOfComments = itemView.findViewById(R.id.numberOfComments);
+            numberOfSeen = itemView.findViewById(R.id.numberOfSeen);
+            moreSettings = itemView.findViewById(R.id.more_settings);
             messageImage = itemView.findViewById(R.id.messageImage);
-            messageTime = itemView.findViewById(R.id.messageTime);
             messageProgress = itemView.findViewById(R.id.messageProgressBar);
+        }
 
-            amountOfSeen = itemView.findViewById(R.id.amount_seen);
-            sender = itemView.findViewById(R.id.senderOfMessage);
+        public void setProfilePic(String thumbnail){
 
-            rLayout = itemView.findViewById(R.id.rLayout);
+            channelImage = itemView.findViewById(R.id.channel_image);
+
+            Picasso.get().load(thumbnail).placeholder(R.drawable.ic_avatar).into(channelImage);
+
         }
 
     }
 
     public static class VideoViewHolder extends RecyclerView.ViewHolder {
 
-        TextView messageTime;
-        VideoView messageVideo;
-        ImageView playButton;
-        TextView amountOfSeen;
+        CircleImageView channelImage;
+        EmojiTextView channelName, textEntered;
+        TextView timestamp, numberOfLikes, numberOfComments, numberOfSeen;
+        ImageView moreSettings, messageImage;
+        GifImageView messageLayout;
 
-        TextView sender;
-        RelativeLayout rLayout;
 
         public VideoViewHolder(View itemView) {
             super(itemView);
 
-            messageTime = itemView.findViewById(R.id.messageTime);
-            messageVideo = itemView.findViewById(R.id.messageVideo);
-            sender = itemView.findViewById(R.id.senderOfMessage);
-            rLayout = itemView.findViewById(R.id.rLayout);
-            playButton = itemView.findViewById(R.id.play_button);
-            amountOfSeen = itemView.findViewById(R.id.amount_seen);
+            channelImage = itemView.findViewById(R.id.channel_image);
+            channelName = itemView.findViewById(R.id.channel_name);
+            textEntered = itemView.findViewById(R.id.textEntered);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            numberOfLikes = itemView.findViewById(R.id.numberOfLikes);
+            numberOfComments = itemView.findViewById(R.id.numberOfComments);
+            numberOfSeen = itemView.findViewById(R.id.numberOfSeen);
+            moreSettings = itemView.findViewById(R.id.more_settings);
+            messageImage = itemView.findViewById(R.id.messageImage);
+            messageLayout = itemView.findViewById(R.id.messageLayout);
+
+        }
+
+
+        public void setProfilePic(String thumbnail){
+
+            channelImage = itemView.findViewById(R.id.channel_image);
+
+            Picasso.get().load(thumbnail).placeholder(R.drawable.ic_avatar).into(channelImage);
 
         }
     }
 
     public static class AudioViewHolder extends RecyclerView.ViewHolder {
 
-        ImageButton playAudioFile;
-        SeekBar seekBarAudio;
+        CircleImageView channelImage;
+        EmojiTextView channelName, textEntered;
+        TextView timestamp, numberOfLikes, numberOfComments, numberOfSeen, audioTime;
+        ImageView moreSettings, playAudio, pauseAudio;
+        RelativeLayout messsageLayout;
+        GifImageView btfBackground;
+        SeekBar audioSeekbar;
 
-        TextView amountOfSeen;
-        TextView sender;
-        TextView audioTime;
-
-        RelativeLayout rLayout;
 
         public AudioViewHolder(View itemView) {
             super(itemView);
 
-            playAudioFile = itemView.findViewById(R.id.play_audio);
-            seekBarAudio = itemView.findViewById(R.id.audio_seekbar);
-
-            amountOfSeen = itemView.findViewById(R.id.amount_seen);
-            sender = itemView.findViewById(R.id.senderOfMessage);
-
-            rLayout = itemView.findViewById(R.id.rLayout);
+            channelImage = itemView.findViewById(R.id.channel_image);
+            channelName = itemView.findViewById(R.id.channel_name);
+            textEntered = itemView.findViewById(R.id.textEntered);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            numberOfLikes = itemView.findViewById(R.id.numberOfLikes);
+            numberOfComments = itemView.findViewById(R.id.numberOfComments);
+            numberOfSeen = itemView.findViewById(R.id.numberOfSeen);
+            moreSettings = itemView.findViewById(R.id.more_settings);
             audioTime = itemView.findViewById(R.id.audio_time);
+            playAudio = itemView.findViewById(R.id.play_audio);
+            pauseAudio = itemView.findViewById(R.id.pause_audio);
+            messsageLayout = itemView.findViewById(R.id.messageLayout);
+            btfBackground = itemView.findViewById(R.id.btf_bg);
+            audioSeekbar = itemView.findViewById(R.id.audio_seekbar);
+
+        }
+
+        public void setProfilePic(String thumbnail){
+
+            channelImage = itemView.findViewById(R.id.channel_image);
+
+            Picasso.get().load(thumbnail).placeholder(R.drawable.ic_avatar).into(channelImage);
+
         }
     }
 
 
     public static class DocumentViewHolder extends RecyclerView.ViewHolder {
 
-        LinearLayout mainDoc;
-        TextView documentName;
-        TextView timeMessage;
-
-        TextView amountOfSeen;
-        TextView sender;
+        CircleImageView channelImage;
+        EmojiTextView channelName;
+        TextView timestamp, numberOfLikes, textEntered, numberOfComments, numberOfSeen, documentLink;
+        ImageView moreSettings;
+        GifImageView documentGif;
 
 
         public DocumentViewHolder(View itemView) {
             super(itemView);
 
-            mainDoc = itemView.findViewById(R.id.mainDoc);
-            documentName = itemView.findViewById(R.id.documentName);
-            timeMessage = itemView.findViewById(R.id.timeMessage);
+            channelImage = itemView.findViewById(R.id.channel_image);
+            channelName = itemView.findViewById(R.id.channel_name);
+            timestamp = itemView.findViewById(R.id.timestamp);
+            numberOfLikes = itemView.findViewById(R.id.numberOfLikes);
+            numberOfComments = itemView.findViewById(R.id.numberOfComments);
+            numberOfSeen = itemView.findViewById(R.id.numberOfSeen);
+            moreSettings = itemView.findViewById(R.id.more_settings);
+            documentGif = itemView.findViewById(R.id.documentGif);
+            documentLink = itemView.findViewById(R.id.documentLink);
+            textEntered = itemView.findViewById(R.id.textEntered);
 
-            amountOfSeen = itemView.findViewById(R.id.amount_seen);
-            sender = itemView.findViewById(R.id.senderOfMessage);
+        }
+
+        public void setProfilePic(String thumbnail){
+
+            channelImage = itemView.findViewById(R.id.channel_image);
+
+            Picasso.get().load(thumbnail).placeholder(R.drawable.ic_avatar).into(channelImage);
 
         }
 
@@ -1200,5 +1175,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 RunTimePermissionWrapper.REQUEST_CODE.MULTIPLE_WALKTHROUGH, WALK_THROUGH);
     }
 
+    private void showTextEntered(Messages message, TextView textview){
+        String text = message.getParent();
+        if (text.length() > 7 && text.contains("Default%")) {
+            String[] parts = text.split("Default%");
+            String part1 = parts[0];
+            String part2 = parts[1];
 
+            textview.setText(part2);
+            textview.setVisibility(View.VISIBLE);
+        }
+    }
 }

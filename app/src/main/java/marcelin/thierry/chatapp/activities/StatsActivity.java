@@ -82,7 +82,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
-import droidninja.filepicker.utils.Orientation;
+//import droidninja.filepicker.utils.Orientation;
 import jp.shts.android.storiesprogressview.StoriesProgressView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.TryAdapter;
@@ -2135,7 +2135,7 @@ public class StatsActivity extends AppCompatActivity implements StoriesProgressV
                     .enableDocSupport(false)
                     .enableSelectAll(true)
                     .sortDocumentsBy(SortingTypes.name)
-                    .withOrientation(Orientation.UNSPECIFIED)
+//                    .withOrientation(Orientation.UNSPECIFIED)
                     .pickFile(this);
         }
     }

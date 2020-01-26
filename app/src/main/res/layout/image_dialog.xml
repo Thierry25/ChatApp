@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_weight="2"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/imageSelected"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.8"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_avatar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight=".2"
+        android:orientation="horizontal"
+
+        android:padding="10dp"
+        android:weightSum="3">
+
+        <ImageButton
+            android:id="@+id/send_emoji"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_marginBottom="4dp"
+            android:layout_weight=".3"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/open_emoji_keyboard"
+            android:src="@drawable/image_dialog_emoji" />
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/send_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="2.4"
+            android:background="@drawable/border"
+            android:hint="@string/type_message"
+            android:imeOptions="actionSend|flagNoExtractUi"
+            android:inputType="textCapSentences|textMultiLine"
+            android:maxLength="250" />
+
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/send_description"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="4dp"
+            android:layout_weight=".3"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/send_voice"
+            android:src="@drawable/ic_send"
+            android:tag="sendAudio" />
+
+    </LinearLayout>
+
+</LinearLayout>

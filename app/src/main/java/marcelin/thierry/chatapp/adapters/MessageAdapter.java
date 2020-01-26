@@ -425,7 +425,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 });
 
-                // ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
                 if (message.isSeen() && message.isVisible() && message.getFrom().equals(Objects.requireNonNull(
                         mAuth.getCurrentUser()).getPhoneNumber())) {
                     ((MessageViewHolder) holder).messageCheck.setImageResource(R.drawable.ic_double_check);
@@ -440,28 +439,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (message.isReplyOn()) {
 
                     ((MessageViewHolder) holder).replyLayout.setVisibility(View.VISIBLE);
-//                    if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
-//                        ((MessageViewHolder) holder).replyLayout.setVisibility(View.VISIBLE);
-////                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_lay);
-////                        ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upper);
-//
-//                    } else {
-//
-//                        ((MessageViewHolder) holder).replyLayout.setVisibility(View.VISIBLE);
-////                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_layy);
-////                        ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upperr);
-//                    }
-
-
-//                    if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//                       mMainVLayout.setBackgroundResource(R.drawable.message_selected_layout);
-//                    }else{
-//                        if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                            mMainVLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                        }else{
-//                            mMainVLayout.setBackgroundResource(R.drawable.message_text_background);
-//                        }
-//                    }
 
                     String string = message.getParent();
                     if (string.contains("/")) {
@@ -481,17 +458,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         part2;
                                 if (part2.equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                     ((MessageViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFD700"));
-
-//                                    ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                                 } else {
                                     ((MessageViewHolder) holder).senderOfMessage.setText(nameStored + " " + "•" + mContext.getString(R.string.s));
-//                                    ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FF4500"));
-//                                    ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.other_linear_background);
-//                                    ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
 
                                 }
                                 switch (message.getType()) {
@@ -533,74 +501,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         }
 
                                         break;
-//
-//                                    case "audio":
-//
-//                                        ((MessageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
-//                                        ((MessageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((MessageViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
-//                                                0, 0, 0);
-//                                        ((MessageViewHolder) holder).audioSent.setCompoundDrawablePadding(30);
-//
-//                                        MediaMetadataRetriever mmr;
-//
-//                                        try {
-//
-//                                            mmr = new MediaMetadataRetriever();
-//                                            if (Build.VERSION.SDK_INT >= 14) {
-//
-//                                                mmr.setDataSource(message.getContent(), new HashMap<String, String>());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//                                                ((MessageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                // ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
-//                                                mmr.release();
-//                                            } else {
-//
-//                                                mmr.setDataSource(message.getContent());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                                                ((MessageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                mmr.release();
-//                                            }
-//
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        break;
-//
-//                                    case "video":
-//
-//                                        ((MessageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).videoSent.setVisibility(View.VISIBLE);
-//
-//                                        ((MessageViewHolder) holder).videoSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new__video,
-//                                                0, 0, 0);
-//                                        ((MessageViewHolder) holder).videoSent.setCompoundDrawablePadding(30);
-//                                        ((MessageViewHolder) holder).videoSent.setText(R.string.v);
-//
-//                                        break;
-//
-//                                    case "document":
-//
-//                                        ((MessageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((MessageViewHolder) holder).documentSent.setVisibility(View.VISIBLE);
-//                                        ((MessageViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((MessageViewHolder) holder).documentSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_document,
-//                                                0, 0, 0);
-//                                        ((MessageViewHolder) holder).documentSent.setCompoundDrawablePadding(30);
-//                                        ((MessageViewHolder) holder).documentSent.setText(R.string.d);
-//
-//                                        break;
 
                                     default:
                                         return;

@@ -5,7 +5,7 @@ android {
     defaultConfig {
         applicationId "marcelin.thierry.chatapp"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -37,7 +37,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.hbb20:ccp:2.2.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.media:media:1.0.0'
@@ -76,7 +76,9 @@ dependencies {
     // Emoji
     implementation 'com.github.hani-momanii:SuperNova-Emoji:1.1'
     // File Picker
-    implementation 'com.droidninja:filepicker:2.1.5'
+    implementation 'com.droidninja:filepicker:2.2.1'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71"
+
     // FullScreen Video
     implementation 'com.github.rtoshiro.fullscreenvideoview:fullscreenvideoview:1.1.2'
     // Slide To Cancel
@@ -118,6 +120,11 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+}
+
+configurations {
+    cleanedAnnotations
+    compile.exclude group: 'org.jetbrains', module: 'annotations'
 }
 
 apply plugin: 'com.google.gms.google-services'

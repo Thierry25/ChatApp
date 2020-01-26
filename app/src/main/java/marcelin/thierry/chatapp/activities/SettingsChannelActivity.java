@@ -478,6 +478,7 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -514,12 +515,12 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
 
                 // Adding an image to firebase storage
 
-                final StorageReference image_path = mStorageRef.child("profile_pics").child(randomIdentifier()+  ".jpg");
-                final StorageReference thumb_filepath = mStorageRef.child("profile_pics").child("thumbs").child(randomIdentifier()+  ".jpg");
+                final StorageReference image_path = mStorageRef.child("profile_pics").child(randomIdentifier() + ".jpg");
+                final StorageReference thumb_filepath = mStorageRef.child("profile_pics").child("thumbs").child(randomIdentifier() + ".jpg");
 
                 image_path.putFile(resultUri).addOnCompleteListener(task -> {
 
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful()) {
                         final String download_url = task.getResult().getDownloadUrl().toString();
 
                         UploadTask uploadTask = thumb_filepath.putBytes(thum_byte);
@@ -528,7 +529,7 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
                             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> thumb_task) {
 
                                 String thumb_downloadUrl = thumb_task.getResult().getDownloadUrl().toString();
-                                if(thumb_task.isSuccessful()){
+                                if (thumb_task.isSuccessful()) {
 
                                     Map<String, Object> updateHashMap = new HashMap();
                                     updateHashMap.put("image", download_url);
@@ -537,21 +538,21 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
                                     mChannelReference.child(mChannelName).updateChildren(updateHashMap)
                                             .addOnCompleteListener(task1 -> {
 
-                                                if(task1.isSuccessful()){
+                                                if (task1.isSuccessful()) {
 
                                                     uploadDialog.dismiss();
                                                     Toast.makeText(SettingsChannelActivity.this,
                                                             R.string.upload_success,
                                                             Toast.LENGTH_SHORT).show();
 
-                                                }else{
+                                                } else {
                                                     Toast.makeText(SettingsChannelActivity.this,
                                                             R.string.upload_error,
                                                             Toast.LENGTH_SHORT).show();
                                                 }
 
                                             });
-                                }else{
+                                } else {
                                     Toast.makeText(getApplicationContext(), R.string.thumbnail_error,
                                             Toast.LENGTH_SHORT).show();
                                     uploadDialog.dismiss();
@@ -560,7 +561,7 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
                             }
                         });
 
-                    }else{
+                    } else {
                         // TODO: Learn about the specific errors that can happen to handle them more efficiently
                         Toast.makeText(SettingsChannelActivity.this, R.string.err, Toast.LENGTH_SHORT).show();
                         uploadDialog.dismiss();

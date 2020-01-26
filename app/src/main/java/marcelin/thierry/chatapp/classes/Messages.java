@@ -27,6 +27,8 @@ public class Messages implements Serializable {
     private static String clickedMessageId = "";
 
     private Map<String, Object> read_by;
+
+    private String channelName, channelImage;
     // For Firebase
     public Messages() { }
 
@@ -145,6 +147,23 @@ public class Messages implements Serializable {
     @Exclude
     public static void setClickedMessageId(String clickedMessageId) {
         Messages.clickedMessageId = clickedMessageId;
+    }
+
+    @Exclude
+    public String getChannelName() {
+        return channelName;
+    }
+    @Exclude
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
+    }
+    @Exclude
+    public String getChannelImage() {
+        return channelImage;
+    }
+    @Exclude
+    public void setChannelImage(String channelImage) {
+        this.channelImage = channelImage;
     }
 
     public boolean isReplyOn() {

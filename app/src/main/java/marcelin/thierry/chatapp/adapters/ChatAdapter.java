@@ -239,6 +239,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
                             new Intent(view.getContext(), ChannelAdminChatActivity.class);
                     goToAdminChannelChat.putExtra("Channel_id", currentConv.getId());
                     goToAdminChannelChat.putExtra("chat_id", currentConv.getName());
+                    goToAdminChannelChat.putExtra("profile_image", currentConv.getProfile_image());
                     view.getContext().startActivity(goToAdminChannelChat);
 
                   }else{
@@ -248,6 +249,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
                               new Intent(view.getContext(), ChannelAdminChatActivity.class);
                       goToAdminChannelChat.putExtra("Channel_id", currentConv.getId());
                       goToAdminChannelChat.putExtra("chat_id", currentConv.getName());
+                      goToAdminChannelChat.putExtra("profile_image", currentConv.getProfile_image());
                       view.getContext().startActivity(goToAdminChannelChat);
                     }else {
 
@@ -278,6 +280,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
                                             new Intent(view.getContext(), ChannelAdminChatActivity.class);
                                     goToAdminChannelChat.putExtra("Channel_id", currentConv.getId());
                                     goToAdminChannelChat.putExtra("chat_id", currentConv.getName());
+                                    goToAdminChannelChat.putExtra("profile_image", currentConv.getProfile_image());
                                     view.getContext().startActivity(goToAdminChannelChat);
                                     mContext.finish();
                                   }else{
@@ -388,6 +391,7 @@ import marcelin.thierry.chatapp.classes.Conversation;
                           (view.getContext(), ChannelSubscriberActivity.class);
                   goToSubscriberChannelChat.putExtra("Channel_id", currentConv.getId());
                   goToSubscriberChannelChat.putExtra("chat_id", currentConv.getName());
+                  goToSubscriberChannelChat.putExtra("profile_image", currentConv.getProfile_image());
                   view.getContext().startActivity(goToSubscriberChannelChat);
                 }
 

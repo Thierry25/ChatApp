@@ -63,8 +63,122 @@
         android:id="@+id/mainVLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:orientation="vertical">
+
+        <HorizontalScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/light_gray"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/color_palette"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_margin="0dp"
+                android:orientation="horizontal"
+                android:paddingBottom="0dp">
+
+                <ImageView
+                    android:id="@+id/whiteBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/white" />
+
+                <ImageView
+                    android:id="@+id/grayBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorGray" />
+
+                <ImageView
+                    android:id="@+id/greenBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorDarkGreen" />
+
+                <ImageView
+                    android:id="@+id/pinkBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPink" />
+
+                <ImageView
+                    android:id="@+id/orangeBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorOrange" />
+
+                <ImageView
+                    android:id="@+id/orangeRedBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorOrangered" />
+
+                <ImageView
+                    android:id="@+id/blackBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/black" />
+
+                <ImageView
+                    android:id="@+id/purpleBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPurple" />
+
+                <ImageView
+                    android:id="@+id/redBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorRed" />
+
+                <ImageView
+                    android:id="@+id/tealBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorTeal" />
+
+                <ImageView
+                    android:id="@+id/philBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPhil" />
+
+                <ImageView
+                    android:id="@+id/brownBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorBrown" />
+
+                <ImageView
+                    android:id="@+id/pinkFadeBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorPinkFade" />
+
+                <ImageView
+                    android:id="@+id/lightPurpleBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorLightPurple" />
+
+                <ImageView
+                    android:id="@+id/lDarkBlueBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorLDarkBlue" />
+
+                <ImageView
+                    android:id="@+id/redLightBg"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/colorRedLight" />
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
 
         <LinearLayout
             android:id="@+id/replyLinearLayout"
@@ -206,19 +320,6 @@
                     android:contentDescription="@string/open_emoji_keyboard"
                     android:src="@drawable/ic_send_emoji" />
 
-
-                <!--<hani.momanii.supernova_emoji_library.Helper.EmojiconEditText-->
-                <!--android:id="@+id/send_text"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="3"-->
-                <!--android:hint="@string/type_message"-->
-                <!--android:imeOptions="actionSend|flagNoExtractUi"-->
-                <!--android:inputType="textCapSentences|textMultiLine">-->
-
-                <!--&lt;!&ndash;<requestFocus />&ndash;&gt;-->
-                <!--</hani.momanii.supernova_emoji_library.Helper.EmojiconEditText>-->
-
                 <com.vanniktech.emoji.EmojiEditText
                     android:id="@+id/send_text"
                     android:layout_width="0dp"
@@ -239,6 +340,14 @@
                     android:src="@drawable/ic_add_acttachment"
                     android:tint="@color/colorPrimary" />
 
+                <ImageView
+                    android:id="@+id/selectColor"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:src="@color/colorOrangered"
+                    android:visibility="gone" />
+
 
             </LinearLayout>
 
@@ -249,10 +358,10 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="8dp"
                 android:layout_weight=".5"
-                android:tag="sendAudio"
                 android:background="?android:attr/selectableItemBackground"
                 android:contentDescription="@string/send_voice"
-                android:src="@drawable/mic" />
+                android:src="@drawable/mic"
+                android:tag="sendAudio" />
 
 
         </LinearLayout>
@@ -262,8 +371,7 @@
         android:id="@+id/fragment_contaainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent" />
 </LinearLayout>
-

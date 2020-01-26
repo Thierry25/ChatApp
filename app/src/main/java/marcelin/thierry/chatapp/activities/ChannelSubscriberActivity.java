@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,13 +52,14 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
     private String mCurrentUserPhone;
 
     private String mChannelName;
+    private String mChannelImage;
 
     //private int mCurrentPage = 1;
     private int itemPosition = 0;
 
     private ChannelInteractionAdapter mChannelInteractionAdapter;
 
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+//    private NestedScrollView mSwipeRefreshLayout;
     private LinearLayoutManager mLinearLayoutManager;
 
     private Toolbar mChatToolbar;
@@ -89,6 +92,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         setContentView(R.layout.activity_channel_subscriber);
 
         mChannelName = getIntent().getStringExtra("Channel_id");
+        mChannelImage = getIntent().getStringExtra("profile_image");
         mChatToolbar = findViewById(R.id.chat_bar_main);
         //   setSupportActionBar(mChatToolbar);
 
@@ -99,7 +103,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 //        actionBar.setDisplayHomeAsUpEnabled(true);
 //        actionBar.setDisplayShowCustomEnabled(true);
         mMessagesList = findViewById(R.id.messages_list);
-        mSwipeRefreshLayout = findViewById(R.id.swipe_layout);
+//        mSwipeRefreshLayout = findViewById(R.id.swipe_layout);
 
         mRootView = findViewById(R.id.rootView);
         mRootView.setBackgroundColor(ContextCompat.getColor(this, R.color.channel_background));
@@ -123,16 +127,17 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 
         loadMessages();
 
-        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+//        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+//
+//            //      mCurrentPage++;
+//
+//            itemPosition = 0;
+//
+//            loadMoreMessages();
+//
+//        });
 
-            //      mCurrentPage++;
-
-            itemPosition = 0;
-
-            loadMoreMessages();
-
-        });
-
+        Picasso.get().load(mChannelImage).into(mProfileImage);
 
         listenerOnMessage();
 
@@ -241,11 +246,12 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
                                         if (isOnActivity){// && !m.getFrom().equals(mCurrentUserPhone)) {
                                             updateSeen(m);
                                         }
-
+                                        m.setChannelName(mChannelName);
+                                        m.setChannelImage(mChannelImage);
                                         messagesList.add(m);
                                         mChannelInteractionAdapter.notifyDataSetChanged();
                                         mMessagesList.scrollToPosition(messagesList.size() - 1);
-                                        mSwipeRefreshLayout.setRefreshing(false);
+//                                        mSwipeRefreshLayout.setRefreshing(false);
                                     }
 
                                     @Override
@@ -282,74 +288,74 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 
     }
 
-    private void loadMoreMessages() {
-
-        DatabaseReference conversationRef = mRootReference.child("ads_channel").child(mChannelName)
-                .child("messages");
-        conversationRef.keepSynced(true);
-
-        DatabaseReference messageRef = mRootReference.child("ads_channel_messages");
-        messageRef.keepSynced(true);
-
-        String mLastKey = messagesList.get(0).getMessageId();
-        Query conversationQuery = conversationRef.orderByKey().endAt(mLastKey).limitToLast(10);
-
-        conversationQuery.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Chat chatRef = dataSnapshot.getValue(Chat.class);
-                if (chatRef == null) {
-                    return;
-                }
-                messageRef.child(chatRef.getMsgId()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Messages m = dataSnapshot.getValue(Messages.class);
-                        if (m == null) {
-                            return;
-                        }
-
-                        m.setMessageId(chatRef.getMsgId());
-                        if (!m.getMessageId().equals(mLastKey)) {
-                            messagesList.add(itemPosition++, m);
-                            mChannelInteractionAdapter.notifyDataSetChanged();
-                        }
-
-                        mLinearLayoutManager.scrollToPositionWithOffset(10, 0);
-                        mSwipeRefreshLayout.setRefreshing(false);
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-    }
+//    private void loadMoreMessages() {
+//
+//        DatabaseReference conversationRef = mRootReference.child("ads_channel").child(mChannelName)
+//                .child("messages");
+//        conversationRef.keepSynced(true);
+//
+//        DatabaseReference messageRef = mRootReference.child("ads_channel_messages");
+//        messageRef.keepSynced(true);
+//
+//        String mLastKey = messagesList.get(0).getMessageId();
+//        Query conversationQuery = conversationRef.orderByKey().endAt(mLastKey).limitToLast(10);
+//
+//        conversationQuery.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                Chat chatRef = dataSnapshot.getValue(Chat.class);
+//                if (chatRef == null) {
+//                    return;
+//                }
+//                messageRef.child(chatRef.getMsgId()).addListenerForSingleValueEvent(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot dataSnapshot) {
+//                        Messages m = dataSnapshot.getValue(Messages.class);
+//                        if (m == null) {
+//                            return;
+//                        }
+//
+//                        m.setMessageId(chatRef.getMsgId());
+//                        if (!m.getMessageId().equals(mLastKey)) {
+//                            messagesList.add(itemPosition++, m);
+//                            mChannelInteractionAdapter.notifyDataSetChanged();
+//                        }
+//
+//                        mLinearLayoutManager.scrollToPositionWithOffset(10, 0);
+//                        mSwipeRefreshLayout.setRefreshing(false);
+//
+//
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError databaseError) {
+//
+//                    }
+//                });
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
+//    }
 
     private void updateSeen(Messages m) {
 

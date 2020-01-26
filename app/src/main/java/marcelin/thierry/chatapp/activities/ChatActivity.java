@@ -108,7 +108,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
-import droidninja.filepicker.utils.Orientation;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.MessageAdapter;
 import marcelin.thierry.chatapp.classes.Chat;
@@ -509,10 +508,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         });
 
-
-
         mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
-
 
         mSendEmoji = findViewById(R.id.send_emoji);
         mSendAttachment = findViewById(R.id.send_attachment);
@@ -3393,7 +3389,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                     .enableDocSupport(false)
                     .enableSelectAll(true)
                     .sortDocumentsBy(SortingTypes.name)
-                    .withOrientation(Orientation.UNSPECIFIED)
+//                    .withOrientation(Orientation.UNSPECIFIED)
                     .pickFile(this);
         }
     }
