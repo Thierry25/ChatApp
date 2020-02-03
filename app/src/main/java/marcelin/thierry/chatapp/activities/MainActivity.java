@@ -26,7 +26,6 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.provider.MediaStore;
@@ -82,7 +81,6 @@ import marcelin.thierry.chatapp.adapters.ChatAdapter;
 import marcelin.thierry.chatapp.adapters.StatusAdapter;
 import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Chat;
-import marcelin.thierry.chatapp.classes.CheckInternetAsyncTask;
 import marcelin.thierry.chatapp.classes.Conversation;
 import marcelin.thierry.chatapp.classes.Group;
 import marcelin.thierry.chatapp.classes.Messages;
@@ -90,6 +88,7 @@ import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
 import marcelin.thierry.chatapp.classes.Status;
 import marcelin.thierry.chatapp.classes.UserStatus;
 import marcelin.thierry.chatapp.classes.Users;
+import marcelin.thierry.chatapp.utils.CheckInternet_;
 import marcelin.thierry.chatapp.utils.Constant;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
@@ -1185,42 +1184,42 @@ public class MainActivity extends AppCompatActivity {
             switch (isClicked) {
                 case 1:
                     try {
-                        if (new CheckInternetAsyncTask(this).execute().get()) {
-                            startActivity(new Intent(this, AddTextActivity.class));
-                        } else {
-                            Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
+                        new CheckInternet_(internet -> {
+                            if(internet){
+                                startActivity(new Intent(this, AddTextActivity.class));
+                            }else{
+                                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
 
                 case 2:
                     try {
-                        if (new CheckInternetAsyncTask(this).execute().get()) {
-                            choseMedia();
-                        } else {
-                            Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
+                        new CheckInternet_(internet -> {
+                           if(internet){
+                               choseMedia();
+                           }else{
+                               Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                           }
+                        });
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
 
                 case 3:
                     try {
-                        if (new CheckInternetAsyncTask(this).execute().get()) {
-                            selectVideoDialog();
-                        } else {
-                            Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
+                        new CheckInternet_(internet -> {
+                           if(internet){
+                               selectVideoDialog();
+                           }else{
+                               Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                           }
+                        });
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 

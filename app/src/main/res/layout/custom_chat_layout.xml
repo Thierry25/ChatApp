@@ -17,37 +17,37 @@
 
         <ImageView
             android:id="@+id/backButton"
-            android:layout_marginTop="8dp"
-            android:layout_marginRight="12dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_chevron_left"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
+            android:src="@drawable/ic_chevron_left" />
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/title"
             android:layout_centerVertical="true"
-            android:textColor="@android:color/black"
-            android:layout_toRightOf="@id/profileImage"
-            android:paddingRight="8dp"
-            android:textSize="18sp"
-            android:textStyle="bold|italic"
-            android:fontFamily="sans-serif-light"
-            android:text="@string/s"
             android:layout_toEndOf="@id/profileImage"
-            android:paddingEnd="8dp" />
+            android:layout_toRightOf="@id/profileImage"
+            android:fontFamily="sans-serif-light"
+            android:paddingEnd="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/s"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold|italic" />
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
             android:layout_width="36dp"
             android:layout_height="36dp"
-            android:src="@drawable/ic_avatar"
-            android:layout_marginEnd="16dp"
             android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
             android:layout_toRightOf="@id/backButton"
-            android:id="@+id/profileImage"
-            android:layout_marginRight="16dp" />
+            android:src="@drawable/ic_avatar" />
     </RelativeLayout>
 
 

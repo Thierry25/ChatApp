@@ -64,9 +64,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bestsoft32.tt_fancy_gif_dialog_lib.TTFancyGifDialog;
-import com.devlomi.record_view.OnRecordListener;
-import com.devlomi.record_view.RecordButton;
-import com.devlomi.record_view.RecordView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -111,12 +108,12 @@ import droidninja.filepicker.models.sort.SortingTypes;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.MessageAdapter;
 import marcelin.thierry.chatapp.classes.Chat;
-import marcelin.thierry.chatapp.classes.CheckInternetAsyncTask;
 import marcelin.thierry.chatapp.classes.Conversation;
 import marcelin.thierry.chatapp.classes.Messages;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.AlertDialogHelper;
+import marcelin.thierry.chatapp.utils.CheckInternet_;
 import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 
 public class ChatActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener,
@@ -689,17 +686,17 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         mSendAttachment.setOnClickListener(view1 -> {
             try {
-                if (new CheckInternetAsyncTask(view1.getContext()).execute().get()) {
-                    showCustomDialog();
-                } else {
-                    Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+                new CheckInternet_(internet -> {
+                    if(internet){
+                        showCustomDialog();
+                    }else{
+                        Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
         });
 
         // To Remove
@@ -790,614 +787,615 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private void sendAudio(File file) {
 
         try {
-            if (new CheckInternetAsyncTask(this).execute().get()) {
-                testingFlag = false;
-                String myReference = "ads_users/" + mCurrentUserPhone + "/" + "conversation/";
-                String otherUserReference = "ads_users/" + mChatPhone + "/" + "conversation/";
+            new CheckInternet_(internet -> {
+                if(internet){
+                        testingFlag = false;
+                        String myReference = "ads_users/" + mCurrentUserPhone + "/" + "conversation/";
+                        String otherUserReference = "ads_users/" + mChatPhone + "/" + "conversation/";
 
-                String chat_reference = "ads_chat/";
+                        String chat_reference = "ads_chat/";
 
-                final String message_reference = "ads_messages/";
+                        final String message_reference = "ads_messages/";
 
-                DatabaseReference msg_push = mRootReference.child("ads_messages").push();
+                        DatabaseReference msg_push = mRootReference.child("ads_messages").push();
 
-                String push_id = msg_push.getKey();
+                        String push_id = msg_push.getKey();
 
-                StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
-                Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
+                        StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
+                        Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
 
-                DatabaseReference conversation_push = mRootReference.child("ads_users")
-                        .child(mCurrentUserPhone).push();
-                String conversation_id = conversation_push.getKey();
+                        DatabaseReference conversation_push = mRootReference.child("ads_users")
+                                .child(mCurrentUserPhone).push();
+                        String conversation_id = conversation_push.getKey();
 
-                filePath.putFile(voiceUri).addOnCompleteListener(task -> {
+                        filePath.putFile(voiceUri).addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
-                                .toString();
+                            if (task.isSuccessful()) {
+                                String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
+                                        .toString();
 
-                        mRootReference.child("ads_users").child(mCurrentUserPhone)
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        if (dataSnapshot.hasChild("conversation")) {
+                                mRootReference.child("ads_users").child(mCurrentUserPhone)
+                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                if (dataSnapshot.hasChild("conversation")) {
 
-                                            final Conversation[] c = new Conversation[1];
-                                            List<Conversation> listConvo = new ArrayList<>();
-                                            final boolean[] isThere = {false};
-                                            //final String[] mConvoRef = new String[1];
+                                                    final Conversation[] c = new Conversation[1];
+                                                    List<Conversation> listConvo = new ArrayList<>();
+                                                    final boolean[] isThere = {false};
+                                                    //final String[] mConvoRef = new String[1];
 
-                                            if (!isFirstTime) {
+                                                    if (!isFirstTime) {
 
-                                                // Getting reference to push_id under ads_user
-                                                DatabaseReference addNewMessage =
-                                                        mRootReference.child("ads_chat")
-                                                                .child(mConvoRef)
-                                                                .child("messages").child(push_id);
+                                                        // Getting reference to push_id under ads_user
+                                                        DatabaseReference addNewMessage =
+                                                                mRootReference.child("ads_chat")
+                                                                        .child(mConvoRef)
+                                                                        .child("messages").child(push_id);
 
-                                                mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
-                                                        .setValue(push_id);
+                                                        mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
+                                                                .setValue(push_id);
 
-                                                Map<String, Object> messageMap = new HashMap<>();
-                                                messageMap.put("content", downloadUrl);
-                                                messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                                                messageMap.put("type", "audio");
-                                                messageMap.put("parent", "Default");
-                                                messageMap.put("visible", true);
-                                                messageMap.put("from", mCurrentUserPhone);
-                                                messageMap.put("seen", false);
+                                                        Map<String, Object> messageMap = new HashMap<>();
+                                                        messageMap.put("content", downloadUrl);
+                                                        messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                                        messageMap.put("type", "audio");
+                                                        messageMap.put("parent", "Default");
+                                                        messageMap.put("visible", true);
+                                                        messageMap.put("from", mCurrentUserPhone);
+                                                        messageMap.put("seen", false);
 
 
-                                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                    messageMap.put("parent", Messages.getClickedMessageId());
-                                                    // Remove if crashed
-                                                    replyLinearLayout.setVisibility(View.GONE);
-                                                }
+                                                        if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                            messageMap.put("parent", Messages.getClickedMessageId());
+                                                            // Remove if crashed
+                                                            replyLinearLayout.setVisibility(View.GONE);
+                                                        }
 
-                                                Map<String, Object> msgContentMap = new HashMap<>();
-                                                msgContentMap.put(message_reference +
-                                                        push_id, messageMap);
+                                                        Map<String, Object> msgContentMap = new HashMap<>();
+                                                        msgContentMap.put(message_reference +
+                                                                push_id, messageMap);
 
-                                                mRootReference.updateChildren(msgContentMap,
-                                                        (databaseError, databaseReference) -> {
-                                                        });
+                                                        mRootReference.updateChildren(msgContentMap,
+                                                                (databaseError, databaseReference) -> {
+                                                                });
 
-                                                mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                                                        mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                                .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
-                                                mUsersReference.child(mChatPhone).child("conversation")
-                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                mTextToSend.setText("");
+                                                        mUsersReference.child(mChatPhone).child("conversation")
+                                                                .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                                                        mTextToSend.setText("");
 
-                                                Map<String, Object> chatUnderId = new HashMap<>();
-                                                chatUnderId.put("msgId", push_id);
-                                                chatUnderId.put("seen", false);
-                                                chatUnderId.put("visible", true);
-                                                chatUnderId.put("timestamp",
-                                                        ServerValue.TIMESTAMP);
+                                                        Map<String, Object> chatUnderId = new HashMap<>();
+                                                        chatUnderId.put("msgId", push_id);
+                                                        chatUnderId.put("seen", false);
+                                                        chatUnderId.put("visible", true);
+                                                        chatUnderId.put("timestamp",
+                                                                ServerValue.TIMESTAMP);
 
-                                                addNewMessage.updateChildren(chatUnderId,
-                                                        (databaseError, databaseReference) -> {
+                                                        addNewMessage.updateChildren(chatUnderId,
+                                                                (databaseError, databaseReference) -> {
 
-                                                            HashMap<String, Object> notificationData
-                                                                    = new HashMap<>();
-                                                            notificationData.put("from",
-                                                                    mCurrentUserPhone);
-                                                            notificationData.put("message",
-                                                                    downloadUrl);
+                                                                    HashMap<String, Object> notificationData
+                                                                            = new HashMap<>();
+                                                                    notificationData.put("from",
+                                                                            mCurrentUserPhone);
+                                                                    notificationData.put("message",
+                                                                            downloadUrl);
 
-                                                            //TODO: [fm] if user has been muted, don't push notification data
-                                                            mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                    .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                    if (!dataSnapshot.exists()) {
-                                                                        mNotificationsDatabase.child(mChatPhone)
-                                                                                .push().setValue(notificationData)
-                                                                                .addOnCompleteListener(task1 -> {
+                                                                    //TODO: [fm] if user has been muted, don't push notification data
+                                                                    mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                            .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                            if (!dataSnapshot.exists()) {
+                                                                                mNotificationsDatabase.child(mChatPhone)
+                                                                                        .push().setValue(notificationData)
+                                                                                        .addOnCompleteListener(task1 -> {
 
-                                                                                    if (task1.isSuccessful()) {
+                                                                                            if (task1.isSuccessful()) {
 
-                                                                                        try {
-                                                                                            if (mp1.isPlaying()) {
-                                                                                                mp1.stop();
-                                                                                                mp1.release();
+                                                                                                try {
+                                                                                                    if (mp1.isPlaying()) {
+                                                                                                        mp1.stop();
+                                                                                                        mp1.release();
+
+                                                                                                    }
+                                                                                                    mp1.start();
+                                                                                                } catch (Exception e) {
+                                                                                                    e.printStackTrace();
+                                                                                                }
+                                                                                                //TODO: update message field seen
+
+                                                                                                Toast.makeText(
+                                                                                                        ChatActivity.this,
+                                                                                                        "Notification Sent",
+                                                                                                        Toast.LENGTH_SHORT).show();
 
                                                                                             }
-                                                                                            mp1.start();
-                                                                                        } catch (Exception e) {
-                                                                                            e.printStackTrace();
-                                                                                        }
-                                                                                        //TODO: update message field seen
+                                                                                        });
+                                                                                //mp1.start();
+                                                                                //TODO: add sent mark
+                                                                            }
+                                                                        }
 
-                                                                                        Toast.makeText(
-                                                                                                ChatActivity.this,
-                                                                                                "Notification Sent",
-                                                                                                Toast.LENGTH_SHORT).show();
+                                                                        @Override
+                                                                        public void onCancelled(DatabaseError databaseError) {
 
-                                                                                    }
-                                                                                });
-                                                                        //mp1.start();
-                                                                        //TODO: add sent mark
-                                                                    }
-                                                                }
-
-                                                                @Override
-                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                }
-                                                            });
+                                                                        }
+                                                                    });
 
 
-                                                        });
+                                                                });
 
-                                            } else {
-                                                mRootReference.child("ads_users")
-                                                        .child(mCurrentUserPhone)
-                                                        .child("conversation")
-                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                // Retrieving all the conversations underneath my phone number
-                                                                // and check if there is one phone number that matches the other user's phone number
-                                                                for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                                                    c[0] = d.getValue(Conversation.class);
-                                                                    listConvo.add(c[0]);
-                                                                }
-                                                                for (int i = 0; i < listConvo.size(); i++) {
-                                                                    if (listConvo.get(i).getPhone_number().equals(mChatPhone)) {
-                                                                        isThere[0] = true;
-                                                                        mConvoRef = listConvo.get(i).getId();
-                                                                    }
-                                                                }
-                                                                isFirstTime = false;
-                                                                if (isThere[0]) {
+                                                    } else {
+                                                        mRootReference.child("ads_users")
+                                                                .child(mCurrentUserPhone)
+                                                                .child("conversation")
+                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        // Retrieving all the conversations underneath my phone number
+                                                                        // and check if there is one phone number that matches the other user's phone number
+                                                                        for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                                                            c[0] = d.getValue(Conversation.class);
+                                                                            listConvo.add(c[0]);
+                                                                        }
+                                                                        for (int i = 0; i < listConvo.size(); i++) {
+                                                                            if (listConvo.get(i).getPhone_number().equals(mChatPhone)) {
+                                                                                isThere[0] = true;
+                                                                                mConvoRef = listConvo.get(i).getId();
+                                                                            }
+                                                                        }
+                                                                        isFirstTime = false;
+                                                                        if (isThere[0]) {
 
-                                                                    // Getting reference to push_id under ads_user
-                                                                    DatabaseReference addNewMessage =
-                                                                            mRootReference.child("ads_chat")
-                                                                                    .child(mConvoRef)
+                                                                            // Getting reference to push_id under ads_user
+                                                                            DatabaseReference addNewMessage =
+                                                                                    mRootReference.child("ads_chat")
+                                                                                            .child(mConvoRef)
+                                                                                            .child("messages").child(push_id);
+
+                                                                            mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
+                                                                                    .setValue(push_id);
+
+                                                                            Map<String, Object> messageMap = new HashMap<>();
+                                                                            messageMap.put("content", downloadUrl);
+                                                                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                                                            messageMap.put("type", "audio");
+                                                                            messageMap.put("parent", "Default");
+                                                                            messageMap.put("visible", true);
+                                                                            messageMap.put("from", mCurrentUserPhone);
+                                                                            messageMap.put("seen", false);
+
+                                                                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                                                messageMap.put("parent", Messages.getClickedMessageId());
+                                                                                // Remove if crashed
+                                                                                replyLinearLayout.setVisibility(View.GONE);
+                                                                            }
+
+                                                                            Map<String, Object> msgContentMap = new HashMap<>();
+                                                                            msgContentMap.put(message_reference +
+                                                                                    push_id, messageMap);
+
+                                                                            mRootReference.updateChildren(msgContentMap,
+                                                                                    (databaseError, databaseReference) -> {
+                                                                                    });
+
+
+                                                                            mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                                            mUsersReference.child(mChatPhone).child("conversation")
+                                                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                                                                            mTextToSend.setText("");
+
+                                                                            Map<String, Object> chatUnderId = new HashMap<>();
+                                                                            chatUnderId.put("msgId", push_id);
+                                                                            chatUnderId.put("seen", false);
+                                                                            chatUnderId.put("visible", true);
+                                                                            chatUnderId.put("timestamp",
+                                                                                    ServerValue.TIMESTAMP);
+
+                                                                            addNewMessage.updateChildren(chatUnderId,
+                                                                                    (databaseError, databaseReference) -> {
+
+                                                                                        HashMap<String, Object> notificationData
+                                                                                                = new HashMap<>();
+                                                                                        notificationData.put("from",
+                                                                                                mCurrentUserPhone);
+                                                                                        notificationData.put("message",
+                                                                                                downloadUrl);
+
+                                                                                        //TODO: [fm] if user has been muted, don't push notification data
+                                                                                        mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                                                .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                            @Override
+                                                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                                if (!dataSnapshot.exists()) {
+                                                                                                    mNotificationsDatabase.child(mChatPhone)
+                                                                                                            .push().setValue(notificationData)
+                                                                                                            .addOnCompleteListener(task1 -> {
+
+                                                                                                                if (task1.isSuccessful()) {
+
+                                                                                                                    try {
+                                                                                                                        if (mp1.isPlaying()) {
+                                                                                                                            mp1.stop();
+                                                                                                                            mp1.release();
+
+                                                                                                                        }
+                                                                                                                        mp1.start();
+                                                                                                                    } catch (Exception e) {
+                                                                                                                        e.printStackTrace();
+                                                                                                                    }
+                                                                                                                    //TODO: update message field seen
+
+                                                                                                                    Toast.makeText(
+                                                                                                                            ChatActivity.this,
+                                                                                                                            "Notification Sent",
+                                                                                                                            Toast.LENGTH_SHORT).show();
+
+                                                                                                                }
+                                                                                                            });
+                                                                                                    //mp1.start();
+                                                                                                    //TODO: add sent mark
+                                                                                                }
+                                                                                            }
+
+                                                                                            @Override
+                                                                                            public void onCancelled(DatabaseError databaseError) {
+
+                                                                                            }
+                                                                                        });
+                                                                                    });
+
+                                                                        } else {
+
+                                                                            /**
+                                                                             * Adding the information under ads_users
+                                                                             */
+
+                                                                            mConvoRef = conversation_id;
+                                                                            mChatId = conversation_id;
+                                                                            Map<String, Object> infoToAddUnderMe
+                                                                                    = new HashMap<>();
+                                                                            infoToAddUnderMe.put("id", conversation_id);
+                                                                            infoToAddUnderMe.put("type", "chat");
+                                                                            infoToAddUnderMe.put("visible", true);
+                                                                            infoToAddUnderMe.put("phone_number",
+                                                                                    mChatPhone);
+                                                                            infoToAddUnderMe.put("timestamp",
+                                                                                    ServerValue.TIMESTAMP);
+
+                                                                            Map<String, Object> mapForCurrentUser
+                                                                                    = new HashMap<>();
+                                                                            mapForCurrentUser.put(myReference +
+                                                                                    conversation_id, infoToAddUnderMe);
+
+                                                                            mRootReference.updateChildren(mapForCurrentUser);
+
+                                                                            Map<String, Object> infoToAddUnderOther
+                                                                                    = new HashMap<>();
+
+                                                                            infoToAddUnderOther.put("id", conversation_id);
+                                                                            infoToAddUnderOther.put("type", "chat");
+                                                                            infoToAddUnderOther.put("visible", true);
+                                                                            infoToAddUnderOther.put("phone_number",
+                                                                                    mCurrentUserPhone);
+                                                                            infoToAddUnderOther.put("timestamp",
+                                                                                    ServerValue.TIMESTAMP);
+
+                                                                            Map<String, Object> mapForOtherUser
+                                                                                    = new HashMap<>();
+                                                                            mapForOtherUser.put(otherUserReference +
+                                                                                    conversation_id, infoToAddUnderOther);
+
+                                                                            mRootReference.updateChildren(mapForOtherUser);
+
+                                                                            /**
+                                                                             * Adding information into ads_chat &
+                                                                             * ads_messages
+                                                                             */
+
+                                                                            DatabaseReference usersInChat = mRootReference
+                                                                                    .child("ads_chat").child(conversation_id)
                                                                                     .child("messages").child(push_id);
 
-                                                                    mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
-                                                                            .setValue(push_id);
+                                                                            Map<String, Object> messageMap = new HashMap<>();
+                                                                            messageMap.put("content", downloadUrl);
+                                                                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                                                            messageMap.put("type", "audio");
+                                                                            messageMap.put("parent", "Default");
+                                                                            messageMap.put("visible", true);
+                                                                            messageMap.put("from", mCurrentUserPhone);
+                                                                            messageMap.put("seen", false);
 
-                                                                    Map<String, Object> messageMap = new HashMap<>();
-                                                                    messageMap.put("content", downloadUrl);
-                                                                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                                                                    messageMap.put("type", "audio");
-                                                                    messageMap.put("parent", "Default");
-                                                                    messageMap.put("visible", true);
-                                                                    messageMap.put("from", mCurrentUserPhone);
-                                                                    messageMap.put("seen", false);
+                                                                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                                                messageMap.put("parent", Messages.getClickedMessageId());
+                                                                                // Remove if crashed
+                                                                                replyLinearLayout.setVisibility(View.GONE);
+                                                                            }
 
-                                                                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                                        messageMap.put("parent", Messages.getClickedMessageId());
-                                                                        // Remove if crashed
-                                                                        replyLinearLayout.setVisibility(View.GONE);
-                                                                    }
+                                                                            Map<String, Object> msgContentMap = new HashMap<>();
+                                                                            msgContentMap.put(message_reference +
+                                                                                    push_id, messageMap);
 
-                                                                    Map<String, Object> msgContentMap = new HashMap<>();
-                                                                    msgContentMap.put(message_reference +
-                                                                            push_id, messageMap);
+                                                                            //Adding message
+                                                                            mRootReference.updateChildren(msgContentMap,
+                                                                                    (databaseError, databaseReference) -> {
+                                                                                    });
 
-                                                                    mRootReference.updateChildren(msgContentMap,
-                                                                            (databaseError, databaseReference) -> {
-                                                                            });
+                                                                            Map<String, Object> chatRefMap = new HashMap<>();
+                                                                            chatRefMap.put("users", mChatUsers);
+                                                                            chatRefMap.put("seen", false);
+                                                                            chatRefMap.put("visible", true);
+                                                                            chatRefMap.put("lastMessage", push_id);
 
+                                                                            Map<String, Object> messageUserMap =
+                                                                                    new HashMap<>();
 
-                                                                    mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                                                                            messageUserMap.put(chat_reference +
+                                                                                    conversation_id, chatRefMap);
 
-                                                                    mUsersReference.child(mChatPhone).child("conversation")
-                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                    mTextToSend.setText("");
+                                                                            mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
-                                                                    Map<String, Object> chatUnderId = new HashMap<>();
-                                                                    chatUnderId.put("msgId", push_id);
-                                                                    chatUnderId.put("seen", false);
-                                                                    chatUnderId.put("visible", true);
-                                                                    chatUnderId.put("timestamp",
-                                                                            ServerValue.TIMESTAMP);
+                                                                            mUsersReference.child(mChatPhone).child("conversation")
+                                                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
-                                                                    addNewMessage.updateChildren(chatUnderId,
-                                                                            (databaseError, databaseReference) -> {
+                                                                            mTextToSend.setText("");
+                                                                            mRootReference.updateChildren(messageUserMap);
 
-                                                                                HashMap<String, Object> notificationData
-                                                                                        = new HashMap<>();
-                                                                                notificationData.put("from",
-                                                                                        mCurrentUserPhone);
-                                                                                notificationData.put("message",
-                                                                                        downloadUrl);
+                                                                            Map<String, Object> chatUnderId = new HashMap<>();
+                                                                            chatUnderId.put("msgId", push_id);
+                                                                            chatUnderId.put("seen", false);
+                                                                            chatUnderId.put("visible", true);
+                                                                            chatUnderId.put("timestamp",
+                                                                                    ServerValue.TIMESTAMP);
 
-                                                                                //TODO: [fm] if user has been muted, don't push notification data
-                                                                                mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                                        .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                    @Override
-                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                        if (!dataSnapshot.exists()) {
-                                                                                            mNotificationsDatabase.child(mChatPhone)
-                                                                                                    .push().setValue(notificationData)
-                                                                                                    .addOnCompleteListener(task1 -> {
+                                                                            usersInChat.updateChildren(chatUnderId,
+                                                                                    (databaseError, databaseReference) -> {
 
-                                                                                                        if (task1.isSuccessful()) {
+                                                                                        HashMap<String, Object> notificationData
+                                                                                                = new HashMap<>();
+                                                                                        notificationData.put("from",
+                                                                                                mCurrentUserPhone);
+                                                                                        notificationData.put("message",
+                                                                                                downloadUrl);
 
-                                                                                                            try {
-                                                                                                                if (mp1.isPlaying()) {
-                                                                                                                    mp1.stop();
-                                                                                                                    mp1.release();
+                                                                                        //TODO: [fm] if user has been muted, don't push notification data
+                                                                                        mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                                                .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                            @Override
+                                                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                                if (!dataSnapshot.exists()) {
+                                                                                                    mNotificationsDatabase.child(mChatPhone)
+                                                                                                            .push().setValue(notificationData)
+                                                                                                            .addOnCompleteListener(task1 -> {
 
-                                                                                                                }
-                                                                                                                mp1.start();
-                                                                                                            } catch (Exception e) {
-                                                                                                                e.printStackTrace();
-                                                                                                            }
-                                                                                                            //TODO: update message field seen
+                                                                                                                if (task1.isSuccessful()) {
 
-                                                                                                            Toast.makeText(
-                                                                                                                    ChatActivity.this,
-                                                                                                                    "Notification Sent",
-                                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                                                                    try {
+                                                                                                                        if (mp1.isPlaying()) {
+                                                                                                                            mp1.stop();
+                                                                                                                            mp1.release();
 
-                                                                                                        }
-                                                                                                    });
-                                                                                            //mp1.start();
-                                                                                            //TODO: add sent mark
-                                                                                        }
-                                                                                    }
+                                                                                                                        }
+                                                                                                                        mp1.start();
+                                                                                                                    } catch (Exception e) {
+                                                                                                                        e.printStackTrace();
+                                                                                                                    }
+                                                                                                                    //TODO: update message field seen
 
-                                                                                    @Override
-                                                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                                                    }
-                                                                                });
-                                                                            });
-
-                                                                } else {
-
-                                                                    /**
-                                                                     * Adding the information under ads_users
-                                                                     */
-
-                                                                    mConvoRef = conversation_id;
-                                                                    mChatId = conversation_id;
-                                                                    Map<String, Object> infoToAddUnderMe
-                                                                            = new HashMap<>();
-                                                                    infoToAddUnderMe.put("id", conversation_id);
-                                                                    infoToAddUnderMe.put("type", "chat");
-                                                                    infoToAddUnderMe.put("visible", true);
-                                                                    infoToAddUnderMe.put("phone_number",
-                                                                            mChatPhone);
-                                                                    infoToAddUnderMe.put("timestamp",
-                                                                            ServerValue.TIMESTAMP);
-
-                                                                    Map<String, Object> mapForCurrentUser
-                                                                            = new HashMap<>();
-                                                                    mapForCurrentUser.put(myReference +
-                                                                            conversation_id, infoToAddUnderMe);
-
-                                                                    mRootReference.updateChildren(mapForCurrentUser);
-
-                                                                    Map<String, Object> infoToAddUnderOther
-                                                                            = new HashMap<>();
-
-                                                                    infoToAddUnderOther.put("id", conversation_id);
-                                                                    infoToAddUnderOther.put("type", "chat");
-                                                                    infoToAddUnderOther.put("visible", true);
-                                                                    infoToAddUnderOther.put("phone_number",
-                                                                            mCurrentUserPhone);
-                                                                    infoToAddUnderOther.put("timestamp",
-                                                                            ServerValue.TIMESTAMP);
-
-                                                                    Map<String, Object> mapForOtherUser
-                                                                            = new HashMap<>();
-                                                                    mapForOtherUser.put(otherUserReference +
-                                                                            conversation_id, infoToAddUnderOther);
-
-                                                                    mRootReference.updateChildren(mapForOtherUser);
-
-                                                                    /**
-                                                                     * Adding information into ads_chat &
-                                                                     * ads_messages
-                                                                     */
-
-                                                                    DatabaseReference usersInChat = mRootReference
-                                                                            .child("ads_chat").child(conversation_id)
-                                                                            .child("messages").child(push_id);
-
-                                                                    Map<String, Object> messageMap = new HashMap<>();
-                                                                    messageMap.put("content", downloadUrl);
-                                                                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                                                                    messageMap.put("type", "audio");
-                                                                    messageMap.put("parent", "Default");
-                                                                    messageMap.put("visible", true);
-                                                                    messageMap.put("from", mCurrentUserPhone);
-                                                                    messageMap.put("seen", false);
-
-                                                                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                                        messageMap.put("parent", Messages.getClickedMessageId());
-                                                                        // Remove if crashed
-                                                                        replyLinearLayout.setVisibility(View.GONE);
-                                                                    }
-
-                                                                    Map<String, Object> msgContentMap = new HashMap<>();
-                                                                    msgContentMap.put(message_reference +
-                                                                            push_id, messageMap);
-
-                                                                    //Adding message
-                                                                    mRootReference.updateChildren(msgContentMap,
-                                                                            (databaseError, databaseReference) -> {
-                                                                            });
-
-                                                                    Map<String, Object> chatRefMap = new HashMap<>();
-                                                                    chatRefMap.put("users", mChatUsers);
-                                                                    chatRefMap.put("seen", false);
-                                                                    chatRefMap.put("visible", true);
-                                                                    chatRefMap.put("lastMessage", push_id);
-
-                                                                    Map<String, Object> messageUserMap =
-                                                                            new HashMap<>();
-
-                                                                    messageUserMap.put(chat_reference +
-                                                                            conversation_id, chatRefMap);
-
-                                                                    mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                                                    mUsersReference.child(mChatPhone).child("conversation")
-                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                                                    mTextToSend.setText("");
-                                                                    mRootReference.updateChildren(messageUserMap);
-
-                                                                    Map<String, Object> chatUnderId = new HashMap<>();
-                                                                    chatUnderId.put("msgId", push_id);
-                                                                    chatUnderId.put("seen", false);
-                                                                    chatUnderId.put("visible", true);
-                                                                    chatUnderId.put("timestamp",
-                                                                            ServerValue.TIMESTAMP);
-
-                                                                    usersInChat.updateChildren(chatUnderId,
-                                                                            (databaseError, databaseReference) -> {
-
-                                                                                HashMap<String, Object> notificationData
-                                                                                        = new HashMap<>();
-                                                                                notificationData.put("from",
-                                                                                        mCurrentUserPhone);
-                                                                                notificationData.put("message",
-                                                                                        downloadUrl);
-
-                                                                                //TODO: [fm] if user has been muted, don't push notification data
-                                                                                mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                                        .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                    @Override
-                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                        if (!dataSnapshot.exists()) {
-                                                                                            mNotificationsDatabase.child(mChatPhone)
-                                                                                                    .push().setValue(notificationData)
-                                                                                                    .addOnCompleteListener(task1 -> {
-
-                                                                                                        if (task1.isSuccessful()) {
-
-                                                                                                            try {
-                                                                                                                if (mp1.isPlaying()) {
-                                                                                                                    mp1.stop();
-                                                                                                                    mp1.release();
+                                                                                                                    Toast.makeText(
+                                                                                                                            ChatActivity.this,
+                                                                                                                            "Notification Sent",
+                                                                                                                            Toast.LENGTH_SHORT).show();
 
                                                                                                                 }
-                                                                                                                mp1.start();
-                                                                                                            } catch (Exception e) {
-                                                                                                                e.printStackTrace();
-                                                                                                            }
-                                                                                                            //TODO: update message field seen
+                                                                                                            });
+                                                                                                    //mp1.start();
+                                                                                                    //TODO: add sent mark
+                                                                                                }
+                                                                                            }
 
-                                                                                                            Toast.makeText(
-                                                                                                                    ChatActivity.this,
-                                                                                                                    "Notification Sent",
-                                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                                            @Override
+                                                                                            public void onCancelled(DatabaseError databaseError) {
 
-                                                                                                        }
-                                                                                                    });
-                                                                                            //mp1.start();
-                                                                                            //TODO: add sent mark
+                                                                                            }
+                                                                                        });
+
+                                                                                    });
+                                                                            loadMessages();
+                                                                        }
+
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
+                                                    }
+                                                } else {
+
+                                                    /**
+                                                     * Adding the information under ads_users
+                                                     */
+                                                    mConvoRef = conversation_id;
+                                                    mChatId = conversation_id;
+                                                    Map<String, Object> infoToAddUnderMe
+                                                            = new HashMap<>();
+                                                    infoToAddUnderMe.put("id", conversation_id);
+                                                    infoToAddUnderMe.put("type", "chat");
+                                                    infoToAddUnderMe.put("visible", true);
+                                                    infoToAddUnderMe.put("phone_number",
+                                                            mChatPhone);
+                                                    infoToAddUnderMe.put("timestamp",
+                                                            ServerValue.TIMESTAMP);
+
+                                                    Map<String, Object> mapForCurrentUser
+                                                            = new HashMap<>();
+                                                    mapForCurrentUser.put(myReference +
+                                                            conversation_id, infoToAddUnderMe);
+
+                                                    mRootReference.updateChildren(mapForCurrentUser);
+
+                                                    Map<String, Object> infoToAddUnderOther
+                                                            = new HashMap<>();
+
+                                                    infoToAddUnderOther.put("id", conversation_id);
+                                                    infoToAddUnderOther.put("type", "chat");
+                                                    infoToAddUnderOther.put("visible", true);
+                                                    infoToAddUnderOther.put("phone_number",
+                                                            mCurrentUserPhone);
+                                                    infoToAddUnderOther.put("timestamp",
+                                                            ServerValue.TIMESTAMP);
+
+                                                    Map<String, Object> mapForOtherUser
+                                                            = new HashMap<>();
+                                                    mapForOtherUser.put(otherUserReference +
+                                                            conversation_id, infoToAddUnderOther);
+
+                                                    mRootReference.updateChildren(mapForOtherUser);
+
+                                                    /**
+                                                     * Adding information into ads_chat &
+                                                     * ads_messages
+                                                     */
+
+                                                    DatabaseReference usersInChat = mRootReference
+                                                            .child("ads_chat").child(conversation_id)
+                                                            .child("messages").child(push_id);
+
+                                                    Map<String, Object> messageMap = new HashMap<>();
+                                                    messageMap.put("content", downloadUrl);
+                                                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                                    messageMap.put("type", "audio");
+                                                    messageMap.put("parent", "Default");
+                                                    messageMap.put("visible", true);
+                                                    messageMap.put("from", mCurrentUserPhone);
+                                                    messageMap.put("seen", false);
+
+                                                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                        messageMap.put("parent", Messages.getClickedMessageId());
+                                                        // Remove if crashed
+                                                        replyLinearLayout.setVisibility(View.GONE);
+                                                    }
+
+                                                    Map<String, Object> msgContentMap = new HashMap<>();
+                                                    msgContentMap.put(message_reference +
+                                                            push_id, messageMap);
+
+                                                    //Adding message
+                                                    mRootReference.updateChildren(msgContentMap,
+                                                            (databaseError, databaseReference) -> {
+                                                            });
+
+                                                    Map<String, Object> chatRefMap = new HashMap<>();
+                                                    chatRefMap.put("users", mChatUsers);
+                                                    chatRefMap.put("seen", false);
+                                                    chatRefMap.put("visible", true);
+                                                    chatRefMap.put("lastMessage", push_id);
+
+                                                    mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                    mUsersReference.child(mChatPhone).child("conversation")
+                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                    Map<String, Object> messageUserMap =
+                                                            new HashMap<>();
+
+                                                    messageUserMap.put(chat_reference +
+                                                            conversation_id, chatRefMap);
+
+                                                    mTextToSend.setText("");
+                                                    mRootReference.updateChildren(messageUserMap);
+
+                                                    Map<String, Object> chatUnderId = new HashMap<>();
+                                                    chatUnderId.put("msgId", push_id);
+                                                    chatUnderId.put("seen", false);
+                                                    chatUnderId.put("visible", true);
+                                                    chatUnderId.put("timestamp",
+                                                            ServerValue.TIMESTAMP);
+
+                                                    usersInChat.updateChildren(chatUnderId,
+                                                            (databaseError, databaseReference) -> {
+
+                                                                HashMap<String, Object> notificationData
+                                                                        = new HashMap<>();
+                                                                notificationData.put("from",
+                                                                        mCurrentUserPhone);
+                                                                notificationData.put("message",
+                                                                        downloadUrl);
+
+                                                                //TODO: [fm] if user has been muted, don't push notification data
+                                                                mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                        .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                        if (!dataSnapshot.exists()) {
+                                                                            mNotificationsDatabase.child(mChatPhone)
+                                                                                    .push().setValue(notificationData)
+                                                                                    .addOnCompleteListener(task1 -> {
+
+                                                                                        if (task1.isSuccessful()) {
+
+                                                                                            try {
+                                                                                                if (mp1.isPlaying()) {
+                                                                                                    mp1.stop();
+                                                                                                    mp1.release();
+
+                                                                                                }
+                                                                                                mp1.start();
+                                                                                            } catch (Exception e) {
+                                                                                                e.printStackTrace();
+                                                                                            }
+                                                                                            //TODO: update message field seen
+
+                                                                                            Toast.makeText(
+                                                                                                    ChatActivity.this,
+                                                                                                    "Notification Sent",
+                                                                                                    Toast.LENGTH_SHORT).show();
+
                                                                                         }
-                                                                                    }
+                                                                                    });
+                                                                            //mp1.start();
+                                                                            //TODO: add sent mark
+                                                                        }
+                                                                    }
 
-                                                                                    @Override
-                                                                                    public void onCancelled(DatabaseError databaseError) {
+                                                                    @Override
+                                                                    public void onCancelled(DatabaseError databaseError) {
 
-                                                                                    }
-                                                                                });
+                                                                    }
+                                                                });
 
-                                                                            });
-                                                                    loadMessages();
-                                                                }
 
-                                                            }
+                                                            });
+                                                    loadMessages();
+                                                }
+                                            }
 
-                                                            @Override
-                                                            public void onCancelled(DatabaseError databaseError) {
-
-                                                            }
-                                                        });
+                                            @Override
+                                            public void onCancelled(DatabaseError databaseError) {
 
                                             }
-                                        } else {
+                                        });
+                            }
 
-                                            /**
-                                             * Adding the information under ads_users
-                                             */
-                                            mConvoRef = conversation_id;
-                                            mChatId = conversation_id;
-                                            Map<String, Object> infoToAddUnderMe
-                                                    = new HashMap<>();
-                                            infoToAddUnderMe.put("id", conversation_id);
-                                            infoToAddUnderMe.put("type", "chat");
-                                            infoToAddUnderMe.put("visible", true);
-                                            infoToAddUnderMe.put("phone_number",
-                                                    mChatPhone);
-                                            infoToAddUnderMe.put("timestamp",
-                                                    ServerValue.TIMESTAMP);
-
-                                            Map<String, Object> mapForCurrentUser
-                                                    = new HashMap<>();
-                                            mapForCurrentUser.put(myReference +
-                                                    conversation_id, infoToAddUnderMe);
-
-                                            mRootReference.updateChildren(mapForCurrentUser);
-
-                                            Map<String, Object> infoToAddUnderOther
-                                                    = new HashMap<>();
-
-                                            infoToAddUnderOther.put("id", conversation_id);
-                                            infoToAddUnderOther.put("type", "chat");
-                                            infoToAddUnderOther.put("visible", true);
-                                            infoToAddUnderOther.put("phone_number",
-                                                    mCurrentUserPhone);
-                                            infoToAddUnderOther.put("timestamp",
-                                                    ServerValue.TIMESTAMP);
-
-                                            Map<String, Object> mapForOtherUser
-                                                    = new HashMap<>();
-                                            mapForOtherUser.put(otherUserReference +
-                                                    conversation_id, infoToAddUnderOther);
-
-                                            mRootReference.updateChildren(mapForOtherUser);
-
-                                            /**
-                                             * Adding information into ads_chat &
-                                             * ads_messages
-                                             */
-
-                                            DatabaseReference usersInChat = mRootReference
-                                                    .child("ads_chat").child(conversation_id)
-                                                    .child("messages").child(push_id);
-
-                                            Map<String, Object> messageMap = new HashMap<>();
-                                            messageMap.put("content", downloadUrl);
-                                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                                            messageMap.put("type", "audio");
-                                            messageMap.put("parent", "Default");
-                                            messageMap.put("visible", true);
-                                            messageMap.put("from", mCurrentUserPhone);
-                                            messageMap.put("seen", false);
-
-                                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                messageMap.put("parent", Messages.getClickedMessageId());
-                                                // Remove if crashed
-                                                replyLinearLayout.setVisibility(View.GONE);
-                                            }
-
-                                            Map<String, Object> msgContentMap = new HashMap<>();
-                                            msgContentMap.put(message_reference +
-                                                    push_id, messageMap);
-
-                                            //Adding message
-                                            mRootReference.updateChildren(msgContentMap,
-                                                    (databaseError, databaseReference) -> {
-                                                    });
-
-                                            Map<String, Object> chatRefMap = new HashMap<>();
-                                            chatRefMap.put("users", mChatUsers);
-                                            chatRefMap.put("seen", false);
-                                            chatRefMap.put("visible", true);
-                                            chatRefMap.put("lastMessage", push_id);
-
-                                            mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                            mUsersReference.child(mChatPhone).child("conversation")
-                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                            Map<String, Object> messageUserMap =
-                                                    new HashMap<>();
-
-                                            messageUserMap.put(chat_reference +
-                                                    conversation_id, chatRefMap);
-
-                                            mTextToSend.setText("");
-                                            mRootReference.updateChildren(messageUserMap);
-
-                                            Map<String, Object> chatUnderId = new HashMap<>();
-                                            chatUnderId.put("msgId", push_id);
-                                            chatUnderId.put("seen", false);
-                                            chatUnderId.put("visible", true);
-                                            chatUnderId.put("timestamp",
-                                                    ServerValue.TIMESTAMP);
-
-                                            usersInChat.updateChildren(chatUnderId,
-                                                    (databaseError, databaseReference) -> {
-
-                                                        HashMap<String, Object> notificationData
-                                                                = new HashMap<>();
-                                                        notificationData.put("from",
-                                                                mCurrentUserPhone);
-                                                        notificationData.put("message",
-                                                                downloadUrl);
-
-                                                        //TODO: [fm] if user has been muted, don't push notification data
-                                                        mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                if (!dataSnapshot.exists()) {
-                                                                    mNotificationsDatabase.child(mChatPhone)
-                                                                            .push().setValue(notificationData)
-                                                                            .addOnCompleteListener(task1 -> {
-
-                                                                                if (task1.isSuccessful()) {
-
-                                                                                    try {
-                                                                                        if (mp1.isPlaying()) {
-                                                                                            mp1.stop();
-                                                                                            mp1.release();
-
-                                                                                        }
-                                                                                        mp1.start();
-                                                                                    } catch (Exception e) {
-                                                                                        e.printStackTrace();
-                                                                                    }
-                                                                                    //TODO: update message field seen
-
-                                                                                    Toast.makeText(
-                                                                                            ChatActivity.this,
-                                                                                            "Notification Sent",
-                                                                                            Toast.LENGTH_SHORT).show();
-
-                                                                                }
-                                                                            });
-                                                                    //mp1.start();
-                                                                    //TODO: add sent mark
-                                                                }
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(DatabaseError databaseError) {
-
-                                                            }
-                                                        });
+                        });
 
 
-                                                    });
-                                            loadMessages();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                    }
-
-                });
-
-            } else {
-                Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+                }else{
+                    Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -3289,79 +3287,56 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         sendImage.setOnClickListener(view -> {
 
             try {
-                if (new CheckInternetAsyncTask(this).execute().get()) {
-                    mDialog.dismiss();
-                    try {
-                        pickImage();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                new CheckInternet_(internet -> {
+                    if(internet){
+                        mDialog.dismiss();
+                        try {
+                            pickImage();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }else{
+                        Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+                });
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-
         });
 
 
         sendAudio.setOnClickListener(view -> {
-
-            try {
-                if (new CheckInternetAsyncTask(this).execute().get()) {
+            new CheckInternet_(internet -> {
+                if(internet){
                     Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(i, GALLERY_PICK);
                     mDialog.dismiss();
-                } else {
+                }else{
                     Toast.makeText(this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
+            });
         });
 
         sendVideo.setOnClickListener(view -> {
-
-            try {
-                if (new CheckInternetAsyncTask(this).execute().get()) {
+            new CheckInternet_(internet -> {
+                if(internet){
                     mDialog.dismiss();
-                    try {
-                        pickVideo();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                } else {
+                    pickVideo();
+                }else{
                     Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
+            });
         });
 
         sendDocument.setOnClickListener(view -> {
-
-            try {
-                if (new CheckInternetAsyncTask(this).execute().get()) {
-                    onPickDoc();
-                    mDialog.dismiss();
-                } else {
-                    Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            new CheckInternet_(internet -> {
+               if(internet){
+                   onPickDoc();
+                   mDialog.dismiss();
+               }else{
+                   Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+               }
+            });
         });
 
     }
@@ -3808,107 +3783,108 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private void sendMessage() {
 
         try {
-            Log.i("ARGENTINA", String.valueOf(new CheckInternetAsyncTask(this).execute().get()));
-            if (new CheckInternetAsyncTask(this).execute().get()) {
-                testingFlag = false;
-                String message = Objects.requireNonNull(mTextToSend.getText()).toString().trim();
 
-                if (!TextUtils.isEmpty(message)) {
+            new CheckInternet_(internet -> {
+                if (internet){
+                    testingFlag = false;
+                    String message = Objects.requireNonNull(mTextToSend.getText()).toString().trim();
 
-                    String myReference = "ads_users/" + mCurrentUserPhone + "/" + "conversation/";
-                    String otherUserReference = "ads_users/" + mChatPhone + "/" + "conversation/";
+                    if (!TextUtils.isEmpty(message)) {
 
-                    String chat_reference = "ads_chat/";
+                        String myReference = "ads_users/" + mCurrentUserPhone + "/" + "conversation/";
+                        String otherUserReference = "ads_users/" + mChatPhone + "/" + "conversation/";
 
-                    // Creating conversation_id for each message
-                    DatabaseReference conversation_push = mRootReference.child("ads_users")
-                            .child(mCurrentUserPhone).push();
-                    String conversation_id = conversation_push.getKey();
+                        String chat_reference = "ads_chat/";
 
-                    final String message_reference = "ads_messages/";
+                        // Creating conversation_id for each message
+                        DatabaseReference conversation_push = mRootReference.child("ads_users")
+                                .child(mCurrentUserPhone).push();
+                        String conversation_id = conversation_push.getKey();
 
-                    // Creating push_id for each message
-                    DatabaseReference msg_push = mRootReference.child("ads_messages").push();
+                        final String message_reference = "ads_messages/";
 
-                    String push_id = msg_push.getKey();
+                        // Creating push_id for each message
+                        DatabaseReference msg_push = mRootReference.child("ads_messages").push();
 
-                    //m.setMessageId(push_id);
+                        String push_id = msg_push.getKey();
 
-                    Map<String, Object> messageMap = new HashMap<>();
-                    messageMap.put("content", message);
-                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                    messageMap.put("type", "text");
-                    messageMap.put("parent", "Default");
-                    messageMap.put("visible", true);
-                    messageMap.put("from", mCurrentUserPhone);
-                    messageMap.put("seen", false);
+                        //m.setMessageId(push_id);
 
-
-                    //Toast.makeText(ChatActivity.this, messageMap.get("timestamp").toString(), Toast.LENGTH_SHORT).show();
-                    // Going under my phone and check if there is a child "conversation"
-                    mRootReference.child("ads_users").child(mCurrentUserPhone)
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if (dataSnapshot.hasChild("conversation")) {
-
-                                        final Conversation[] c = new Conversation[1];
-                                        List<Conversation> listConvo = new ArrayList<>();
-                                        final boolean[] isThere = {false};
-                                        // final String[] mConvoRef = new String[1];
-
-                                        if (!isFirstTime) {
-
-                                            DatabaseReference addNewMessage =
-                                                    mRootReference.child("ads_chat")
-                                                            .child(mConvoRef)
-                                                            .child("messages").child(push_id);
-
-                                            mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
-                                                    .setValue(push_id);
-
-                                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                messageMap.put("parent", Messages.getClickedMessageId());
-                                                // Remove if crashed
-                                                replyLinearLayout.setVisibility(View.GONE);
-                                            }
-
-                                            Map<String, Object> msgContentMap = new HashMap<>();
-                                            msgContentMap.put(message_reference +
-                                                    push_id, messageMap);
-
-                                            mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                                            });
-
-                                            mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                            mUsersReference.child(mChatPhone).child("conversation")
-                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                            mTextToSend.setText("");
-
-                                            Map<String, Object> chatUnderId = new HashMap<>();
-                                            chatUnderId.put("msgId", push_id);
-                                            chatUnderId.put("seen", false);
-                                            chatUnderId.put("visible", true);
-                                            chatUnderId.put("timestamp",
-                                                    ServerValue.TIMESTAMP);
-
-                                            addNewMessage.updateChildren(chatUnderId,
-                                                    (databaseError, databaseReference) -> {
-
-                                                        HashMap<String, Object> notificationData
-                                                                = new HashMap<>();
-                                                        notificationData.put("from",
-                                                                mCurrentUserPhone);
-                                                        notificationData.put("message",
-                                                                message);
+                        Map<String, Object> messageMap = new HashMap<>();
+                        messageMap.put("content", message);
+                        messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                        messageMap.put("type", "text");
+                        messageMap.put("parent", "Default");
+                        messageMap.put("visible", true);
+                        messageMap.put("from", mCurrentUserPhone);
+                        messageMap.put("seen", false);
 
 
-                                                        /**
-                                                         * Newly added
-                                                         */
+                        //Toast.makeText(ChatActivity.this, messageMap.get("timestamp").toString(), Toast.LENGTH_SHORT).show();
+                        // Going under my phone and check if there is a child "conversation"
+                        mRootReference.child("ads_users").child(mCurrentUserPhone)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.hasChild("conversation")) {
+
+                                            final Conversation[] c = new Conversation[1];
+                                            List<Conversation> listConvo = new ArrayList<>();
+                                            final boolean[] isThere = {false};
+                                            // final String[] mConvoRef = new String[1];
+
+                                            if (!isFirstTime) {
+
+                                                DatabaseReference addNewMessage =
+                                                        mRootReference.child("ads_chat")
+                                                                .child(mConvoRef)
+                                                                .child("messages").child(push_id);
+
+                                                mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
+                                                        .setValue(push_id);
+
+                                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                    messageMap.put("parent", Messages.getClickedMessageId());
+                                                    // Remove if crashed
+                                                    replyLinearLayout.setVisibility(View.GONE);
+                                                }
+
+                                                Map<String, Object> msgContentMap = new HashMap<>();
+                                                msgContentMap.put(message_reference +
+                                                        push_id, messageMap);
+
+                                                mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                                                });
+
+                                                mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                mUsersReference.child(mChatPhone).child("conversation")
+                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                mTextToSend.setText("");
+
+                                                Map<String, Object> chatUnderId = new HashMap<>();
+                                                chatUnderId.put("msgId", push_id);
+                                                chatUnderId.put("seen", false);
+                                                chatUnderId.put("visible", true);
+                                                chatUnderId.put("timestamp",
+                                                        ServerValue.TIMESTAMP);
+
+                                                addNewMessage.updateChildren(chatUnderId,
+                                                        (databaseError, databaseReference) -> {
+
+                                                            HashMap<String, Object> notificationData
+                                                                    = new HashMap<>();
+                                                            notificationData.put("from",
+                                                                    mCurrentUserPhone);
+                                                            notificationData.put("message",
+                                                                    message);
+
+
+                                                            /**
+                                                             * Newly added
+                                                             */
                                                 /*
                                                 mExceptReference.child(mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
@@ -3928,491 +3904,490 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                     }
                                                 });
 */                                                        mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                        if (!dataSnapshot.exists()) {
-                                                                            mNotificationsDatabase.child(mChatPhone)
-                                                                                    .push().setValue(notificationData)
-                                                                                    .addOnCompleteListener(task1 -> {
+                                                                    .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                            if (!dataSnapshot.exists()) {
+                                                                                mNotificationsDatabase.child(mChatPhone)
+                                                                                        .push().setValue(notificationData)
+                                                                                        .addOnCompleteListener(task1 -> {
 
-                                                                                        if (task1.isSuccessful()) {
+                                                                                            if (task1.isSuccessful()) {
 
-                                                                                            try {
-                                                                                                if (mp1.isPlaying()) {
-                                                                                                    mp1.stop();
-                                                                                                    mp1.release();
+                                                                                                try {
+                                                                                                    if (mp1.isPlaying()) {
+                                                                                                        mp1.stop();
+                                                                                                        mp1.release();
 
+                                                                                                    }
+                                                                                                    mp1.start();
+                                                                                                } catch (Exception e) {
+                                                                                                    e.printStackTrace();
                                                                                                 }
-                                                                                                mp1.start();
-                                                                                            } catch (Exception e) {
-                                                                                                e.printStackTrace();
+                                                                                                //TODO: update message field seen
+
+
+                                                                                                Toast.makeText(
+                                                                                                        ChatActivity.this,
+                                                                                                        "Notification Sent",
+                                                                                                        Toast.LENGTH_SHORT).show();
+
                                                                                             }
-                                                                                            //TODO: update message field seen
+                                                                                        });
+                                                                            }
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(DatabaseError databaseError) {
+
+                                                                        }
+                                                                    });
+                                                            //mp1.start();
+                                                            //TODO: add sent mark
+
+                                                        });
+
+                                            } else {
+                                                mRootReference.child("ads_users")
+                                                        .child(mCurrentUserPhone)
+                                                        .child("conversation")
+                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                for (DataSnapshot d : dataSnapshot.getChildren()) {
+                                                                    c[0] = d.getValue(Conversation.class);
+                                                                    listConvo.add(c[0]);
+                                                                }
+                                                                for (int i = 0; i < listConvo.size(); i++) {
+                                                                    if (listConvo.get(i).getPhone_number().equals(mChatPhone)) {
+                                                                        isThere[0] = true;
+                                                                        mConvoRef = listConvo.get(i).getId();
+                                                                        Log.i("mCoonvo", mConvoRef);
+                                                                        break;
+                                                                    }
+                                                                }
+                                                                isFirstTime = false;
+                                                                if (isThere[0]) {
+
+                                                                    // Getting reference to conversation_id under ads_user and push new messages
+                                                                    DatabaseReference addNewMessage =
+                                                                            mRootReference.child("ads_chat")
+                                                                                    .child(mConvoRef)
+                                                                                    .child("messages").child(push_id);
+
+                                                                    mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
+                                                                            .setValue(push_id);
+
+                                                                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                                        messageMap.put("parent", Messages.getClickedMessageId());
+                                                                    }
+
+                                                                    Map<String, Object> msgContentMap = new HashMap<>();
+                                                                    msgContentMap.put(message_reference +
+                                                                            push_id, messageMap);
+
+                                                                    mRootReference.updateChildren(msgContentMap,
+                                                                            (databaseError, databaseReference) -> {
+                                                                            });
+
+                                                                    mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                                                    mUsersReference.child(mChatPhone).child("conversation")
+                                                                            .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                                                                    mTextToSend.setText("");
+
+                                                                    Map<String, Object> chatUnderId = new HashMap<>();
+                                                                    chatUnderId.put("msgId", push_id);
+                                                                    chatUnderId.put("seen", false);
+                                                                    chatUnderId.put("visible", true);
+                                                                    chatUnderId.put("timestamp",
+                                                                            ServerValue.TIMESTAMP);
+
+                                                                    addNewMessage.updateChildren(chatUnderId,
+                                                                            (databaseError, databaseReference) -> {
+
+                                                                                HashMap<String, Object> notificationData
+                                                                                        = new HashMap<>();
+                                                                                notificationData.put("from",
+                                                                                        mCurrentUserPhone);
+                                                                                notificationData.put("message",
+                                                                                        message);
+
+                                                                                //TODO: [fm] if user has been muted, don't push notification data
+                                                                                mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                                        .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                    @Override
+                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                        if (!dataSnapshot.exists()) {
+                                                                                            mNotificationsDatabase.child(mChatPhone)
+                                                                                                    .push().setValue(notificationData)
+                                                                                                    .addOnCompleteListener(task1 -> {
+
+                                                                                                        if (task1.isSuccessful()) {
+
+                                                                                                            try {
+                                                                                                                if (mp1.isPlaying()) {
+                                                                                                                    mp1.stop();
+                                                                                                                    mp1.release();
+
+                                                                                                                }
+                                                                                                                mp1.start();
+                                                                                                            } catch (Exception e) {
+                                                                                                                e.printStackTrace();
+                                                                                                            }
+                                                                                                            //TODO: update message field seen
+
+                                                                                                            Toast.makeText(
+                                                                                                                    ChatActivity.this,
+                                                                                                                    "Notification Sent",
+                                                                                                                    Toast.LENGTH_SHORT).show();
+
+                                                                                                        }
+                                                                                                    });
+                                                                                            //mp1.start();
+                                                                                            //TODO: add sent mark
+                                                                                        }
+
+                                                                                    }
+
+                                                                                    @Override
+                                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                                    }
+                                                                                });
+
+                                                                            });
+
+                                                                    // loadMessages();
+                                                                    // Chat.setChatListenerCalled(true);
+                                                                } else {
 
 
-                                                                                            Toast.makeText(
-                                                                                                    ChatActivity.this,
-                                                                                                    "Notification Sent",
-                                                                                                    Toast.LENGTH_SHORT).show();
+                                                                    /**
+                                                                     * Adding the information under ads_users of my phone and the other user,
+                                                                     * if the phone number doesn't match the other user
+                                                                     *
+                                                                     */
+
+                                                                    mConvoRef = conversation_id;
+                                                                    mChatId = conversation_id;
+                                                                    Map<String, Object> infoToAddUnderMe
+                                                                            = new HashMap<>();
+                                                                    infoToAddUnderMe.put("id", conversation_id);
+                                                                    infoToAddUnderMe.put("type", "chat");
+                                                                    infoToAddUnderMe.put("visible", true);
+                                                                    infoToAddUnderMe.put("phone_number",
+                                                                            mChatPhone);
+                                                                    infoToAddUnderMe.put("timestamp",
+                                                                            ServerValue.TIMESTAMP);
+
+                                                                    Map<String, Object> mapForCurrentUser
+                                                                            = new HashMap<>();
+                                                                    mapForCurrentUser.put(myReference +
+                                                                            conversation_id, infoToAddUnderMe);
+
+                                                                    mRootReference.updateChildren(mapForCurrentUser);
+
+                                                                    Map<String, Object> infoToAddUnderOther
+                                                                            = new HashMap<>();
+
+                                                                    infoToAddUnderOther.put("id", conversation_id);
+                                                                    infoToAddUnderOther.put("type", "chat");
+                                                                    infoToAddUnderOther.put("visible", true);
+                                                                    infoToAddUnderOther.put("phone_number",
+                                                                            mCurrentUserPhone);
+                                                                    infoToAddUnderOther.put("timestamp",
+                                                                            ServerValue.TIMESTAMP);
+
+                                                                    Map<String, Object> mapForOtherUser
+                                                                            = new HashMap<>();
+                                                                    mapForOtherUser.put(otherUserReference +
+                                                                            conversation_id, infoToAddUnderOther);
+
+                                                                    mRootReference.updateChildren(mapForOtherUser);
+
+                                                                    /**
+                                                                     * Adding information into ads_chat &
+                                                                     * ads_messages
+                                                                     */
+
+                                                                    DatabaseReference usersInChat = mRootReference
+                                                                            .child("ads_chat").child(conversation_id)
+                                                                            .child("messages").child(push_id);
+
+                                                                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                                        messageMap.put("parent", Messages.getClickedMessageId());
+                                                                    }
+
+                                                                    Map<String, Object> msgContentMap = new HashMap<>();
+                                                                    msgContentMap.put(message_reference +
+                                                                            push_id, messageMap);
+
+                                                                    //Adding message
+                                                                    mRootReference.updateChildren(msgContentMap,
+                                                                            (databaseError, databaseReference) -> {
+                                                                            });
+
+                                                                    Map<String, Object> chatRefMap = new HashMap<>();
+                                                                    chatRefMap.put("users", mChatUsers);
+                                                                    chatRefMap.put("seen", false);
+                                                                    chatRefMap.put("visible", true);
+                                                                    chatRefMap.put("lastMessage", push_id);
+
+                                                                    Map<String, Object> messageUserMap =
+                                                                            new HashMap<>();
+
+                                                                    messageUserMap.put(chat_reference +
+                                                                            conversation_id, chatRefMap);
+
+                                                                    mTextToSend.setText("");
+                                                                    mRootReference.updateChildren(messageUserMap);
+
+                                                                    Map<String, Object> chatUnderId = new HashMap<>();
+                                                                    chatUnderId.put("msgId", push_id);
+                                                                    chatUnderId.put("seen", false);
+                                                                    chatUnderId.put("visible", true);
+                                                                    chatUnderId.put("timestamp",
+                                                                            ServerValue.TIMESTAMP);
+
+                                                                    usersInChat.updateChildren(chatUnderId,
+                                                                            (databaseError, databaseReference) -> {
+
+                                                                                HashMap<String, Object> notificationData
+                                                                                        = new HashMap<>();
+                                                                                notificationData.put("from",
+                                                                                        mCurrentUserPhone);
+                                                                                notificationData.put("message",
+                                                                                        message);
+
+                                                                                //TODO: [fm] if user has been muted, don't push notification data
+                                                                                mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                                        .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                    @Override
+                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                                        if (!dataSnapshot.exists()) {
+                                                                                            mNotificationsDatabase.child(mChatPhone)
+                                                                                                    .push().setValue(notificationData)
+                                                                                                    .addOnCompleteListener(task1 -> {
+
+                                                                                                        if (task1.isSuccessful()) {
+
+                                                                                                            try {
+                                                                                                                if (mp1.isPlaying()) {
+                                                                                                                    mp1.stop();
+                                                                                                                    mp1.release();
+
+                                                                                                                }
+                                                                                                                mp1.start();
+                                                                                                            } catch (Exception e) {
+                                                                                                                e.printStackTrace();
+                                                                                                            }
+                                                                                                            //TODO: update message field seen
+
+                                                                                                            Toast.makeText(
+                                                                                                                    ChatActivity.this,
+                                                                                                                    "Notification Sent",
+                                                                                                                    Toast.LENGTH_SHORT).show();
+
+                                                                                                        }
+                                                                                                    });
+                                                                                            //mp1.start();
+                                                                                            //TODO: add sent mark
+                                                                                        }
+                                                                                    }
+
+                                                                                    @Override
+                                                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                                                    }
+                                                                                });
+
+                                                                            });
+                                                                    loadMessages();
+                                                                    //Chat.setChatListenerCalled(true);
+                                                                }
+
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+
+                                            }
+                                        } else {
+
+
+                                            /**
+                                             * Adding the information under ads_users of my phone and the other user,
+                                             * if the phone number doesn't match the other user
+                                             *
+                                             */
+
+                                            mConvoRef = conversation_id;
+                                            mChatId = conversation_id;
+                                            Map<String, Object> infoToAddUnderMe
+                                                    = new HashMap<>();
+                                            infoToAddUnderMe.put("id", conversation_id);
+                                            infoToAddUnderMe.put("type", "chat");
+                                            infoToAddUnderMe.put("visible", true);
+                                            infoToAddUnderMe.put("phone_number",
+                                                    mChatPhone);
+                                            infoToAddUnderMe.put("timestamp",
+                                                    ServerValue.TIMESTAMP);
+
+                                            Map<String, Object> mapForCurrentUser
+                                                    = new HashMap<>();
+                                            mapForCurrentUser.put(myReference +
+                                                    conversation_id, infoToAddUnderMe);
+
+                                            mRootReference.updateChildren(mapForCurrentUser);
+
+                                            Map<String, Object> infoToAddUnderOther
+                                                    = new HashMap<>();
+
+                                            infoToAddUnderOther.put("id", conversation_id);
+                                            infoToAddUnderOther.put("type", "chat");
+                                            infoToAddUnderOther.put("visible", true);
+                                            infoToAddUnderOther.put("phone_number",
+                                                    mCurrentUserPhone);
+                                            infoToAddUnderOther.put("timestamp",
+                                                    ServerValue.TIMESTAMP);
+
+                                            Map<String, Object> mapForOtherUser
+                                                    = new HashMap<>();
+                                            mapForOtherUser.put(otherUserReference +
+                                                    conversation_id, infoToAddUnderOther);
+
+                                            mRootReference.updateChildren(mapForOtherUser);
+
+                                            /**
+                                             * Adding information into ads_chat &
+                                             * ads_messages
+                                             */
+
+                                            DatabaseReference usersInChat = mRootReference
+                                                    .child("ads_chat").child(conversation_id)
+                                                    .child("messages").child(push_id);
+
+                                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                                messageMap.put("parent", Messages.getClickedMessageId());
+                                            }
+
+                                            Map<String, Object> msgContentMap = new HashMap<>();
+                                            msgContentMap.put(message_reference +
+                                                    push_id, messageMap);
+
+                                            //Adding message
+                                            mRootReference.updateChildren(msgContentMap,
+                                                    (databaseError, databaseReference) -> {
+                                                    });
+
+                                            Map<String, Object> chatRefMap = new HashMap<>();
+                                            chatRefMap.put("users", mChatUsers);
+                                            chatRefMap.put("seen", false);
+                                            chatRefMap.put("visible", true);
+                                            chatRefMap.put("lastMessage", push_id);
+
+                                            Map<String, Object> messageUserMap =
+                                                    new HashMap<>();
+
+                                            messageUserMap.put(chat_reference +
+                                                    conversation_id, chatRefMap);
+
+                                            mTextToSend.setText("");
+                                            mRootReference.updateChildren(messageUserMap);
+
+                                            mUsersReference.child(mCurrentUserPhone).child("conversation")
+                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                            mUsersReference.child(mChatPhone).child("conversation")
+                                                    .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
+
+                                            Map<String, Object> chatUnderId = new HashMap<>();
+                                            chatUnderId.put("msgId", push_id);
+                                            chatUnderId.put("seen", false);
+                                            chatUnderId.put("visible", true);
+                                            chatUnderId.put("timestamp",
+                                                    ServerValue.TIMESTAMP);
+
+                                            usersInChat.updateChildren(chatUnderId,
+                                                    (databaseError, databaseReference) -> {
+
+                                                        HashMap<String, Object> notificationData
+                                                                = new HashMap<>();
+                                                        notificationData.put("from",
+                                                                mCurrentUserPhone);
+                                                        notificationData.put("message",
+                                                                message);
+
+                                                        //TODO: [fm] if user has been muted, don't push notification data
+                                                        mUsersReference.child(mCurrentUserPhone).child("e")
+                                                                .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                if (!dataSnapshot.exists()) {
+                                                                    mNotificationsDatabase.child(mChatPhone)
+                                                                            .push().setValue(notificationData)
+                                                                            .addOnCompleteListener(task1 -> {
+
+                                                                                if (task1.isSuccessful()) {
+
+                                                                                    try {
+                                                                                        if (mp1.isPlaying()) {
+                                                                                            mp1.stop();
+                                                                                            mp1.release();
 
                                                                                         }
-                                                                                    });
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                                    }
-                                                                });
-                                                        //mp1.start();
-                                                        //TODO: add sent mark
-
-                                                    });
-
-                                        } else {
-                                            mRootReference.child("ads_users")
-                                                    .child(mCurrentUserPhone)
-                                                    .child("conversation")
-                                                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                                                c[0] = d.getValue(Conversation.class);
-                                                                listConvo.add(c[0]);
-                                                            }
-                                                            for (int i = 0; i < listConvo.size(); i++) {
-                                                                if (listConvo.get(i).getPhone_number().equals(mChatPhone)) {
-                                                                    isThere[0] = true;
-                                                                    mConvoRef = listConvo.get(i).getId();
-                                                                    Log.i("mCoonvo", mConvoRef);
-                                                                    break;
-                                                                }
-                                                            }
-                                                            isFirstTime = false;
-                                                            if (isThere[0]) {
-
-                                                                // Getting reference to conversation_id under ads_user and push new messages
-                                                                DatabaseReference addNewMessage =
-                                                                        mRootReference.child("ads_chat")
-                                                                                .child(mConvoRef)
-                                                                                .child("messages").child(push_id);
-
-                                                                mRootReference.child("ads_chat").child(mConvoRef).child("lastMessage")
-                                                                        .setValue(push_id);
-
-                                                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                                    messageMap.put("parent", Messages.getClickedMessageId());
-                                                                }
-
-                                                                Map<String, Object> msgContentMap = new HashMap<>();
-                                                                msgContentMap.put(message_reference +
-                                                                        push_id, messageMap);
-
-                                                                mRootReference.updateChildren(msgContentMap,
-                                                                        (databaseError, databaseReference) -> {
-                                                                        });
-
-                                                                mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                                                mUsersReference.child(mChatPhone).child("conversation")
-                                                                        .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                mTextToSend.setText("");
-
-                                                                Map<String, Object> chatUnderId = new HashMap<>();
-                                                                chatUnderId.put("msgId", push_id);
-                                                                chatUnderId.put("seen", false);
-                                                                chatUnderId.put("visible", true);
-                                                                chatUnderId.put("timestamp",
-                                                                        ServerValue.TIMESTAMP);
-
-                                                                addNewMessage.updateChildren(chatUnderId,
-                                                                        (databaseError, databaseReference) -> {
-
-                                                                            HashMap<String, Object> notificationData
-                                                                                    = new HashMap<>();
-                                                                            notificationData.put("from",
-                                                                                    mCurrentUserPhone);
-                                                                            notificationData.put("message",
-                                                                                    message);
-
-                                                                            //TODO: [fm] if user has been muted, don't push notification data
-                                                                            mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                                    .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                @Override
-                                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                    if (!dataSnapshot.exists()) {
-                                                                                        mNotificationsDatabase.child(mChatPhone)
-                                                                                                .push().setValue(notificationData)
-                                                                                                .addOnCompleteListener(task1 -> {
-
-                                                                                                    if (task1.isSuccessful()) {
-
-                                                                                                        try {
-                                                                                                            if (mp1.isPlaying()) {
-                                                                                                                mp1.stop();
-                                                                                                                mp1.release();
-
-                                                                                                            }
-                                                                                                            mp1.start();
-                                                                                                        } catch (Exception e) {
-                                                                                                            e.printStackTrace();
-                                                                                                        }
-                                                                                                        //TODO: update message field seen
-
-                                                                                                        Toast.makeText(
-                                                                                                                ChatActivity.this,
-                                                                                                                "Notification Sent",
-                                                                                                                Toast.LENGTH_SHORT).show();
-
-                                                                                                    }
-                                                                                                });
-                                                                                        //mp1.start();
-                                                                                        //TODO: add sent mark
+                                                                                        mp1.start();
+                                                                                    } catch (Exception e) {
+                                                                                        e.printStackTrace();
                                                                                     }
+                                                                                    //TODO: update message field seen
 
-                                                                                }
-
-                                                                                @Override
-                                                                                public void onCancelled(DatabaseError databaseError) {
+                                                                                    Toast.makeText(
+                                                                                            ChatActivity.this,
+                                                                                            "Notification Sent",
+                                                                                            Toast.LENGTH_SHORT).show();
 
                                                                                 }
                                                                             });
-
-                                                                        });
-
-                                                                // loadMessages();
-                                                                // Chat.setChatListenerCalled(true);
-                                                            } else {
-
-
-                                                                /**
-                                                                 * Adding the information under ads_users of my phone and the other user,
-                                                                 * if the phone number doesn't match the other user
-                                                                 *
-                                                                 */
-
-                                                                mConvoRef = conversation_id;
-                                                                mChatId = conversation_id;
-                                                                Map<String, Object> infoToAddUnderMe
-                                                                        = new HashMap<>();
-                                                                infoToAddUnderMe.put("id", conversation_id);
-                                                                infoToAddUnderMe.put("type", "chat");
-                                                                infoToAddUnderMe.put("visible", true);
-                                                                infoToAddUnderMe.put("phone_number",
-                                                                        mChatPhone);
-                                                                infoToAddUnderMe.put("timestamp",
-                                                                        ServerValue.TIMESTAMP);
-
-                                                                Map<String, Object> mapForCurrentUser
-                                                                        = new HashMap<>();
-                                                                mapForCurrentUser.put(myReference +
-                                                                        conversation_id, infoToAddUnderMe);
-
-                                                                mRootReference.updateChildren(mapForCurrentUser);
-
-                                                                Map<String, Object> infoToAddUnderOther
-                                                                        = new HashMap<>();
-
-                                                                infoToAddUnderOther.put("id", conversation_id);
-                                                                infoToAddUnderOther.put("type", "chat");
-                                                                infoToAddUnderOther.put("visible", true);
-                                                                infoToAddUnderOther.put("phone_number",
-                                                                        mCurrentUserPhone);
-                                                                infoToAddUnderOther.put("timestamp",
-                                                                        ServerValue.TIMESTAMP);
-
-                                                                Map<String, Object> mapForOtherUser
-                                                                        = new HashMap<>();
-                                                                mapForOtherUser.put(otherUserReference +
-                                                                        conversation_id, infoToAddUnderOther);
-
-                                                                mRootReference.updateChildren(mapForOtherUser);
-
-                                                                /**
-                                                                 * Adding information into ads_chat &
-                                                                 * ads_messages
-                                                                 */
-
-                                                                DatabaseReference usersInChat = mRootReference
-                                                                        .child("ads_chat").child(conversation_id)
-                                                                        .child("messages").child(push_id);
-
-                                                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                                                    messageMap.put("parent", Messages.getClickedMessageId());
+                                                                    //mp1.start();
+                                                                    //TODO: add sent mark
                                                                 }
-
-                                                                Map<String, Object> msgContentMap = new HashMap<>();
-                                                                msgContentMap.put(message_reference +
-                                                                        push_id, messageMap);
-
-                                                                //Adding message
-                                                                mRootReference.updateChildren(msgContentMap,
-                                                                        (databaseError, databaseReference) -> {
-                                                                        });
-
-                                                                Map<String, Object> chatRefMap = new HashMap<>();
-                                                                chatRefMap.put("users", mChatUsers);
-                                                                chatRefMap.put("seen", false);
-                                                                chatRefMap.put("visible", true);
-                                                                chatRefMap.put("lastMessage", push_id);
-
-                                                                Map<String, Object> messageUserMap =
-                                                                        new HashMap<>();
-
-                                                                messageUserMap.put(chat_reference +
-                                                                        conversation_id, chatRefMap);
-
-                                                                mTextToSend.setText("");
-                                                                mRootReference.updateChildren(messageUserMap);
-
-                                                                Map<String, Object> chatUnderId = new HashMap<>();
-                                                                chatUnderId.put("msgId", push_id);
-                                                                chatUnderId.put("seen", false);
-                                                                chatUnderId.put("visible", true);
-                                                                chatUnderId.put("timestamp",
-                                                                        ServerValue.TIMESTAMP);
-
-                                                                usersInChat.updateChildren(chatUnderId,
-                                                                        (databaseError, databaseReference) -> {
-
-                                                                            HashMap<String, Object> notificationData
-                                                                                    = new HashMap<>();
-                                                                            notificationData.put("from",
-                                                                                    mCurrentUserPhone);
-                                                                            notificationData.put("message",
-                                                                                    message);
-
-                                                                            //TODO: [fm] if user has been muted, don't push notification data
-                                                                            mUsersReference.child(mCurrentUserPhone).child("e")
-                                                                                    .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                @Override
-                                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                    if (!dataSnapshot.exists()) {
-                                                                                        mNotificationsDatabase.child(mChatPhone)
-                                                                                                .push().setValue(notificationData)
-                                                                                                .addOnCompleteListener(task1 -> {
-
-                                                                                                    if (task1.isSuccessful()) {
-
-                                                                                                        try {
-                                                                                                            if (mp1.isPlaying()) {
-                                                                                                                mp1.stop();
-                                                                                                                mp1.release();
-
-                                                                                                            }
-                                                                                                            mp1.start();
-                                                                                                        } catch (Exception e) {
-                                                                                                            e.printStackTrace();
-                                                                                                        }
-                                                                                                        //TODO: update message field seen
-
-                                                                                                        Toast.makeText(
-                                                                                                                ChatActivity.this,
-                                                                                                                "Notification Sent",
-                                                                                                                Toast.LENGTH_SHORT).show();
-
-                                                                                                    }
-                                                                                                });
-                                                                                        //mp1.start();
-                                                                                        //TODO: add sent mark
-                                                                                    }
-                                                                                }
-
-                                                                                @Override
-                                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                                }
-                                                                            });
-
-                                                                        });
-                                                                loadMessages();
-                                                                //Chat.setChatListenerCalled(true);
                                                             }
 
-                                                        }
+                                                            @Override
+                                                            public void onCancelled(DatabaseError databaseError) {
 
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
-
-                                                        }
-                                                    });
-
-                                        }
-                                    } else {
-
-
-                                        /**
-                                         * Adding the information under ads_users of my phone and the other user,
-                                         * if the phone number doesn't match the other user
-                                         *
-                                         */
-
-                                        mConvoRef = conversation_id;
-                                        mChatId = conversation_id;
-                                        Map<String, Object> infoToAddUnderMe
-                                                = new HashMap<>();
-                                        infoToAddUnderMe.put("id", conversation_id);
-                                        infoToAddUnderMe.put("type", "chat");
-                                        infoToAddUnderMe.put("visible", true);
-                                        infoToAddUnderMe.put("phone_number",
-                                                mChatPhone);
-                                        infoToAddUnderMe.put("timestamp",
-                                                ServerValue.TIMESTAMP);
-
-                                        Map<String, Object> mapForCurrentUser
-                                                = new HashMap<>();
-                                        mapForCurrentUser.put(myReference +
-                                                conversation_id, infoToAddUnderMe);
-
-                                        mRootReference.updateChildren(mapForCurrentUser);
-
-                                        Map<String, Object> infoToAddUnderOther
-                                                = new HashMap<>();
-
-                                        infoToAddUnderOther.put("id", conversation_id);
-                                        infoToAddUnderOther.put("type", "chat");
-                                        infoToAddUnderOther.put("visible", true);
-                                        infoToAddUnderOther.put("phone_number",
-                                                mCurrentUserPhone);
-                                        infoToAddUnderOther.put("timestamp",
-                                                ServerValue.TIMESTAMP);
-
-                                        Map<String, Object> mapForOtherUser
-                                                = new HashMap<>();
-                                        mapForOtherUser.put(otherUserReference +
-                                                conversation_id, infoToAddUnderOther);
-
-                                        mRootReference.updateChildren(mapForOtherUser);
-
-                                        /**
-                                         * Adding information into ads_chat &
-                                         * ads_messages
-                                         */
-
-                                        DatabaseReference usersInChat = mRootReference
-                                                .child("ads_chat").child(conversation_id)
-                                                .child("messages").child(push_id);
-
-                                        if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                                            messageMap.put("parent", Messages.getClickedMessageId());
-                                        }
-
-                                        Map<String, Object> msgContentMap = new HashMap<>();
-                                        msgContentMap.put(message_reference +
-                                                push_id, messageMap);
-
-                                        //Adding message
-                                        mRootReference.updateChildren(msgContentMap,
-                                                (databaseError, databaseReference) -> {
-                                                });
-
-                                        Map<String, Object> chatRefMap = new HashMap<>();
-                                        chatRefMap.put("users", mChatUsers);
-                                        chatRefMap.put("seen", false);
-                                        chatRefMap.put("visible", true);
-                                        chatRefMap.put("lastMessage", push_id);
-
-                                        Map<String, Object> messageUserMap =
-                                                new HashMap<>();
-
-                                        messageUserMap.put(chat_reference +
-                                                conversation_id, chatRefMap);
-
-                                        mTextToSend.setText("");
-                                        mRootReference.updateChildren(messageUserMap);
-
-                                        mUsersReference.child(mCurrentUserPhone).child("conversation")
-                                                .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                        mUsersReference.child(mChatPhone).child("conversation")
-                                                .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-
-                                        Map<String, Object> chatUnderId = new HashMap<>();
-                                        chatUnderId.put("msgId", push_id);
-                                        chatUnderId.put("seen", false);
-                                        chatUnderId.put("visible", true);
-                                        chatUnderId.put("timestamp",
-                                                ServerValue.TIMESTAMP);
-
-                                        usersInChat.updateChildren(chatUnderId,
-                                                (databaseError, databaseReference) -> {
-
-                                                    HashMap<String, Object> notificationData
-                                                            = new HashMap<>();
-                                                    notificationData.put("from",
-                                                            mCurrentUserPhone);
-                                                    notificationData.put("message",
-                                                            message);
-
-                                                    //TODO: [fm] if user has been muted, don't push notification data
-                                                    mUsersReference.child(mCurrentUserPhone).child("e")
-                                                            .child("U-" + mChatPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            if (!dataSnapshot.exists()) {
-                                                                mNotificationsDatabase.child(mChatPhone)
-                                                                        .push().setValue(notificationData)
-                                                                        .addOnCompleteListener(task1 -> {
-
-                                                                            if (task1.isSuccessful()) {
-
-                                                                                try {
-                                                                                    if (mp1.isPlaying()) {
-                                                                                        mp1.stop();
-                                                                                        mp1.release();
-
-                                                                                    }
-                                                                                    mp1.start();
-                                                                                } catch (Exception e) {
-                                                                                    e.printStackTrace();
-                                                                                }
-                                                                                //TODO: update message field seen
-
-                                                                                Toast.makeText(
-                                                                                        ChatActivity.this,
-                                                                                        "Notification Sent",
-                                                                                        Toast.LENGTH_SHORT).show();
-
-                                                                            }
-                                                                        });
-                                                                //mp1.start();
-                                                                //TODO: add sent mark
                                                             }
-                                                        }
+                                                        });
 
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
 
-                                                        }
                                                     });
-
-
-                                                });
-                                        loadMessages();
-                                        //Chat.setChatListenerCalled(true);
+                                            loadMessages();
+                                            //Chat.setChatListenerCalled(true);
+                                        }
                                     }
-                                }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
+                                    }
+                                });
+
+                    }
+                }else{
+                    Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
 
                 }
-
-                //     mTextToSend.requestFocus();
-            } else {
-                Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
 
     }
 
@@ -4430,19 +4405,19 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         return builder.toString();
     }
 
-    private String randomIdentifier_() {
-        StringBuilder builder = new StringBuilder();
-        while (builder.toString().length() == 0) {
-            int length = rand.nextInt(6) + 6;
-            for (int i = 0; i < length; i++) {
-                builder.append(lexicon.charAt(rand.nextInt(lexicon.length())));
-            }
-            if (identifiers.contains(builder.toString())) {
-                builder = new StringBuilder();
-            }
-        }
-        return builder.toString();
-    }
+//    private String randomIdentifier_() {
+//        StringBuilder builder = new StringBuilder();
+//        while (builder.toString().length() == 0) {
+//            int length = rand.nextInt(6) + 6;
+//            for (int i = 0; i < length; i++) {
+//                builder.append(lexicon.charAt(rand.nextInt(lexicon.length())));
+//            }
+//            if (identifiers.contains(builder.toString())) {
+//                builder = new StringBuilder();
+//            }
+//        }
+//        return builder.toString();
+//    }
 
 
     private void askPermission() {
@@ -4518,81 +4493,72 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
 
             case R.id.menu_call:
-
                 try {
-                    if (new CheckInternetAsyncTask(this).execute().get()) {
-                        Map<String, Object> m = new HashMap<>();
-                        m.put("from", mCurrentUserPhone);
+                    new CheckInternet_(internet -> {
+                        if (internet) {
+                            Map<String, Object> m = new HashMap<>();
+                            m.put("from", mCurrentUserPhone);
 
-                        String voiceChannelId = randomIdentifier();
-                        mCallReference.child(mChatPhone).child(voiceChannelId).setValue(m).addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                Intent goToPhoneCall = new Intent(ChatActivity.this, CallScreenActivity.class);
-                                goToPhoneCall.putExtra("user_phone", mChatPhone);
-                                goToPhoneCall.putExtra("channel_id", voiceChannelId);
-                                startActivity(goToPhoneCall);
-                            }
-                        });
-                    } else {
-                        Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                            String voiceChannelId = randomIdentifier();
+                            mCallReference.child(mChatPhone).child(voiceChannelId).setValue(m).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Intent goToPhoneCall = new Intent(ChatActivity.this, CallScreenActivity.class);
+                                    goToPhoneCall.putExtra("user_phone", mChatPhone);
+                                    goToPhoneCall.putExtra("channel_id", voiceChannelId);
+                                    startActivity(goToPhoneCall);
+                                }
+                            });
+                        } else{
+                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 break;
 
             case R.id.menu_video:
-                // TO fix at home/sw
-
                 try {
-                    if (new CheckInternetAsyncTask(this).execute().get()) {
-                        DatabaseReference msg_push = mVideoCallReference.child(mChatPhone).push();
+                    new CheckInternet_(internet -> {
+                       if(internet){
+                           DatabaseReference msg_push = mVideoCallReference.child(mChatPhone).push();
 
-                        String push_id = msg_push.getKey();
+                           String push_id = msg_push.getKey();
 
-                        Map<String, Object> m1 = new HashMap<>();
-                        m1.put("from", mCurrentUserPhone);
+                           Map<String, Object> m1 = new HashMap<>();
+                           m1.put("from", mCurrentUserPhone);
 
-                        mVideoCallReference.child(mChatPhone).child(push_id).setValue(m1).addOnCompleteListener(task -> {
+                           mVideoCallReference.child(mChatPhone).child(push_id).setValue(m1).addOnCompleteListener(task -> {
 
-                            if (task.isSuccessful()) {
+                               if (task.isSuccessful()) {
 
-                                Intent goToVideoCall = new Intent(ChatActivity.this, VideoCallActivity.class);
-                                goToVideoCall.putExtra("user_phone", mChatPhone);
-                                goToVideoCall.putExtra("channel_id", push_id);
-                                startActivity(goToVideoCall);
-
-                            }
-
-                        });
-                    } else {
-                        Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                                   Intent goToVideoCall = new Intent(ChatActivity.this, VideoCallActivity.class);
+                                   goToVideoCall.putExtra("user_phone", mChatPhone);
+                                   goToVideoCall.putExtra("channel_id", push_id);
+                                   startActivity(goToVideoCall);
+                               }
+                           });
+                       }else{
+                           Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                       }
+                    });
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-
                 break;
 
             case R.id.menu_send_contact:
-                // Open  dialog for all my contacts in phone and allow user to select from them
-
                 try {
-                    if (new CheckInternetAsyncTask(this).execute().get()) {
-                        Intent sendContact = new Intent(this, SendContactActivity.class);
-                        sendContact.putExtra("user_phone", mChatPhone);
-                        startActivity(sendContact);
-                    } else {
-                        Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
+                    new CheckInternet_(internet -> {
+                       if(internet){
+                           Intent sendContact = new Intent(this, SendContactActivity.class);
+                           sendContact.putExtra("user_phone", mChatPhone);
+                           startActivity(sendContact);
+                       }else{
+                           Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                       }
+                    });
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
@@ -4656,9 +4622,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                     }
                     messagesList.set(pos, m);
                     mMessageAdapter.notifyDataSetChanged();
-
                 }
-
             }
 
             @Override
@@ -4764,85 +4728,14 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             default:
                 return;
         }
-        //if(from == 1){
-//            if(mSelectedMessages.size() > 0){
-//                for(Messages m : mSelectedMessages){
-//
-//                    if (!m.getFrom().equals(Objects.requireNonNull
-//                            (mAuth.getCurrentUser()).getPhoneNumber())) {
-//                        Toast.makeText(this, "Cannot delete message " +
-//                                "not coming from you", Toast.LENGTH_SHORT).show();
-//                    } else if (m.getType().equals("group_link") || m.getType().equals("channel_link")) {
-//                        mMessageReference.child(m.getMessageId())
-//                                .child("visible").setValue(false);
-//
-//                        mMessageReference.child(m.getMessageId())
-//                                .child("content").setValue("Message Deleted");
-//
-//                      //  ((MessageViewHolder) holder).messageLinearLayout.setEnabled(false);
-//
-//                        Toast.makeText(this, "Message deleted",
-//                                Toast.LENGTH_SHORT).show();
-//                    } else {
-//                        mMessageReference.child(m.getMessageId())
-//                                .child("visible").setValue(false);
-//
-//                        mMessageReference.child(m.getMessageId())
-//                                .child("content").setValue("Message Deleted");
-//
-//                       // ((MessageViewHolder) holder).messageLinearLayout.setEnabled(false);
-//
-//                        Toast.makeText(this,  "Message deleted",
-//                                Toast.LENGTH_SHORT).show();
-//                        }
-//                }
-//            }
-//            if (mActionMode != null) {
-//                mActionMode.finish();
-//            }
-        //}else if(from == 2){
-//
-//            for(Messages m : mSelectedMessages){
-//                if(m.getType().equals("audio") || m.getType().equals("video") || m.getType().equals("image")){
-//                    Toast.makeText(this, "Can only copy text messages", Toast.LENGTH_SHORT).show();
-//                    mActionMode.finish();
-//                    return;
-//                }
-//                if(m.getFrom().equals(mCurrentUserPhone)){
-//                    mFinalCopiedMessages = mFinalCopiedMessages + "[" + getDate(m.getTimestamp())
-//                            + "]" + "You: " + m.getContent() + "\n";
-//                }else{
-//                    String nameStored = Users.getLocalContactList().get(m.getFrom());
-//                    nameStored = nameStored != null && nameStored.length() > 0  ? nameStored :
-//                           m.getFrom();
-//                    mFinalCopiedMessages = mFinalCopiedMessages + "[" + getDate(m.getTimestamp())
-//                            + "]" +  nameStored + ": " + m.getContent() + "\n";
-//                }
-//            }
-//
-//            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-//            ClipData clip = ClipData.newPlainText("simpleText", mFinalCopiedMessages);
-//            if (clipboard != null) {
-//                clipboard.setPrimaryClip(clip);
-//            }
-//
-//            if (mActionMode != null) {
-//                mActionMode.finish();
-//            }
-        //} else if(from == 3){
-
-        // }
-
     }
 
     @Override
     public void onNegativeClick(int from) {
-
     }
 
     @Override
     public void onNeutralClick(int from) {
-
     }
 
     public void multi_select(int position) {

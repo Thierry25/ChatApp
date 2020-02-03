@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -74,7 +73,6 @@ import net.alhazmy13.mediapicker.Image.ImagePicker;
 import net.alhazmy13.mediapicker.Video.VideoPicker;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -94,16 +92,14 @@ import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
 //import droidninja.filepicker.utils.Orientation;
-import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
-import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.GroupMessageAdapter;
 import marcelin.thierry.chatapp.classes.Chat;
-import marcelin.thierry.chatapp.classes.CheckInternetAsyncTask;
 import marcelin.thierry.chatapp.classes.Messages;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.AlertDialogHelper;
+import marcelin.thierry.chatapp.utils.CheckInternet_;
 import marcelin.thierry.chatapp.utils.Constant;
 import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 
@@ -488,14 +484,14 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
         mSendAttachment.setOnClickListener(view1 -> {
             try {
-                if(new CheckInternetAsyncTask(GroupChatActivity.this).execute().get()){
-                    showCustomDialog();
-                }else{
-                    Toast.makeText(GroupChatActivity.this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
+                new CheckInternet_(internet -> {
+                   if(internet){
+                       showCustomDialog();
+                   }else{
+                       Toast.makeText(GroupChatActivity.this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                   }
+                });
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
@@ -542,103 +538,102 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         // String referenceInGroup = "ads_group/" + mCurrentUserPhone + "/" + mChatPhone;
 
         try {
-            if(new CheckInternetAsyncTask(this).execute().get()){
-                final String message_reference = "ads_group_messages/";
+            new CheckInternet_(internet -> {
+               if(internet){
+                       final String message_reference = "ads_group_messages/";
 
-                DatabaseReference msg_push = mRootReference.child("ads_group").child(mGroupName).push();
+                       DatabaseReference msg_push = mRootReference.child("ads_group").child(mGroupName).push();
 
-                String push_id = msg_push.getKey();
+                       String push_id = msg_push.getKey();
 
-                DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
-                        .child("messages").child(push_id);
+                       DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
+                               .child("messages").child(push_id);
 
-                StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
-                Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
+                       StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
+                       Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
 
 
-                filePath.putFile(voiceUri).addOnCompleteListener(task -> {
+                       filePath.putFile(voiceUri).addOnCompleteListener(task -> {
 
-                    if (task.isSuccessful()) {
-                        String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
-                                .toString();
+                           if (task.isSuccessful()) {
+                               String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
+                                       .toString();
 
-                        mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                        Map<String, Object> messageMap = new HashMap<>();
-                        messageMap.put("content", downloadUrl);
-                        messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                        messageMap.put("type", "audio");
-                        messageMap.put("parent", "Default");
-                        messageMap.put("visible", true);
-                        messageMap.put("from", mCurrentUserPhone);
-                        messageMap.put("seen", false);
-                        messageMap.put("read_by", mRead);
+                               mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                               Map<String, Object> messageMap = new HashMap<>();
+                               messageMap.put("content", downloadUrl);
+                               messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                               messageMap.put("type", "audio");
+                               messageMap.put("parent", "Default");
+                               messageMap.put("visible", true);
+                               messageMap.put("from", mCurrentUserPhone);
+                               messageMap.put("seen", false);
+                               messageMap.put("read_by", mRead);
 
-                        if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                            messageMap.put("parent", Messages.getClickedMessageId());
-                            // Remove if crashed
-                            replyLinearLayout.setVisibility(View.GONE);
-                        }
+                               if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                   messageMap.put("parent", Messages.getClickedMessageId());
+                                   // Remove if crashed
+                                   replyLinearLayout.setVisibility(View.GONE);
+                               }
 
-                        Map<String, Object> msgContentMap = new HashMap<>();
-                        msgContentMap.put(message_reference + push_id, messageMap);
+                               Map<String, Object> msgContentMap = new HashMap<>();
+                               msgContentMap.put(message_reference + push_id, messageMap);
 
-                        mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
-                                .setValue(push_id);
+                               mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
+                                       .setValue(push_id);
 
-                        //Adding message
-                        mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                            //TODO: when completed, insert into table ads_chat. On error, remove from db
-                        });
+                               //Adding message
+                               mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                                   //TODO: when completed, insert into table ads_chat. On error, remove from db
+                               });
 
-                        Map<String, Object> chatRefMap = new HashMap<>();
-                        chatRefMap.put("msgId", push_id);
-                        chatRefMap.put("seen", false);
-                        chatRefMap.put("visible", true);
+                               Map<String, Object> chatRefMap = new HashMap<>();
+                               chatRefMap.put("msgId", push_id);
+                               chatRefMap.put("seen", false);
+                               chatRefMap.put("visible", true);
 
-                        mTextToSend.setText("");
+                               mTextToSend.setText("");
 
-                        usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+                               usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
 
-                            HashMap<String, Object> notificationData = new HashMap<>();
-                            notificationData.put("from", mCurrentUserPhone);
-                            notificationData.put("message", downloadUrl);
+                                   HashMap<String, Object> notificationData = new HashMap<>();
+                                   notificationData.put("from", mCurrentUserPhone);
+                                   notificationData.put("message", downloadUrl);
 
-                            mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
-                                    .addOnCompleteListener(task1 -> {
+                                   mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
+                                           .addOnCompleteListener(task1 -> {
 
-                                        if (task1.isSuccessful()) {
-                                            try {
-                                                if (mp1.isPlaying()) {
-                                                    mp1.stop();
-                                                    mp1.release();
+                                               if (task1.isSuccessful()) {
+                                                   try {
+                                                       if (mp1.isPlaying()) {
+                                                           mp1.stop();
+                                                           mp1.release();
 
-                                                }
-                                                mp1.start();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                            //TODO: update message field seen
+                                                       }
+                                                       mp1.start();
+                                                   } catch (Exception e) {
+                                                       e.printStackTrace();
+                                                   }
+                                                   //TODO: update message field seen
 
-                                            Toast.makeText(GroupChatActivity.this,
-                                                    "Notification Sent",
-                                                    Toast.LENGTH_SHORT).show();
+                                                   Toast.makeText(GroupChatActivity.this,
+                                                           "Notification Sent",
+                                                           Toast.LENGTH_SHORT).show();
 
-                                        }
-                                    });
-                            //mp1.start();
-                            //TODO: add sent mark
+                                               }
+                                           });
+                                   //mp1.start();
+                                   //TODO: add sent mark
 
-                        });
-                    }
+                               });
+                           }
 
-                });
-
-            }else{
-                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+                       });
+               }else{
+                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+               }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -1077,97 +1072,97 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private void sendMessage() {
 
         try {
-            if(new CheckInternetAsyncTask(this).execute().get()){
+            new CheckInternet_(internet -> {
+               if(internet){
+                       String message = mTextToSend.getText().toString().trim();
 
-                String message = mTextToSend.getText().toString().trim();
+                       if (!TextUtils.isEmpty(message)) {
 
-                if (!TextUtils.isEmpty(message)) {
+                           final String message_reference = "ads_group_messages/";
 
-                    final String message_reference = "ads_group_messages/";
+                           DatabaseReference msg_push = mRootReference.child("ads_group_messages").push();
 
-                    DatabaseReference msg_push = mRootReference.child("ads_group_messages").push();
+                           String push_id = msg_push.getKey();
 
-                    String push_id = msg_push.getKey();
+                           if(mGroupName == null || mGroupName.length() < 1) {
+                               Log.i("groupName", "empty");
+                           }
 
-                    if(mGroupName == null || mGroupName.length() < 1) {
-                        Log.i("groupName", "empty");
-                    }
+                           DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
+                                   .child("messages").child(push_id);
 
-                    DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
-                            .child("messages").child(push_id);
+                           mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                           Map<String, Object> messageMap = new HashMap<>();
+                           messageMap.put("content", message);
+                           messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                           messageMap.put("parent", "Default");
+                           messageMap.put("visible", true);
+                           messageMap.put("type", "text");
+                           messageMap.put("from", mCurrentUserPhone);
+                           messageMap.put("seen", false);
+                           messageMap.put("read_by", mRead);
 
-                    mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                    Map<String, Object> messageMap = new HashMap<>();
-                    messageMap.put("content", message);
-                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                    messageMap.put("parent", "Default");
-                    messageMap.put("visible", true);
-                    messageMap.put("type", "text");
-                    messageMap.put("from", mCurrentUserPhone);
-                    messageMap.put("seen", false);
-                    messageMap.put("read_by", mRead);
+                           Map<String, Object> msgContentMap = new HashMap<>();
+                           msgContentMap.put(message_reference + push_id, messageMap);
 
-                    Map<String, Object> msgContentMap = new HashMap<>();
-                    msgContentMap.put(message_reference + push_id, messageMap);
+                           mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
+                                   .setValue(push_id);
 
-                    mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
-                            .setValue(push_id);
+                           if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                               messageMap.put("parent", Messages.getClickedMessageId());
+                           }
+                           //Adding message
+                           mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                               //TODO: when completed, insert into table ads_chat. On error, remove from db
+                           });
 
-                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                        messageMap.put("parent", Messages.getClickedMessageId());
-                    }
-                    //Adding message
-                    mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                        //TODO: when completed, insert into table ads_chat. On error, remove from db
-                    });
+                           Map<String, Object> chatRefMap = new HashMap<>();
+                           chatRefMap.put("msgId", push_id);
+                           chatRefMap.put("seen", false);
+                           chatRefMap.put("visible", true);
+                           chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
-                    Map<String, Object> chatRefMap = new HashMap<>();
-                    chatRefMap.put("msgId", push_id);
-                    chatRefMap.put("seen", false);
-                    chatRefMap.put("visible", true);
-                    chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
+                           mTextToSend.setText("");
 
-                    mTextToSend.setText("");
+                           usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
 
-                    usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+                               HashMap<String, Object> notificationData = new HashMap<>();
+                               notificationData.put("from", mCurrentUserPhone);
+                               notificationData.put("message", message);
 
-                        HashMap<String, Object> notificationData = new HashMap<>();
-                        notificationData.put("from", mCurrentUserPhone);
-                        notificationData.put("message", message);
+                               mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
+                                       .addOnCompleteListener(task -> {
 
-                        mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
-                                .addOnCompleteListener(task -> {
+                                           if (task.isSuccessful()) {
+                                               try {
+                                                   if (mp1.isPlaying()) {
+                                                       mp1.stop();
+                                                       mp1.release();
 
-                                    if (task.isSuccessful()) {
-                                        try {
-                                            if (mp1.isPlaying()) {
-                                                mp1.stop();
-                                                mp1.release();
+                                                   }
+                                                   mp1.start();
+                                               } catch (Exception e) {
+                                                   e.printStackTrace();
+                                               }
+                                               //TODO: update message field seen
 
-                                            }
-                                            mp1.start();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        //TODO: update message field seen
+                                               Toast.makeText(GroupChatActivity.this, "Notification Sent",
+                                                       Toast.LENGTH_SHORT).show();
 
-                                        Toast.makeText(GroupChatActivity.this, "Notification Sent",
-                                                Toast.LENGTH_SHORT).show();
+                                           }
+                                       });
+                               //mp1.start();
+                               //TODO: add sent mark
 
-                                    }
-                                });
-                        //mp1.start();
-                        //TODO: add sent mark
+                           });
+                       }
 
-                    });
-                }
 
-            } else{
-                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+               }else{
+                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+               }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -57,6 +57,7 @@ import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
+import marcelin.thierry.chatapp.activities.CommentActivity;
 import marcelin.thierry.chatapp.activities.ForwardMessageActivity;
 import marcelin.thierry.chatapp.activities.FullScreenImageActivity;
 import marcelin.thierry.chatapp.activities.VideoPlayerActivity;
@@ -148,6 +149,18 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 }else{
                     ((MessageViewHolder) holder).textEntered.setTextSize(16);
                 }
+
+                ((MessageViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", message.getContent());
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    v.getContext().startActivity(goToCommentActivity);
+                });
 
                 ((MessageViewHolder) holder).channelName.setText(message.getChannelName());
                 ((MessageViewHolder) holder).setProfilePic(message.getChannelImage());
