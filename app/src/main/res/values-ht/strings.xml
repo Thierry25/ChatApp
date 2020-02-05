@@ -42,7 +42,7 @@
     <string name="chan_locking">Bloke Kanal</string>
     <string name="chan_lool__">Bloke kanal ou a?</string>
     <string name="chan_n_succ">Non kanal chanje avèk siksè</string>
-    <string name="chan_na_chgn">Tanpri tann, non kanal la ap chanje ...</string>
+    <string name="chan_na_chgn">Tanpri tann, non kanal la ap chanje …</string>
     <string name="chan_no_">Kanal sa pa disponib ankò</string>
     <string name="chan_pass_entered">Antre modpas kanal la</string>
     <string name="chan_rec_msg">Èske ou ta renmen rekonekte kanal sa a?</string>
@@ -59,7 +59,7 @@
     <string name="channel">Nouvo kanal</string>
     <string name="channel_creation_error">Non kanal sa pa valab</string>
     <string name="channel_creation_information">Tanpri antre non kanal la oswa yon deskripsyon</string>
-    <string name="channel_description">Tanpri bay enfòmasyon           sou sa ki pi byen dekri kanal ou a ...</string>
+    <string name="channel_description">Tanpri bay enfòmasyon sou sa ki pi byen dekri kanal ou a …</string>
     <string name="channel_first">Premyeman kreye kanal la</string>
     <string name="channel_info__">Enfomasyon kanal la</string>
     <string name="channel_lock">Fèmen kanal la</string>
@@ -183,7 +183,7 @@
     <string name="open_emoji_keyboard">Louvri klavye Emoji</string>
     <string name="open_files_to_send">Louvri dosye pou voye</string>
     <string name="open_voice">Louvri vwa</string>
-    <string name="typing">Tape mesaj ...</string>
+    <string name="typing">Tape mesaj …</string>
     <string name="send_attachment">Voye atachman</string>
     <string name="send_voice">Voye vwa</string>
     <string name="send_message">"Voye mesaj   "</string>
@@ -245,10 +245,10 @@
     <string name="message_err">Pa ka voye mesaj bay itilizatè bloke</string>
     <string name="user_not_available">Itilizatè pa disponib ankò</string>
     <string name="participant_warning">Tanpri ajoute omwen yon patisipan</string>
-    <string name="saving">Anrejistre...</string>
+    <string name="saving">Anrejistre…</string>
     <string name="no_changes">Pa gen okenn chanjman ki te fèt</string>
     <string name="not_admin">Ou pa yon admin</string>
-    <string name="picture_upload">Telechaje foto...</string>
+    <string name="picture_upload">Telechaje foto…</string>
     <string name="upload_text">Foto ou yo telechaje</string>
     <string name="upload_success">Telechaje avèk siksè</string>
     <string name="upload_error">Te gen kèk erè</string>
@@ -346,7 +346,7 @@
     <string name="snd_contact">Voye kontak</string>
     <string name="r_save_">Anrejistre</string>
     <string name="st_updt_">Aktyalizasyon estati</string>
-    <string name="stt_upload_msg">Tanpri tann pandan ke nou ap transfere estati ou ...</string>
+    <string name="stt_upload_msg">Tanpri tann pandan ke nou ap transfere estati ou …</string>
     <string name="sta_del_">Estati sipresyon</string>
     <string name="st_err_msg">Èske ou sèten ou vle efase estati sa a? Pwosesis sa a pa ka anile</string>
     <string name="user_since">Itilizatè depi</string>
@@ -392,5 +392,6 @@
     <string name="like">Renmen</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
+    <string name="see_replies">See replies</string>
 
 </resources>

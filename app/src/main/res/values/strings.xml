@@ -32,7 +32,7 @@
     <string name="open_emoji_keyboard">Open Emoji Keyboard</string>
     <string name="open_files_to_send">Open files to send</string>
     <string name="open_voice">Open voice</string>
-    <string name="typing">Type message...</string>
+    <string name="typing">Type message…</string>
 
     <string name="send_attachment">Send attachment</string>
     <string name="send_voice">Send voice</string>
@@ -61,7 +61,7 @@
     <string name="profname">profName</string>
 
     <string name="ok">OK</string>
-    <string name="cancel">CANCEL</string>
+    <string name="cancel">Cancel</string>
     <string name="time_created">Created on</string>
     <string name="subscribers">Subscribers</string>
     <string name="add_users">Add users</string>
@@ -207,13 +207,13 @@
     <string name="add_name">Please add a name</string>
     <string name="group_first">Group must be created first</string>
     <string name="change_group_name">Change group name</string>
-    <string name="saving">Saving...</string>
+    <string name="saving">Saving…</string>
     <string name="changing_group_name">Please wait, group name changing..</string>
     <string name="group_name_success">Group Name successfully changed</string>
     <string name="group_error_name">Error while saving</string>
     <string name="no_changes">No changes occurred</string>
     <string name="not_admin">You are not an admin</string>
-    <string name="picture_upload">Uploading picture...</string>
+    <string name="picture_upload">Uploading picture…</string>
     <string name="upload_text">Your picture is being uploaded</string>
     <string name="upload_success">Successfully uploaded</string>
     <string name="upload_error">There was some error</string>
@@ -265,7 +265,7 @@
     <string name="unsub">Unsubscribe</string>
     <string name="add_subs">Add Subscribers</string>
     <string name="already">Already subscribed to this channel</string>
-    <string name="subscribe">Subscribe...</string>
+    <string name="subscribe">Subscribe…</string>
     <string name="subs_to">Do you want to subscribe to</string>
     <string name="already_">Already member to this group</string>
     <string name="enter">Do you want to enter</string>
@@ -490,4 +490,5 @@
     <string name="like">Like</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
+    <string name="see_replies">See replies</string>
 </resources>

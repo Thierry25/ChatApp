@@ -218,7 +218,7 @@
     <string name="password">Introduzca la contraseña (4 caracteres como mínimo)</string>
     <string name="phone_chan_">Teléfono de configuración de canal</string>
     <string name="phone_number">Número de teléfono</string>
-    <string name="picture_upload">Cargando imagen...</string>
+    <string name="picture_upload">Cargando imagen…</string>
     <string name="private_channel_text">Los canales privados no se pueden encontrar en la búsqueda, los usuarios sólo pueden unirse por enlace</string>
     <string name="process_time">Reconectar</string>
     <string name="profname">profNombre</string>
@@ -394,5 +394,6 @@
     <string name="like">Gusta</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
+    <string name="see_replies">See replies</string>
 
 </resources>

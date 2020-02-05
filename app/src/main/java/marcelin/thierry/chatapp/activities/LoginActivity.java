@@ -36,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.hbb20.CountryCodePicker;
+import com.vanniktech.emoji.EmojiEditText;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -50,7 +51,7 @@ public class LoginActivity extends AppCompatActivity{
     private CountryCodePicker mCountryCodePicker;
     private EditText mEditTextCarrierNumber;
     private EditText mEditTextCodeReceived;
-    private EditText mEditTextDisplayName;
+    private EmojiEditText mEditTextDisplayName;
 
     private LinearLayout mPhoneLayout;
     private LinearLayout mNameLayout;
@@ -392,9 +393,9 @@ public class LoginActivity extends AppCompatActivity{
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             if(mEditTextDisplayName.getText().toString().trim().length() >= 4){
-                mNextButton.setVisibility(View.VISIBLE);
+                mNextButton.show();//setVisibility(View.VISIBLE);
             }else{
-                mNextButton.setVisibility(View.GONE);
+                mNextButton.hide();//setVisibility(View.GONE);
             }
 
         }

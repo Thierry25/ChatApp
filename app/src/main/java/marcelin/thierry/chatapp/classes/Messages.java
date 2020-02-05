@@ -13,6 +13,7 @@ public class Messages implements Serializable {
     private String content, type, from, parent;
     private Long timestamp;
     private boolean seen, visible;
+    private String name, profilePic;
 
     private boolean isSelected = false;
 
@@ -164,6 +165,23 @@ public class Messages implements Serializable {
     @Exclude
     public void setChannelImage(String channelImage) {
         this.channelImage = channelImage;
+    }
+
+    @Exclude
+    public String getName() {
+        return name;
+    }
+    @Exclude
+    public void setName(String name) {
+        this.name = name;
+    }
+    @Exclude
+    public String getProfilePic() {
+        return profilePic;
+    }
+    @Exclude
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public boolean isReplyOn() {

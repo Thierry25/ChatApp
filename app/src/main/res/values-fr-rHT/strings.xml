@@ -42,7 +42,7 @@
     <string name="chan_locking">Canal de verrouillage</string>
     <string name="chan_lool__">Verrouiller votre canal ?</string>
     <string name="chan_n_succ">Le nom du canal a été modifié avec succès</string>
-    <string name="chan_na_chgn">Veuillez patienter, changement de nom de chaîne...</string>
+    <string name="chan_na_chgn">Veuillez patienter, changement de nom de chaîne…</string>
     <string name="chan_no_">Le canal n\'est plus disponible</string>
     <string name="chan_pass_entered">Entrer le mot de passe du cana</string>
     <string name="chan_rec_msg">Souhaitez-vous vous reconnecter à ce canal ?</string>
@@ -55,7 +55,7 @@
     <string name="change_language">Changer la langue</string>
     <string name="change_password__">Changer le mot de passe</string>
     <string name="change_status">Modifier statut.</string>
-    <string name="changing_group_name">Veuillez patienter, changement de nom de groupe...</string>
+    <string name="changing_group_name">Veuillez patienter, changement de nom de groupe…</string>
     <string name="channel">" Nouveau canal"</string>
     <string name="channel_creation_error">Nom de canal non valide</string>
     <string name="channel_creation_information">Veuillez entrer le nom du canal ou une description</string>
@@ -392,4 +392,5 @@
     <string name="like">Aimer</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
+    <string name="see_replies">See replies</string>
 </resources>
