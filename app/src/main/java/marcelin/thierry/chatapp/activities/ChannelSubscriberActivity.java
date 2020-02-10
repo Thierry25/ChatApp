@@ -53,6 +53,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 
     private String mChannelName;
     private String mChannelImage;
+    private ArrayList<String> mChannelAdmins;
 
     //private int mCurrentPage = 1;
     private int itemPosition = 0;
@@ -93,6 +94,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 
         mChannelName = getIntent().getStringExtra("Channel_id");
         mChannelImage = getIntent().getStringExtra("profile_image");
+        mChannelAdmins = getIntent().getStringArrayListExtra("admins");
         mChatToolbar = findViewById(R.id.chat_bar_main);
         //   setSupportActionBar(mChatToolbar);
 
@@ -248,6 +250,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
                                         }
                                         m.setChannelName(mChannelName);
                                         m.setChannelImage(mChannelImage);
+                                        m.setAdmins(mChannelAdmins);
                                         messagesList.add(m);
                                         mChannelInteractionAdapter.notifyDataSetChanged();
                                         mMessagesList.scrollToPosition(messagesList.size() - 1);

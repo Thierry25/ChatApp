@@ -5,6 +5,8 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @IgnoreExtraProperties
@@ -30,6 +32,10 @@ public class Messages implements Serializable {
     private Map<String, Object> read_by;
 
     private String channelName, channelImage;
+    private Map<String, Object> c, l;
+
+    @Exclude
+    private List<String> admins = new ArrayList<>();
     // For Firebase
     public Messages() { }
 
@@ -128,8 +134,17 @@ public class Messages implements Serializable {
         return read_by;
     }
 
-    public void setRead_by(Map<String, Object> read_by) {
-        this.read_by = read_by;
+    public Map<String, Object> getL() {
+        return l;
+    }
+
+    @Exclude
+    public List<String> getAdmins() {
+        return admins;
+    }
+    @Exclude
+    public void setAdmins(List<String> admins) {
+        this.admins = admins;
     }
 
     public String getColor() {
@@ -138,6 +153,10 @@ public class Messages implements Serializable {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public Map<String, Object> getC() {
+        return c;
     }
 
     @Exclude

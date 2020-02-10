@@ -491,4 +491,17 @@
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
     <string name="see_replies">See replies</string>
+    <string name="just_now">Now</string>
+    <string name="seconds_ago">s</string>
+    <string name="a_minute_ago">1m</string>
+    <string name="minutes_ago">mns</string>
+    <string name="an_hour_ago">1hr</string>
+    <string name="hours_ago">hrs</string>
+    <string name="yesterday">yesterday</string>
+    <string name="days_ago">days ago</string>
+    <string name="a_week_ago">1w</string>
+    <string name="weeks_ago">ws</string>
+
+    <string name="comment">❤👍Leave your comments below🎉😎</string>
+
 </resources>

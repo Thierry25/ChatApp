@@ -67,7 +67,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -891,6 +890,8 @@ public class MainActivity extends AppCompatActivity {
                                                     Channel ch = dataSnapshot.getValue(Channel.class);
                                                     c.setProfile_image(ch.getThumbnail());
                                                     c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
+                                                    List<String> l = new ArrayList<>(ch.getAdmins().keySet());
+                                                    c.setAdmins(l);
                                                 }
 
                                                 mConvoList.remove(c);
@@ -991,6 +992,8 @@ public class MainActivity extends AppCompatActivity {
                                                                 Channel ch = dataSnapshot.getValue(Channel.class);
                                                                 c.setProfile_image(ch.getThumbnail());
                                                                 c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
+                                                                List<String> l = new ArrayList<>(ch.getAdmins().keySet());
+                                                                c.setAdmins(l);
                                                             }
                                                             Long addToListStart = System.nanoTime();
                                                             mConvoList.remove(c);
@@ -1043,69 +1046,7 @@ public class MainActivity extends AppCompatActivity {
         Collections.sort(l, Collections.reverseOrder());
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        MenuInflater inflater = getMenuInflater();
-//        inflater.inflate(R.menu.main_menu, menu);
-//
-////        int positionOfMenuItem = 3;
-////        MenuItem item = menu.getItem(positionOfMenuItem);
-////        SpannableString s = new SpannableString(getString(R.string.mood));
-////        s.setSpan(new ForegroundColorSpan(Color.RED), 0, s.length(), 0);
-////        item.setTitle(s);
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        super.onOptionsItemSelected(item);
-//
-//        switch (item.getItemId()) {
-//
-////            case R.id.menu_reconnect:
-////                Intent reconnectIntent = new Intent(MainActivity.this, ChannelReconnectActivity.class);
-////                startActivity(reconnectIntent);
-////                break;
-//
-//            case R.id.menu_contacts:
-//                Intent contactsIntent = new Intent(MainActivity.this, ContactsActivity.class);
-//                startActivity(contactsIntent);
-//                break;
-//
-//            case R.id.menu_parametre:
-//                Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
-//                startActivity(settingsIntent);
-//                break;
-//
-//            case R.id.menu_search:
-//
-//                View view = findViewById(R.id.menu_search);
-//                new MaterialShowcaseView.Builder(this)
-//                        .setTarget(view)
-//                        .setShapePadding(96)
-//                        .setDismissText(getString(R.string.got_it))
-//                        .setContentText(getText(R.string.search_text_))
-//                        .setContentTextColor(getResources().getColor(R.color.colorPrimaryDark))
-//                        .setMaskColour(getResources().getColor(R.color.colorOrangered))
-//                        .singleUse(SHOWCASE_ID) // provide a unique ID used to ensure it is only shown once
-//                        .show();
-//
-//                Intent goToSearchActivity = new Intent(MainActivity.this, SearchActivity.class);
-//                startActivity(goToSearchActivity);
-//                break;
-//
-//            case R.id.menu_change_language:
-//                showChangeLanguageDialog();
-//                break;
-//
-//            default:
-//                return false;
-//        }
-//
-//
-//        return true;
-//    }
+
 
     @Override
     public void onStart() {

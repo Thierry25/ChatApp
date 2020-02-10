@@ -1,13 +1,15 @@
 package marcelin.thierry.chatapp.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ import com.vanniktech.emoji.EmojiTextView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -48,10 +51,10 @@ import marcelin.thierry.chatapp.utils.CheckInternet_;
 
 public class CommentActivity extends AppCompatActivity {
 
-    private CircleImageView mChannelImage;
-    private EmojiTextView mChannelName, textEntered;
+    private CircleImageView mChannelImage, profilePic;
+    private EmojiTextView mChannelName, textEntered, commentName;
     private EmojiEditText mSendText;
-    private TextView mTimestamp;
+    private TextView mTimestamp, numberOfLikes, numberOfComments, numberOfSeen;
     private ImageView mMoreSettings;
     private LinearLayout messageLayout;
     private RecyclerView commentList;
@@ -64,15 +67,25 @@ public class CommentActivity extends AppCompatActivity {
     String channelName;
     String messageId;
 
+    private ConstraintLayout commentMessage, commentImage;
+
     private List<Messages> messagesList = new ArrayList<>();
     private CommentAdapter commentAdapter;
 
     private DatabaseReference mChannelReference = FirebaseDatabase.getInstance().getReference().child("ads_channel");
     private DatabaseReference mCommentReference = FirebaseDatabase.getInstance().getReference().child("c");
+    private DatabaseReference mChannelMessagesReference = FirebaseDatabase.getInstance().getReference().child("ads_channel_messages");
 
     private DatabaseReference mRootReference = FirebaseDatabase.getInstance().getReference();
 
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
+    private static final int SECOND_MILLIS = 1000;
+    private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
+    private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
+    private static final int DAY_MILLIS = 24 * HOUR_MILLIS;
+    private static final int WEEK_MILLIS = 7 * DAY_MILLIS;
+
+    private NestedScrollView nestedView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +103,13 @@ public class CommentActivity extends AppCompatActivity {
         mSend = findViewById(R.id.send);
         myPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
         commentList = findViewById(R.id.commentList);
+        profilePic = findViewById(R.id.profilePic);
+        commentName = findViewById(R.id.commentName);
+        numberOfComments = findViewById(R.id.numberOfComments);
+        numberOfLikes = findViewById(R.id.numberOfLikes);
+        numberOfSeen = findViewById(R.id.numberOfSeen);
+        commentMessage = findViewById(R.id.comment_message);
+        commentImage = findViewById(R.id.comment_image);
 
         channelName = getIntent().getStringExtra("channel_name");
         String channelImage = getIntent().getStringExtra("channel_image");
@@ -98,6 +118,9 @@ public class CommentActivity extends AppCompatActivity {
         String messageContent = getIntent().getStringExtra("message_content");
         String color = getIntent().getStringExtra("message_color");
         long timestamp = getIntent().getLongExtra("message_timestamp", 0);
+        int likes = getIntent().getIntExtra("message_like", 0);
+        int comments = getIntent().getIntExtra("message_comment", 0);
+        int seen = getIntent().getIntExtra("message_seen", 0);
 
         mLinearLayoutManager = new LinearLayoutManager(this);
 
@@ -105,8 +128,17 @@ public class CommentActivity extends AppCompatActivity {
         commentList.setLayoutManager(mLinearLayoutManager);
         commentList.setNestedScrollingEnabled(false);
 
-        commentAdapter = new CommentAdapter(messagesList);
+        commentAdapter = new CommentAdapter(messagesList, this);
         commentList.setAdapter(commentAdapter);
+        nestedView = findViewById(R.id.nestedView);
+
+        Picasso.get().load(channelImage).placeholder(R.drawable.ic_avatar).into(profilePic);
+        commentName.setText(channelName);
+
+        mTimestamp.setText(getTimeAgo(timestamp, this));
+        numberOfSeen.setText(String.valueOf(seen));
+        numberOfLikes.setText(String.valueOf(likes));
+        numberOfComments.setText(String.valueOf(comments));
 
         getComments();
 
@@ -116,13 +148,13 @@ public class CommentActivity extends AppCompatActivity {
         commentContentMap.put("parent", "Default");
         commentContentMap.put("timestamp", ServerValue.TIMESTAMP);
 
+
         switch (messageType){
 
             case "text":
                 mChannelName.setText(channelName);
-                Picasso.get().load(channelImage).into(mChannelImage);
+                Picasso.get().load(channelImage).placeholder(R.drawable.ic_avatar).into(mChannelImage);
                 mMoreSettings.setVisibility(View.GONE);
-                mTimestamp.setText(getDate(timestamp));
 
                 if(color.equals("#7016a8") || color.equals("#FFFFFF")){
                     textEntered.setTextColor(Color.parseColor("#000000"));
@@ -156,8 +188,15 @@ public class CommentActivity extends AppCompatActivity {
                            commentLink.put("msgId", push_id);
                            commentLink.put("timestamp", ServerValue.TIMESTAMP);
 
+                           Map<String, Object> commentByMap = new HashMap<>();
+                           commentByMap.put(myPhone, ServerValue.TIMESTAMP);
+
                            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
                                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
+                                   });
+
+                           mChannelMessagesReference.child(messageId).child("c").child(push_id)
+                                   .updateChildren(commentByMap, (databaseError, databaseReference) ->{
                                    });
                            mSendText.setText("");
                        }else{
@@ -172,18 +211,14 @@ public class CommentActivity extends AppCompatActivity {
 
             case "image":
 
+                commentMessage.setVisibility(View.GONE);
+                commentImage.setVisibility(View.VISIBLE);
+
+
+                break;
+
         }
 
-    }
-    private String getDate(long time) {
-        Calendar cal = Calendar.getInstance(Locale.ENGLISH);
-        try {
-            cal.setTimeInMillis(time);
-            return DateFormat.format("MMM dd, hh:mm a", cal).toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     private void getComments(){
@@ -193,9 +228,9 @@ public class CommentActivity extends AppCompatActivity {
             conversationRef = mRootReference.child("ads_channel")
                     .child(channelName).child("messages").child(messageId).child("c");
             conversationRef.keepSynced(true);
-
+            nestedView.setVisibility(View.VISIBLE);
         } catch (Exception e) {
-            Toast.makeText(this, "Mei you comment", Toast.LENGTH_SHORT).show();
+            nestedView.setVisibility(View.GONE);
             return;
         }
 
@@ -211,7 +246,7 @@ public class CommentActivity extends AppCompatActivity {
                     return;
                 }
                 mCommentReference.child(chatRef.getMsgId())
-                        .addValueEventListener(new ValueEventListener() {
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 Messages message = dataSnapshot.getValue(Messages.class);
@@ -229,6 +264,10 @@ public class CommentActivity extends AppCompatActivity {
 
                                         message.setName(u.getName());
                                         message.setProfilePic(u.getThumbnail());
+                                        message.setMessageId(chatRef.getMsgId());
+                                        messagesList.add(message);
+                                        commentAdapter.notifyDataSetChanged();
+                                        commentList.scrollToPosition(messagesList.size() - 1);
                                     }
 
                                     @Override
@@ -236,10 +275,7 @@ public class CommentActivity extends AppCompatActivity {
 
                                     }
                                 });
-                                message.setMessageId(chatRef.getMsgId());
-                                messagesList.add(message);
-                                commentAdapter.notifyDataSetChanged();
-                                commentList.scrollToPosition(messagesList.size() - 1);
+
 
                             }
 
@@ -270,6 +306,34 @@ public class CommentActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+
+    public static String getTimeAgo(long date, Context context) {
+        Date now = Calendar.getInstance().getTime();
+        final long diff = now.getTime() - date;
+
+        if (diff < SECOND_MILLIS) {
+            return context.getString(R.string.just_now);
+        } else if (diff < MINUTE_MILLIS) {
+            return diff / SECOND_MILLIS + context.getString(R.string.seconds_ago);
+        } else if (diff < 2 * MINUTE_MILLIS) {
+            return context.getString(R.string.a_minute_ago);
+        } else if (diff < 59 * MINUTE_MILLIS) {
+            return diff / MINUTE_MILLIS + context.getString(R.string.minutes_ago);
+        } else if (diff < 90 * MINUTE_MILLIS) {
+            return context.getString(R.string.an_hour_ago);
+        } else if (diff < 24 * HOUR_MILLIS) {
+            return diff / HOUR_MILLIS + context.getString(R.string.hours_ago);
+        } else if (diff < 48 * HOUR_MILLIS) {
+            return context.getString(R.string.yesterday);
+        } else if (diff < 6 * DAY_MILLIS) {
+            return diff / DAY_MILLIS + context.getString(R.string.days_ago);
+        } else if (diff < 11 * DAY_MILLIS) {
+            return context.getString(R.string.a_week_ago);
+        } else {
+            return diff / WEEK_MILLIS + context.getString(R.string.weeks_ago);
+        }
     }
 
 }

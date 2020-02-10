@@ -65,6 +65,7 @@ import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Group;
 import marcelin.thierry.chatapp.classes.Messages;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
+import marcelin.thierry.chatapp.dto.Message;
 import pl.droidsonroids.gif.GifImageView;
 
 public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -97,6 +98,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
     private final static DatabaseReference mMessageReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_channel_messages");
 
+    private Map<String, Object> likeMap = new HashMap<>();
+    private boolean isShown;
+
+
     public ChannelInteractionAdapter(List<Messages> mMessagesList, Context mContext, Activity mActivity) {
         this.mMessagesList = mMessagesList;
         this.mContext = mContext;
@@ -118,6 +123,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         //       mHolderList.add(holder);
 
         final Messages message = mMessagesList.get(position);
+        mAuth = FirebaseAuth.getInstance();
+        String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+
+        likeMap.put(Objects.requireNonNull(phone), ServerValue.TIMESTAMP);
         //
 //        final Users user = users.get(position);
 
@@ -159,7 +168,38 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_content", message.getContent());
                     goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
                     goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
                     v.getContext().startActivity(goToCommentActivity);
+                });
+
+                if(message.getAdmins().contains(phone)){
+                    ((MessageViewHolder) holder).numberOfLikes.setEnabled(false);
+                    ((MessageViewHolder) holder).numberOfLikes.setFocusable(false);
+                    ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                }
+
+                for(String s : message.getL().keySet()){
+                    if(s.equals(phone)){
+                        isShown = true;
+                        ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }else{
+                        isShown = false;
+                        ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                    }
+                }
+
+                ((MessageViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
+                    isShown = !isShown;
+                    if(isShown && !message.getAdmins().contains(phone)){
+                        ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                        mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
+
+                    }else {
+                        mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
+                        ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }
                 });
 
                 ((MessageViewHolder) holder).channelName.setText(message.getChannelName());
@@ -445,6 +485,8 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
                 
                 ((MessageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((MessageViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
+                ((MessageViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
                 break;
 
@@ -479,8 +521,6 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 });
 
-                ((ImageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
-
                 showTextEntered(message, ((ImageViewHolder) holder).textEntered);
               
                 ((ImageViewHolder) holder).moreSettings.setOnClickListener(view -> {
@@ -513,6 +553,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
+
                                         break;
 
                                     case 2:
@@ -534,6 +575,52 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 });
 
+                ((ImageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((ImageViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
+                ((ImageViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
+
+                ((ImageViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", message.getContent());
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    v.getContext().startActivity(goToCommentActivity);
+                });
+
+                if(message.getAdmins().contains(phone)){
+                    ((ImageViewHolder) holder).numberOfLikes.setEnabled(false);
+                    ((ImageViewHolder) holder).numberOfLikes.setFocusable(false);
+                    ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                }
+
+                for(String s : message.getL().keySet()){
+                    if(s.equals(phone)){
+                        isShown = true;
+                        ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }else{
+                        isShown = false;
+                        ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                    }
+                }
+
+                ((ImageViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
+                    isShown = !isShown;
+                    if(isShown && !message.getAdmins().contains(phone)){
+                        ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                        mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
+
+                    }else {
+                        mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
+                        ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }
+                });
                 break;
 
             case 2:
@@ -562,8 +649,6 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     view.getContext().startActivity(i);
                 });
 
-                ((VideoViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
-                
                 showTextEntered(message, ((VideoViewHolder) holder).textEntered);
                 ((VideoViewHolder) holder).moreSettings.setOnClickListener(view -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -615,6 +700,53 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     dialog.show();
 
 
+                });
+
+                ((VideoViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((VideoViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
+                ((VideoViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
+
+                ((VideoViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", message.getContent());
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    v.getContext().startActivity(goToCommentActivity);
+                });
+
+                if(message.getAdmins().contains(phone)){
+                    ((VideoViewHolder) holder).numberOfLikes.setEnabled(false);
+                    ((VideoViewHolder) holder).numberOfLikes.setFocusable(false);
+                    ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                }
+
+                for(String s : message.getL().keySet()){
+                    if(s.equals(phone)){
+                        isShown = true;
+                        ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }else{
+                        isShown = false;
+                        ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                    }
+                }
+
+                ((VideoViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
+                    isShown = !isShown;
+                    if(isShown && !message.getAdmins().contains(phone)){
+                        ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                        mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
+
+                    }else {
+                        mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
+                        ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }
                 });
                 break;
 
@@ -809,6 +941,54 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 });
 
+                ((AudioViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((AudioViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
+                ((AudioViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
+
+                ((AudioViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", message.getContent());
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    v.getContext().startActivity(goToCommentActivity);
+                });
+
+                if(message.getAdmins().contains(phone)){
+                    ((AudioViewHolder) holder).numberOfLikes.setEnabled(false);
+                    ((AudioViewHolder) holder).numberOfLikes.setFocusable(false);
+                    ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+
+                }
+
+                for(String s : message.getL().keySet()){
+                    if(s.equals(phone)){
+                        isShown = true;
+                        ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }else{
+                        isShown = false;
+                        ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                    }
+                }
+
+                ((AudioViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
+                    isShown = !isShown;
+                    if(isShown && !message.getAdmins().contains(phone)){
+                        ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                        mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
+
+                    }else {
+                        mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
+                        ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }
+                });
+
 
                 break;
 
@@ -876,9 +1056,55 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
-
                 });
+
+                ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
+                ((DocumentViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
+                ((DocumentViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
+
+                ((DocumentViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", message.getContent());
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    v.getContext().startActivity(goToCommentActivity);
+                });
+
+                if(message.getAdmins().contains(phone)){
+                    ((DocumentViewHolder) holder).numberOfLikes.setEnabled(false);
+                    ((DocumentViewHolder) holder).numberOfLikes.setFocusable(false);
+                    ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                }
+
+                for(String ts : message.getL().keySet()){
+                    if(ts.equals(phone)){
+                        isShown = true;
+                        ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }else{
+                        isShown = false;
+                        ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                    }
+                }
+
+                ((DocumentViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
+                    isShown = !isShown;
+                    if(isShown && !message.getAdmins().contains(phone)){
+                        ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
+                        mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
+
+                    }else {
+                        mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
+                        ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
+                    }
+                });
+
 
                 break;
         }

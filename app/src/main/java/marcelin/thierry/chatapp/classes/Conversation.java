@@ -3,6 +3,10 @@ package marcelin.thierry.chatapp.classes;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 @IgnoreExtraProperties
 public class Conversation implements Comparable<Conversation> {
 
@@ -12,6 +16,8 @@ public class Conversation implements Comparable<Conversation> {
 
     @Exclude
     private String lastMessage, profile_image, name;
+    @Exclude
+    private List<String> admins = new ArrayList<>();
 
     @Exclude
     private int unreadMessages;
@@ -86,6 +92,16 @@ public class Conversation implements Comparable<Conversation> {
     @Exclude
     public String getName() {
         return name;
+    }
+
+    @Exclude
+    public List<String> getAdmins() {
+        return admins;
+    }
+
+    @Exclude
+    public void setAdmins(List<String> admins) {
+        this.admins = admins;
     }
 
     @Exclude

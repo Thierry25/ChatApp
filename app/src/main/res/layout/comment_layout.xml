@@ -33,13 +33,25 @@
         android:text="@string/s"/>
 
     <com.vanniktech.emoji.EmojiTextView
-        android:id="@+id/reply"
+        android:id="@+id/time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/commentName"
         android:layout_toEndOf="@id/profilePic"
+        android:text="@string/_00_00"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/time"
+        android:layout_below="@id/commentName"
         android:layout_marginStart="8dp"
         android:textSize="12sp"
+        android:layout_marginTop="4dp"
         android:text="@string/reply"/>
 
     <com.vanniktech.emoji.EmojiTextView

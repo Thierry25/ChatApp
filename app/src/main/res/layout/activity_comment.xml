@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/rootView"
+    android:orientation="vertical"
+    android:weightSum="1"
     android:layout_height="match_parent"
     android:background="@color/light_gray"
     tools:context=".activities.CommentActivity">
@@ -20,17 +22,14 @@
         android:layout_margin="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_below="@id/comment_message" />
-
+        android:visibility="gone" />
     <include
         android:id="@+id/comment_image"
         layout="@layout/channel_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:visibility="gone"
-        android:layout_below="@id/comment_audio" />
+        android:visibility="gone" />
 
     <include
         android:id="@+id/comment_video"
@@ -38,32 +37,89 @@
         android:layout_width="match_parent"
         android:layout_margin="8dp"
         android:visibility="gone"
-        android:layout_below="@id/comment_image"
         android:layout_height="wrap_content" />
 
     <include
         android:id="@+id/comment_document"
         layout="@layout/channel_document"
-        android:layout_below="@id/comment_video"
         android:layout_margin="8dp"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:background="@drawable/border"
+        android:layout_margin="8dp">
+
+        <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilePic"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_avatar"/>
+
+        <com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/commentName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_toEndOf="@id/profilePic"
+            android:text="@string/channel_name"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black"
+            android:layout_marginEnd="12dp"
+            android:layout_marginStart="8dp"/>
+
+            <com.vanniktech.emoji.EmojiTextView
+                android:id="@+id/comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/commentName"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_toEndOf="@id/profilePic"
+                android:text="@string/comment"
+                android:textColor="@color/colorPurple"
+                android:textSize="15sp" />
+
+            <!--        <com.vanniktech.emoji.EmojiTextView-->
+<!--            android:id="@+id/time"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/commentName"-->
+<!--            android:layout_toEndOf="@id/profilePic"-->
+<!--            android:text="@string/_00_00"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:layout_marginTop="4dp"-->
+<!--            android:textSize="12sp"/>-->
+
+        </RelativeLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedView"
-        android:background="@drawable/border"
+        android:layout_marginTop="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:layout_below="@id/comment_document">
+        android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/commentList"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/commentList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
     </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
         <LinearLayout
             android:id="@+id/messageLinLayout"
@@ -96,7 +152,6 @@
                 android:layout_weight="3"
                 android:hint="@string/type_message"
                 android:maxLength="250"
-                android:imeOptions="actionSend|flagNoExtractUi"
                 android:inputType="textCapSentences|textMultiLine" />
 
             <ImageButton
@@ -110,4 +165,4 @@
                 android:tint="@color/colorPrimary" />
 
         </LinearLayout>
-</RelativeLayout>
+</LinearLayout>

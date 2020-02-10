@@ -105,8 +105,13 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private String mChannelName;
     private String mChannelId;
     private String mChannelImage;
+    private ArrayList<String> mChannelAdmins;
 
-    private Map<String, Object> mRead = new HashMap<>();
+
+    private Map<String, Object> mRead= new HashMap<>();
+    private Map<String, Object> likesMap= new HashMap<>();
+    private Map<String, Object> commentsMap = new HashMap<>();
+
     private String mCurrentUserPhone;
     private static String mFileName = null;
     private static final String LOG_TAG = "AudioRecordTest";
@@ -218,6 +223,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         mChannelId = i.getStringExtra("chat_id");
 
         mChannelImage = i.getStringExtra("profile_image");
+
+        mChannelAdmins = i.getStringArrayListExtra("admins");
 
         mChatToolbar = findViewById(R.id.chat_bar_main);
         setSupportActionBar(mChatToolbar);
@@ -509,6 +516,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                        .toString();
 
                                mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                               likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                               commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+
                                Map<String, Object> messageMap = new HashMap<>();
                                messageMap.put("content", downloadUrl);
                                messageMap.put("timestamp", ServerValue.TIMESTAMP);
@@ -519,6 +529,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                messageMap.put("seen", false);
                                messageMap.put("read_by", mRead);
                                messageMap.put("color", "#7016a8");
+                               messageMap.put("c", commentsMap);
+                               messageMap.put("l", likesMap);
 
                                Map<String, Object> msgContentMap = new HashMap<>();
                                msgContentMap.put(message_reference + push_id, messageMap);
@@ -681,6 +693,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     .getDownloadUrl()).toString();
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+
                             Map<String, Object> messageMap = new HashMap<>();
                             messageMap.put("content", downloadUrl);
                             messageMap.put("timestamp", ServerValue.TIMESTAMP);
@@ -690,6 +705,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
                             messageMap.put("read_by", mRead);
+                            messageMap.put("c", commentsMap);
+                            messageMap.put("l", likesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -771,6 +788,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     .getDownloadUrl()).toString();
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+
                             Map<String, Object> messageMap = new HashMap<>();
                             messageMap.put("content", downloadUrl);
                             messageMap.put("timestamp", ServerValue.TIMESTAMP);
@@ -780,6 +800,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
                             messageMap.put("read_by", mRead);
+                            messageMap.put("c", commentsMap);
+                            messageMap.put("l", likesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -860,6 +882,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                             .getDownloadUrl()).toString();
 
                                     mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                                    likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                                    commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+
                                     Map<String, Object> messageMap = new HashMap<>();
                                     messageMap.put("content", downloadUrl);
                                     messageMap.put("timestamp", ServerValue.TIMESTAMP);
@@ -869,6 +894,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     messageMap.put("from", mCurrentUserPhone);
                                     messageMap.put("seen", false);
                                     messageMap.put("read_by", mRead);
+                                    messageMap.put("c", commentsMap);
+                                    messageMap.put("l", likesMap);
                                     messageMap.put("color", "#7016a8");
 
                                     Map<String, Object> msgContentMap = new HashMap<>();
@@ -951,6 +978,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     .getDownloadUrl()).toString();
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+
                             Map<String, Object> messageMap = new HashMap<>();
                             messageMap.put("content", downloadUrl);
                             messageMap.put("timestamp", ServerValue.TIMESTAMP);
@@ -960,6 +990,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
                             messageMap.put("read_by", mRead);
+                            messageMap.put("c", commentsMap);
+                            messageMap.put("l", likesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -1167,6 +1199,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     .child("messages").child(push_id);
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
                             messageMap.put("content", message);
@@ -1177,6 +1211,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
                             messageMap.put("read_by", mRead);
+                            messageMap.put("c", commentsMap);
+                            messageMap.put("l", likesMap);
                             messageMap.put("color", colorList[colorToUpdate]);
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -1297,6 +1333,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                 m.setMessageId(chatRef.getMsgId());
                                 m.setChannelName(mChannelName);
                                 m.setChannelImage(mChannelImage);
+                                m.setAdmins(mChannelAdmins);
 
                                 int pos = messagesList.indexOf(m);
                                 Log.i("XXA", String.valueOf(pos));
@@ -1330,6 +1367,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 if (chatRef == null) {
                     return;
                 }
+
                 messageRef.child(chatRef.getMsgId()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1342,8 +1380,10 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 //                        Toast.makeText(ChannelAdminChatActivity.this, String.valueOf(seen),
 //                                Toast.LENGTH_SHORT).show();
                         m.setMessageId(chatRef.getMsgId());
+
                         m.setChannelName(mChannelName);
                         m.setChannelImage(mChannelImage);
+                        m.setAdmins(mChannelAdmins);
 
                         messagesList.add(m);
                         mChannelInteractionAdapter.notifyDataSetChanged();
