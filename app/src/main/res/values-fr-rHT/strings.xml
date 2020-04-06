@@ -392,5 +392,25 @@
     <string name="like">Aimer</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
-    <string name="see_replies">See replies</string>
+    <string name="see_replies">Voir les réponses</string>
+    <string name="channel_link">Lien de votre chaîne :</string>
+    <string name="no_password">Votre chaîne n\'a pas de mot de passe</string>
+
+    <string name="just_now">Maintenant</string>
+    <string name="seconds_ago">s</string>
+    <string name="a_minute_ago">1m</string>
+    <string name="minutes_ago">mns</string>
+    <string name="an_hour_ago">1hr</string>
+    <string name="hours_ago">hrs</string>
+    <string name="yesterday">hier</string>
+    <string name="days_ago">jrs</string>
+    <string name="a_week_ago">1sem</string>
+    <string name="weeks_ago">sems</string>
+
+    <string name="comment">❤👍Laissez vos commentaires ci-dessous🎉😎</string>
+    <string name="description">Description</string>
+    <string name="no_prior_password_lock">Ajouter un mot de passe à votre chaîne? Il vous sera demandé d\'entrer un mot de passe et de sélectionner une méthode de récupération</string>
+    <string name="replying_to">Replying to @</string>
+    <string name="close_replies">Close Replies</string>
+
 </resources>

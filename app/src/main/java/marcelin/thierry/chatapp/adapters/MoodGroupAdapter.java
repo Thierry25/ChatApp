@@ -30,7 +30,7 @@ public class MoodGroupAdapter extends RecyclerView.Adapter<MoodGroupAdapter.Grou
     @Override
     public GroupViewAdapter onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_main_layout_for_contact_group,
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_main_layout,
                 parent, false);
         return new GroupViewAdapter(view);
     }
@@ -48,13 +48,23 @@ public class MoodGroupAdapter extends RecyclerView.Adapter<MoodGroupAdapter.Grou
         holder.mProfileStatus.setText(currentGroup.getLink());
         //holder.mContactName.setText(usersStoredNames.get(position));
         //@author fmarcelin
-        holder.mContactsLayout.setBackgroundColor(currentGroup.isSelected() ? Color.CYAN : Color.WHITE);
+        //holder.mContactsLayout.setBackgroundColor(currentGroup.isSelected() ? Color.CYAN : Color.WHITE);
         holder.mProfileName.setText(MessageFormat.format("{0}participants", String.valueOf(currentGroup.getUsers().size())));
-        holder.setProfilePic(currentGroup.getThumbnail());
+        if(currentGroup.isSelected()){
+            holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+        }else{
+            holder.setProfilePic(currentGroup.getThumbnail());
+        }
+        //holder.setProfilePic(currentGroup.getThumbnail());
 
         holder.mContactsLayout.setOnClickListener(view -> {
             currentGroup.setSelected(!currentGroup.isSelected());
-            holder.mContactsLayout.setBackgroundColor(currentGroup.isSelected() ? Color.CYAN : Color.WHITE);
+         //   holder.mContactsLayout.setBackgroundColor(currentGroup.isSelected() ? Color.CYAN : Color.WHITE);
+            if(currentGroup.isSelected()){
+                holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+            }else{
+                holder.setProfilePic(currentGroup.getThumbnail());
+            }
 
         });
 
@@ -83,7 +93,7 @@ public class MoodGroupAdapter extends RecyclerView.Adapter<MoodGroupAdapter.Grou
             mProfileStatus = mView.findViewById(R.id.profileStatus);
             mProfileName = mView.findViewById(R.id.profileName);
             mUserProfile = mView.findViewById(R.id.profilePic);
-            mContactsLayout = mView.findViewById(R.id.mainContactGroup);
+            mContactsLayout = mView.findViewById(R.id.mainCLayout);
         }
 
         public void setProfilePic(String thumbnail){

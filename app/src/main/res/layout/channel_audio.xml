@@ -67,6 +67,17 @@
             android:layout_marginTop="16dp"
             android:background="@color/black">
 
+            <TextView
+                android:id="@+id/audioText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Audio"
+                android:textColor="@color/white"
+                android:textSize="22sp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone"/>
+
             <ImageView
                 android:id="@+id/play_audio"
                 android:layout_width="wrap_content"

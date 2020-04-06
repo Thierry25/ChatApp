@@ -56,14 +56,55 @@
 
     <com.vanniktech.emoji.EmojiTextView
         android:id="@+id/seeReplies"
-        android:layout_below="@id/reply"
+        android:layout_below="@id/replyLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/see_replies"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:layout_toEndOf="@id/profilePic"
-        android:textSize="12sp" />
+        android:textSize="14sp" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/repliesList"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seeReplies"
+        android:layout_toEndOf="@id/profilePic"
+        android:layout_marginStart="24dp"/>
+    
+    <RelativeLayout
+        android:id="@+id/replyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reply"
+        android:visibility="gone"
+        android:layout_toEndOf="@id/profilePic">
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/replyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/replying_to"
+            android:textSize="12sp"
+            android:layout_marginStart="12dp"/>
+
+        <Button
+            android:id="@+id/sendReply"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/replyText"
+            android:layout_alignParentEnd="true"
+            android:text="@string/cancel"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+   
 
 </RelativeLayout>

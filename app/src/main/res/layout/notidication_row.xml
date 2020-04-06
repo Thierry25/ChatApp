@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/notification_profile"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_avatar"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/notification_information"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="2"
+        android:text="@string/replied"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:fontFamily="sans-serif-light"
+        android:layout_toEndOf="@id/notification_profile"
+        android:layout_below="@id/timestamp"
+        android:layout_centerVertical="true"
+        android:maxLength="150"/>
+
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_marginTop="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="@color/colorPurple"
+        android:text="@string/_00_00"
+        android:layout_toEndOf="@id/notification_profile"/>
+</RelativeLayout>

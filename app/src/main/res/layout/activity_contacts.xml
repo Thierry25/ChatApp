@@ -9,9 +9,9 @@
 
     <include
         android:id="@+id/contacts_bar_layout"
-        layout="@layout/app_bar_layout"
-        app:layout_constraintBottom_toBottomOf="parent"
+        layout="@layout/custom_chat_layout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

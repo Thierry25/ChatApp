@@ -392,6 +392,27 @@
     <string name="like">Renmen</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
-    <string name="see_replies">See replies</string>
+    <string name="see_replies">Gade repons yo</string>
+    <string name="channel_link">Lyen chanèl ou:</string>
+    <string name="no_password">Chanèl ou pa gem modpas </string>
+
+    <string name="just_now">Kounya</string>
+    <string name="seconds_ago">s</string>
+    <string name="a_minute_ago">1m</string>
+    <string name="minutes_ago">mns</string>
+    <string name="an_hour_ago">1è</string>
+    <string name="hours_ago">è</string>
+    <string name="yesterday">yè</string>
+    <string name="days_ago">jou</string>
+    <string name="a_week_ago">1sem</string>
+    <string name="weeks_ago">sem</string>
+
+    <string name="comment">❤👍Kite kòmatè ou yo anba🎉😎</string>
+    <string name="description">Deskripsyon</string>
+    <string name="no_prior_password_lock">Wap ajoute on modpas sou chanèl ou? Nap mandew antre on modpas epi chwazi on fason pouw k rekiperel siw bliye modpas la.</string>
+    <string name="replying_to">Replying to @</string>
+    <string name="close_replies">Close Replies</string>
+
+
 
 </resources>

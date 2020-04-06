@@ -65,7 +65,6 @@ import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Group;
 import marcelin.thierry.chatapp.classes.Messages;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
-import marcelin.thierry.chatapp.dto.Message;
 import pl.droidsonroids.gif.GifImageView;
 
 public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -171,13 +170,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_like", message.getL().size());
                     goToCommentActivity.putExtra("message_comment", message.getC().size());
                     goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
                 });
 
                 if(message.getAdmins().contains(phone)){
+                    ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((MessageViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((MessageViewHolder) holder).numberOfLikes.setFocusable(false);
-                    ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                 }
 
                 for(String s : message.getL().keySet()){
@@ -591,13 +592,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_like", message.getL().size());
                     goToCommentActivity.putExtra("message_comment", message.getC().size());
                     goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
                 });
 
                 if(message.getAdmins().contains(phone)){
+                    ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((ImageViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((ImageViewHolder) holder).numberOfLikes.setFocusable(false);
-                    ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                 }
 
                 for(String s : message.getL().keySet()){
@@ -718,13 +721,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_like", message.getL().size());
                     goToCommentActivity.putExtra("message_comment", message.getC().size());
                     goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
                 });
 
                 if(message.getAdmins().contains(phone)){
+                    ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((VideoViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((VideoViewHolder) holder).numberOfLikes.setFocusable(false);
-                    ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                 }
 
                 for(String s : message.getL().keySet()){
@@ -957,14 +962,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_like", message.getL().size());
                     goToCommentActivity.putExtra("message_comment", message.getC().size());
                     goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
                 });
 
                 if(message.getAdmins().contains(phone)){
+                    ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((AudioViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((AudioViewHolder) holder).numberOfLikes.setFocusable(false);
-                    ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-
                 }
 
                 for(String s : message.getL().keySet()){
@@ -1074,13 +1080,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("message_like", message.getL().size());
                     goToCommentActivity.putExtra("message_comment", message.getC().size());
                     goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
                 });
 
                 if(message.getAdmins().contains(phone)){
+                    ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((DocumentViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((DocumentViewHolder) holder).numberOfLikes.setFocusable(false);
-                    ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                 }
 
                 for(String ts : message.getL().keySet()){

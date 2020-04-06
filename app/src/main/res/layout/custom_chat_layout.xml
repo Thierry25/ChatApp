@@ -9,7 +9,7 @@
     android:fitsSystemWindows="true"
     app:layout_collapseMode="pin"
     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    app:theme="@style/AppTheme.Toolbar">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="12dp"
-            android:layout_marginRight="12dp"
             android:src="@drawable/ic_chevron_left" />
 
         <TextView
@@ -30,10 +29,8 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@id/profileImage"
-            android:layout_toRightOf="@id/profileImage"
             android:fontFamily="sans-serif-light"
             android:paddingEnd="8dp"
-            android:paddingRight="8dp"
             android:text="@string/s"
             android:textColor="@android:color/black"
             android:textSize="18sp"
@@ -45,9 +42,32 @@
             android:layout_height="36dp"
             android:layout_centerVertical="true"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_toRightOf="@id/backButton"
+            android:layout_toEndOf="@id/backButton"
             android:src="@drawable/ic_avatar" />
+
+        <ImageView
+            android:id="@+id/notification_bell"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_notification"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:id="@+id/unseenReplies"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_alignTop="@id/notification_bell"
+            android:layout_alignEnd="@id/notification_bell"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:background="@drawable/badge_circle"/>
+
+
+
     </RelativeLayout>
 
 

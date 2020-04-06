@@ -15,7 +15,6 @@
         android:title="@string/try_"
         app:showAsAction="ifRoom|collapseActionView" />
 
-
     <item
         android:id="@+id/menu_search"
         android:icon="@drawable/ic_search_black_24dp"
@@ -27,6 +26,12 @@
         android:id="@+id/menu_send_contact"
         android:icon="@drawable/ic_send_contact"
         android:title="@string/snd_contact" />
+
+    <item
+        android:id="@+id/menu_media"
+        android:icon="@drawable/ic_send_contact"
+        android:title="@string/medias" />
+
 
 </menu>
 

@@ -6,11 +6,15 @@ import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import marcelin.thierry.chatapp.dto.Message;
+
 @IgnoreExtraProperties
-public class Messages implements Serializable {
+public class Messages implements Serializable, Comparable<Messages>{
 
     private String content, type, from, parent;
     private Long timestamp;
@@ -32,14 +36,16 @@ public class Messages implements Serializable {
     private Map<String, Object> read_by;
 
     private String channelName, channelImage;
-    private Map<String, Object> c, l;
+    private Map<String, Object> c, l, r;
 
     @Exclude
     private List<String> admins = new ArrayList<>();
+
     // For Firebase
     public Messages() { }
 
     public Messages(String from) {
+        this();
         this.from = from;
     }
 
@@ -138,6 +144,10 @@ public class Messages implements Serializable {
         return l;
     }
 
+    public Map<String, Object> getR() {
+        return r;
+    }
+
     @Exclude
     public List<String> getAdmins() {
         return admins;
@@ -224,9 +234,17 @@ public class Messages implements Serializable {
         this.visible = visible;
     }
 
+
     @Override
     public boolean equals(Object obj) {
         if(!(obj instanceof Messages)) { return false; }
         return ((Messages) obj).messageId.equals(this.messageId);
+    }
+
+
+    @Override
+    public int compareTo(Messages m) {
+        Date d = new Date(getTimestamp());
+        return d.compareTo(new Date(m.getTimestamp()));
     }
 }

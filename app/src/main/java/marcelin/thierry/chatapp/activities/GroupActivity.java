@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.UserSelectionAdapter;
 import marcelin.thierry.chatapp.classes.Users;
@@ -56,6 +62,9 @@ public class GroupActivity extends AppCompatActivity implements SearchView.OnQue
             .getReference().child("ads_users");
 
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,8 +75,11 @@ public class GroupActivity extends AppCompatActivity implements SearchView.OnQue
         mUserSelectionBar = findViewById(R.id.userSelectionBar);
 
         setSupportActionBar(mUserSelectionBar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.group);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.group);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        title = findViewById(R.id.title);
+        backButton = findViewById(R.id.backButton);
+        profileImage = findViewById(R.id.profileImage);
 
         mUserSelectionAdapter = new UserSelectionAdapter(mContactsFromFirebase);
 
@@ -77,7 +89,14 @@ public class GroupActivity extends AppCompatActivity implements SearchView.OnQue
         mUsersList.setLayoutManager(new LinearLayoutManager(this));
         mUsersList.setAdapter(mUserSelectionAdapter);
 
+        title.setText(R.string.group);
+        title.setTextSize(26);
+        title.setTypeface(null, Typeface.NORMAL);
+        title.setPadding(8,0,0,0);
+        backButton.setOnClickListener(v -> finish());
+
         mDoneButton = findViewById(R.id.doneButton);
+        profileImage.setVisibility(View.GONE);
         mDoneButton.setOnClickListener(view -> {
 
             for (Users user : mContactsFromFirebase) {

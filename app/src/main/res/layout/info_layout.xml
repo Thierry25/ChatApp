@@ -22,6 +22,7 @@
             android:id="@+id/passwordEntered"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textPassword"
             android:hint="@string/cha_passw_"
             android:textColor="#000"/>
 
@@ -41,6 +42,15 @@
 
     </LinearLayout>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/chanProfile"
+        android:layout_width="110dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="110dp"
+        android:src="@drawable/ic_avatar"
+        android:layout_marginBottom="20dp"
+        android:visibility="gone"/>
+
     <TextView
         android:id="@+id/password"
         android:layout_width="wrap_content"
@@ -49,6 +59,7 @@
         android:padding="8dp"
         android:textSize="18sp"
         android:visibility="gone"
+        android:layout_below="@id/chanProfile"
         android:textColor="@color/colorPrimary" />
 
     <TextView
@@ -74,15 +85,50 @@
         android:textColor="@color/colorPrimary" />
 
     <TextView
+        android:id="@+id/link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_info"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        android:layout_below="@id/answer"
+        android:visibility="gone"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_info"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:layout_below="@id/link"
+        android:visibility="gone"
+        android:textStyle="italic"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
+        android:id="@+id/subscribers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/get_info"
+        android:padding="8dp"
+        android:textSize="18sp"
+        android:layout_below="@id/description"
+        android:visibility="gone"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary" />
+
+    <TextView
         android:id="@+id/email"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/get_info"
         android:padding="8dp"
         android:textSize="18sp"
-        android:layout_below="@id/answer"
+        android:layout_below="@id/subscribers"
         android:visibility="gone"
         android:textColor="@color/colorPrimary" />
-
 
 </RelativeLayout>

@@ -33,7 +33,7 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate
-                (R.layout.users_main_layout_for_contact_group, parent, false);
+                (R.layout.users_main_layout, parent, false);
         return new UserViewHolder(view);
     }
 
@@ -45,14 +45,24 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
         holder.mProfileStatus.setText(user.getStatus());
         //holder.mContactName.setText(usersStoredNames.get(position));
         //@author fmarcelin
-        holder.mContactsLayout.setBackgroundColor(user.isSelected() ? Color.CYAN : Color.WHITE);
+
+      //  holder.mContactsLayout.setBackgroundColor(user.isSelected() ? Color.parseColor("#20BF9F") : Color.parseColor("#F6F6F6"));
+        if(user.isSelected()){
+            holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+        }else{
+            holder.setProfilePic(user.getThumbnail());
+        }
         holder.mContactName.setText(user.getNameStoredInPhone());
-        holder.setProfilePic(user.getThumbnail());
+   //     holder.setProfilePic(user.getThumbnail());
 
         holder.mContactsLayout.setOnClickListener(view -> {
             user.setSelected(!user.isSelected());
-            holder.mContactsLayout.setBackgroundColor(user.isSelected() ? Color.CYAN : Color.WHITE);
-
+            if(user.isSelected()){
+                holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+            }else{
+                holder.setProfilePic(user.getThumbnail());
+            }
+          //  holder.mContactsLayout.setBackgroundColor(user.isSelected() ? Color.parseColor("#20BF9F") : Color.parseColor("#F6F6F6"));
         });
 
     }
@@ -90,7 +100,8 @@ public class UserSelectionAdapter extends RecyclerView.Adapter<UserSelectionAdap
             mProfileStatus = mView.findViewById(R.id.profileStatus);
             mProfileName = mView.findViewById(R.id.profileName);
             mUserProfile = mView.findViewById(R.id.profilePic);
-            mContactsLayout = mView.findViewById(R.id.mainContactGroup);
+            //mContactsLayout = mView.findViewById(R.id.mainContactGroup);
+            mContactsLayout = mView.findViewById(R.id.mainCLayout);
         }
 
         public void setProfilePic(String thumbnail){

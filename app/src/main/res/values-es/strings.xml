@@ -394,6 +394,25 @@
     <string name="like">Gusta</string>
     <string name="_333l">333l</string>
     <string name="_210c">210c</string>
-    <string name="see_replies">See replies</string>
+    <string name="see_replies">Ver respuestas</string>
+    <string name="channel_link">El enlace de tu canal :</string>
+    <string name="no_password">Tu canal no tiene contraseña</string>
+
+    <string name="just_now">Ahora</string>
+    <string name="seconds_ago">s</string>
+    <string name="a_minute_ago">1m</string>
+    <string name="minutes_ago">mns</string>
+    <string name="an_hour_ago">1hr</string>
+    <string name="hours_ago">hrs</string>
+    <string name="yesterday">ayer</string>
+    <string name="days_ago">días</string>
+    <string name="a_week_ago">1sem</string>
+    <string name="weeks_ago">sems</string>
+    <string name="comment">❤👍Deja tus comentarios abajo🎉😎</string>
+    <string name="description">Descripción</string>
+
+    <string name="no_prior_password_lock">¿Agregar una contraseña a tu canal? Se le pedirá que ingrese una contraseña y seleccione un método de recuperación</string>
+    <string name="replying_to">Replying to @</string>
+    <string name="close_replies">Close Replies</string>
 
 </resources>

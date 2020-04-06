@@ -4563,6 +4563,17 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 }
                 break;
 
+            case R.id.menu_media:
+                try{
+                    new CheckInternet_(internet -> {
+//                        Intent getMedia = new Intent(this, );
+//                        getMedia.putExtra();
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                break;
+
             default:
                 return true;
         }

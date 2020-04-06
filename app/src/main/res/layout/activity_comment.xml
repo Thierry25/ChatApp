@@ -94,17 +94,6 @@
                 android:textColor="@color/colorPurple"
                 android:textSize="15sp" />
 
-            <!--        <com.vanniktech.emoji.EmojiTextView-->
-<!--            android:id="@+id/time"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@id/commentName"-->
-<!--            android:layout_toEndOf="@id/profilePic"-->
-<!--            android:text="@string/_00_00"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:layout_marginTop="4dp"-->
-<!--            android:textSize="12sp"/>-->
-
         </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -120,6 +109,40 @@
 
     </androidx.core.widget.NestedScrollView>
     </LinearLayout>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:id="@+id/replyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="25dp"
+        android:visibility="gone"
+        android:layout_marginBottom="2dp"
+        android:layout_marginEnd="4dp"
+        android:background="#D3D3D3">
+
+        <TextView
+            android:id="@+id/replyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:textSize="16sp"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-light"
+            android:text="Replying to @Amaterasu...."/>
+
+        <ImageView
+            android:id="@+id/close_reply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:visibility="gone"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_delete"/>
+
+
+    </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/messageLinLayout"

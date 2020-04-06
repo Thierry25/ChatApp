@@ -4,12 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mainCLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profilePic"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginRight="4dp"
@@ -34,6 +35,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginTop="4dp"
         android:text="Display Name"
+        android:textStyle="bold"
         android:textColor="@color/defaultContentColor"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -88,12 +90,12 @@
         app:layout_constraintTop_toBottomOf="@+id/profilePic"
         app:layout_constraintVertical_bias="1.0">
 
-        <View
-            android:layout_width="0dp"
-            android:layout_height=".8dp"
-            android:layout_marginLeft="30dp"
-            android:layout_weight="0.65"
-            android:background="#E8E8E8" />
+<!--        <View-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height=".8dp"-->
+<!--            android:layout_marginLeft="30dp"-->
+<!--            android:layout_weight="0.65"-->
+<!--            android:background="#E8E8E8" />-->
 
     </LinearLayout>
 

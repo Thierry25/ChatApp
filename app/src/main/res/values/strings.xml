@@ -500,8 +500,17 @@
     <string name="yesterday">yesterday</string>
     <string name="days_ago">days ago</string>
     <string name="a_week_ago">1w</string>
-    <string name="weeks_ago">ws</string>
+    <string name="weeks_ago">wks</string>
 
     <string name="comment">❤👍Leave your comments below🎉😎</string>
+    <string name="channel_link">Your channel link :</string>
+    <string name="no_password">Your channel doesn\'t have a password</string>
+    <string name="description">Description</string>
+
+    <string name="no_prior_password_lock">Add a password to your channel? You will be asked to enter a password and select a recovery method</string>
+    <string name="replying_to">Replying to @</string>
+    <string name="close_replies">Close Replies</string>
+    <string name="replied">replied to your comment</string>
+    <string name="message_sent">Reply sent</string>
 
 </resources>

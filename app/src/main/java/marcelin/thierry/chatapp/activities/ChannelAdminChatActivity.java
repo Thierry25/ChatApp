@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.NotificationChannel;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,10 +39,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
@@ -73,6 +76,7 @@ import net.alhazmy13.mediapicker.Image.ImagePicker;
 import net.alhazmy13.mediapicker.Video.VideoPicker;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -90,10 +94,14 @@ import droidninja.filepicker.FilePickerConst;
 import droidninja.filepicker.models.sort.SortingTypes;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.ChannelInteractionAdapter;
+import marcelin.thierry.chatapp.adapters.NotificationAdapter;
 import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Chat;
 import marcelin.thierry.chatapp.classes.Messages;
+import marcelin.thierry.chatapp.classes.NotificationDropDownMenu;
+import marcelin.thierry.chatapp.classes.ReplyNotification;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
+import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.CheckInternet_;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -111,16 +119,17 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private Map<String, Object> mRead= new HashMap<>();
     private Map<String, Object> likesMap= new HashMap<>();
     private Map<String, Object> commentsMap = new HashMap<>();
+    private Map<String, Object> repliesMap = new HashMap<>();
 
     private String mCurrentUserPhone;
     private static String mFileName = null;
-    private static final String LOG_TAG = "AudioRecordTest";
+  //  private static final String LOG_TAG = "AudioRecordTest";
 
-    private int itemPosition = 0;
+  //  private int itemPosition = 0;
     private static final int GALLERY_PICK = 1;
     private static final int MAX_ATTACHMENT_COUNT = 1;
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
-    private int seen = 0;
+//    private int seen = 0;
 
 
     private List<String> mImagesPath;
@@ -130,12 +139,15 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private ArrayList<String> mDocPath = new ArrayList<>();
     private List<Messages> messagesList = new ArrayList<>();
 
+    private List<ReplyNotification> replyNotificationsList = new ArrayList<>();
+
     private View mRootView;
     private CircleImageView mProfileImage;
     private RecyclerView mMessagesList;
 
     // to change
     private ChannelInteractionAdapter mChannelInteractionAdapter;
+    private NotificationAdapter mNotificationAdapter;
 
     //private SwipeRefreshLayout mSwipeRefreshLayout;
     private LinearLayoutManager mLinearLayoutManager;
@@ -151,6 +163,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private MediaRecorder mRecorder;
     private Toolbar mChatToolbar;
     private ImageView mSendVoice;
+    private ImageView notification_bell;
+    private TextView unseenReplies;
 
     private static final StorageReference mImagesStorage = FirebaseStorage.getInstance().getReference();
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
@@ -164,9 +178,11 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             .getReference().child("ads_notifications");
     private static final DatabaseReference mMessageReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_channel_messages");
-
     private static final DatabaseReference mChannelReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_channel");
+    private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance().getReference()
+            .child("ads_users");
+
 
     private NestedScrollView nested;
 
@@ -286,6 +302,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         ViewCompat.setNestedScrollingEnabled(nested, true);
 
         mChannelInteractionAdapter = new ChannelInteractionAdapter(messagesList, this, this);
+        mNotificationAdapter = new NotificationAdapter(this, replyNotificationsList);
         mMessagesList.setAdapter(mChannelInteractionAdapter);
 
         mp1 = MediaPlayer.create(ChannelAdminChatActivity.this, R.raw.playsound);
@@ -302,8 +319,11 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
         selectColor = findViewById(R.id.selectColor);
         selectColor.setVisibility(View.VISIBLE);
+        notification_bell = findViewById(R.id.notification_bell);
+        unseenReplies = findViewById(R.id.unseenReplies);
 
         loadMessages();
+        getComments();
 //
         Picasso.get().load(mChannelImage).placeholder(R.drawable.ic_avatar).into(mProfileImage);
 
@@ -482,7 +502,110 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             }
         });
 
+        // TODO: Notification
+        notification_bell.setVisibility(View.VISIBLE);
 
+        notification_bell.setOnClickListener(v ->{
+            showNotifications();
+           // getComments();
+        });
+    }
+
+    private void getComments(){
+        mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.exists()){
+                    ReplyNotification replyNotification = dataSnapshot.getValue(ReplyNotification.class);
+                    if(replyNotification == null){
+                        return;
+                    }
+              //      if(!replyNotification.getRe().equals(mCurrentUserPhone)){
+                        if(!replyNotification.isSe()){
+                            unseenReplies.setVisibility(View.VISIBLE);
+                        }
+                        mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Users u = dataSnapshot.getValue(Users.class);
+                                if(u == null){
+                                    return;
+                                }
+                                replyNotification.setReplyImage(u.getThumbnail());
+                                replyNotification.setReplierName(u.getName());
+                                replyNotificationsList.add(replyNotification);
+                                mNotificationAdapter.notifyDataSetChanged();
+
+                                if(replyNotificationsList.isEmpty()){
+                                    // do something in the list
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+              //      }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void showNotifications() {
+        final NotificationDropDownMenu menu = new NotificationDropDownMenu(this, replyNotificationsList);
+        menu.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        menu.setWidth(getPxFromDp(350));
+        menu.setOutsideTouchable(true);
+        menu.setFocusable(true);
+        menu.showAsDropDown(notification_bell);
+        menu.setAnimationStyle(R.style.emoji_fade_animation_style);
+        menu.setNotificationSelectedListener((position, replyNotification) -> {
+            menu.dismiss();
+            // New Intent to CommentActivity
+            mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).child(replyNotification.getR()).child("se").setValue(true);
+            Intent goToCommentActivity = new Intent(ChannelAdminChatActivity.this, CommentActivity.class);
+            goToCommentActivity.putExtra("channel_name", replyNotification.getCh());
+            goToCommentActivity.putExtra("channel_image",replyNotification.getChi());
+            goToCommentActivity.putExtra("message_type", replyNotification.getTy());
+            goToCommentActivity.putExtra("message_id",replyNotification.getId());
+            goToCommentActivity.putExtra("message_color",replyNotification.getCol());
+            goToCommentActivity.putExtra("message_content",replyNotification.getCo());
+            goToCommentActivity.putExtra("message_timestamp", replyNotification.getT2());
+            goToCommentActivity.putExtra("message_like", replyNotification.getL());
+            goToCommentActivity.putExtra("message_comment", replyNotification.getCc());
+            goToCommentActivity.putExtra("message_seen", replyNotification.getS());
+            goToCommentActivity.putExtra("reply_id", replyNotification.getR());
+            goToCommentActivity.putExtra("from", "Activity");
+            goToCommentActivity.putExtra("isOn", true);
+            goToCommentActivity.putExtra("comment_id", replyNotification.getC());
+            startActivity(goToCommentActivity);
+
+        });
+    }
+
+    private int getPxFromDp(int i) {
+        return (int) (i * getResources().getDisplayMetrics().density);
     }
 
 
@@ -517,6 +640,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                                likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                               repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                                commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                                Map<String, Object> messageMap = new HashMap<>();
@@ -531,6 +655,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                messageMap.put("color", "#7016a8");
                                messageMap.put("c", commentsMap);
                                messageMap.put("l", likesMap);
+                               messageMap.put("r", repliesMap);
 
                                Map<String, Object> msgContentMap = new HashMap<>();
                                msgContentMap.put(message_reference + push_id, messageMap);
@@ -694,6 +819,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                             likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone,mCurrentUserPhone);
                             commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
@@ -707,6 +833,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
+                            messageMap.put("r", repliesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -789,6 +916,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                             likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                             commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
@@ -802,6 +930,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
+                            messageMap.put("r", repliesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -883,6 +1012,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                     mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                                     likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                                    repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                                     commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                                     Map<String, Object> messageMap = new HashMap<>();
@@ -896,6 +1026,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     messageMap.put("read_by", mRead);
                                     messageMap.put("c", commentsMap);
                                     messageMap.put("l", likesMap);
+                                    messageMap.put("r", repliesMap);
                                     messageMap.put("color", "#7016a8");
 
                                     Map<String, Object> msgContentMap = new HashMap<>();
@@ -979,6 +1110,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                             likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                             commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
@@ -992,6 +1124,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
+                            messageMap.put("r", repliesMap);
                             messageMap.put("color", "#7016a8");
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -1200,6 +1333,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                             likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                             commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
@@ -1213,6 +1347,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
+                            messageMap.put("r", repliesMap);
                             messageMap.put("color", colorList[colorToUpdate]);
 
                             Map<String, Object> msgContentMap = new HashMap<>();
@@ -1439,113 +1574,156 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
             case R.id.lock:
 
-                new TTFancyGifDialog.Builder(this)
-                        .setTitle(getString(R.string.lo___))
-                        .setMessage(getString(R.string.chan_lool__))
-                        .isCancellable(false)
-                        .setGifResource(R.drawable.gif16)
+                mChannelReference.child(mChannelName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Channel c = dataSnapshot.getValue(Channel.class);
+                        if(c == null){
+                            return;
+                        }
+                        if(c.getPassword().length() == 0){
+                            Toast.makeText(ChannelAdminChatActivity.this, R.string.no_password, Toast.LENGTH_SHORT).show();
 
-                        .OnPositiveClicked(() -> {
-                            mChannelReference.child(mChannelName).child("locked").setValue("no").addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(ChannelAdminChatActivity.this, R.string.suc__loc_, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        })
+                            new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
+                                    .setTitle(getString(R.string.lo___))
+                                    .setMessage(getString(R.string.no_prior_password_lock))
+                                    .isCancellable(false)
+                                    .setGifResource(R.drawable.gif16)
+                                    .OnPositiveClicked(() -> {
+                                        Intent addPasswordIntent = new Intent(ChannelAdminChatActivity.this, LockChannelActivity.class);
+                                        addPasswordIntent.putExtra("Channel_id", mChannelName);
+                                        startActivity(addPasswordIntent);
+                                    })
+                                    .OnNegativeClicked(() -> {
 
-                        .OnNegativeClicked(() -> {
+                                    })
+                                    .build();
+                        }else{
+                            new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
+                                    .setTitle(getString(R.string.lo___))
+                                    .setMessage(getString(R.string.chan_lool__))
+                                    .isCancellable(false)
+                                    .setGifResource(R.drawable.gif16)
 
-                        })
-                        .build();
+                                    .OnPositiveClicked(() -> {
+                                        mChannelReference.child(mChannelName).child("locked").setValue("no").addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(ChannelAdminChatActivity.this, R.string.suc__loc_, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    })
+
+                                    .OnNegativeClicked(() -> {
+
+                                    })
+                                    .build();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
 
                 break;
 
             case R.id.passwordChange:
 
                 questionDialog.setContentView(R.layout.change_password);
-                questionDialog.show();
+               // questionDialog.show();
+
 
                 EditText oldPassword = questionDialog.findViewById(R.id.oldPassword);
                 Button btnNext = questionDialog.findViewById(R.id.next_Button);
 
-                // Ask for old password and save new password
-                btnNext.setOnClickListener(view1 -> {
-                    mChannelReference.child(mChannelName).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Channel c = dataSnapshot.getValue(Channel.class);
-                            if (c == null) {
-                                return;
-                            }
-                            if (c.getPassword().equals(oldPassword.getText().toString().trim())) {
-
-                                oldPassword.setText("");
-                                oldPassword.setHint(R.string.nw_pasw__);
-                                btnNext.setText(getString(R.string.save));
-
-                                btnNext.setOnClickListener(view1 -> {
-                                    if (TextUtils.isEmpty(oldPassword.getText().toString().trim())) {
-                                        Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.nqq_qw), Toast.LENGTH_SHORT).show();
-                                    } else if (oldPassword.getText().toString().trim().length() < 4) {
-                                        Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.characters_error), Toast.LENGTH_SHORT).show();
-                                    } else if (oldPassword.getText().toString().trim().equals(c.getPassword())) {
-                                        Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.pass_err___), Toast.LENGTH_SHORT).show();
-                                    } else {
-                                        new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
-                                                .setTitle(getString(R.string.change_password__))
-                                                .setMessage(getString(R.string.sur__quq_) + " " + oldPassword.getText().toString().trim())
-                                                .isCancellable(false)
-                                                .setGifResource(R.drawable.gif16)
-                                                .OnPositiveClicked(() -> {
-
-                                                    ProgressDialog progressDialog = new ProgressDialog(ChannelAdminChatActivity.this);
-                                                    progressDialog.setTitle(getString(R.string.saving));
-                                                    progressDialog.setMessage(getString(R.string.pas__sav__));
-                                                    progressDialog.show();
-
-
-                                                    mChannelReference.child(mChannelName)
-                                                            .child("password")
-                                                            .setValue(oldPassword.getText().toString().trim())
-                                                            .addOnCompleteListener(task -> {
-
-                                                                if (task.isSuccessful()) {
-                                                                    progressDialog.dismiss();
-                                                                    Toast.makeText(ChannelAdminChatActivity.this,
-                                                                            R.string.sux__saq_
-                                                                            , Toast.LENGTH_SHORT).show();
-                                                                    questionDialog.dismiss();
-                                                                }
-
-                                                            });
-
-                                                })
-                                                .OnNegativeClicked(() -> {
-                                                    questionDialog.dismiss();
-                                                })
-                                                .build();
-                                    }
-                                });
-
-                            } else {
-                                Toast.makeText(ChannelAdminChatActivity.this, R.string.wr_ans___, Toast.LENGTH_SHORT).show();
-                            }
-
+                mChannelReference.child(mChannelName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Channel c = dataSnapshot.getValue(Channel.class);
+                        if (c == null) {
+                            return;
                         }
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                        if(c.getPassword().length() == 0){
+                            Toast.makeText(ChannelAdminChatActivity.this, R.string.no_password, Toast.LENGTH_SHORT).show();
+                        }else{
+                            questionDialog.show();
+                            // Ask for old password and save new password
+                            btnNext.setOnClickListener(view1 -> {
+                                if (c.getPassword().equals(oldPassword.getText().toString().trim())) {
+                                    oldPassword.setText("");
+                                    oldPassword.setHint(R.string.nw_pasw__);
+                                    btnNext.setText(getString(R.string.save));
 
+                                    btnNext.setOnClickListener(view -> {
+                                        if (TextUtils.isEmpty(oldPassword.getText().toString().trim())) {
+                                            Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.nqq_qw), Toast.LENGTH_SHORT).show();
+                                        } else if (oldPassword.getText().toString().trim().length() < 4) {
+                                            Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.characters_error), Toast.LENGTH_SHORT).show();
+                                        } else if (oldPassword.getText().toString().trim().equals(c.getPassword())) {
+                                            Toast.makeText(ChannelAdminChatActivity.this, getString(R.string.pass_err___), Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
+                                                    .setTitle(getString(R.string.change_password__))
+                                                    .setMessage(getString(R.string.sur__quq_) + " " + oldPassword.getText().toString().trim())
+                                                    .isCancellable(false)
+                                                    .setGifResource(R.drawable.gif16)
+                                                    .OnPositiveClicked(() -> {
+
+                                                        ProgressDialog progressDialog = new ProgressDialog(ChannelAdminChatActivity.this);
+                                                        progressDialog.setTitle(getString(R.string.saving));
+                                                        progressDialog.setMessage(getString(R.string.pas__sav__));
+                                                        progressDialog.show();
+
+
+                                                        mChannelReference.child(mChannelName)
+                                                                .child("password")
+                                                                .setValue(oldPassword.getText().toString().trim())
+                                                                .addOnCompleteListener(task -> {
+
+                                                                    if (task.isSuccessful()) {
+                                                                        progressDialog.dismiss();
+                                                                        Toast.makeText(ChannelAdminChatActivity.this,
+                                                                                R.string.sux__saq_
+                                                                                , Toast.LENGTH_SHORT).show();
+                                                                        questionDialog.dismiss();
+                                                                    }
+
+                                                                });
+
+                                                    })
+                                                    .OnNegativeClicked(() -> {
+                                                        questionDialog.dismiss();
+                                                    })
+                                                    .build();
+                                        }
+                                    });
+
+                                } else {
+                                    Toast.makeText(ChannelAdminChatActivity.this, R.string.wr_ans___, Toast.LENGTH_SHORT).show();
+                                }
+
+                            });
                         }
-                    });
+
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
                 });
+
+
 
                 break;
 
             case R.id.info:
 
                 questionDialog.setContentView(R.layout.info_layout);
-                questionDialog.show();
+               // questionDialog.show();
                 questionDialog.setCanceledOnTouchOutside(true);
 
                 EditText passwordEntered = questionDialog.findViewById(R.id.passwordEntered);
@@ -1556,53 +1734,80 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 TextView question = questionDialog.findViewById(R.id.question);
                 TextView answer = questionDialog.findViewById(R.id.answer);
                 TextView email = questionDialog.findViewById(R.id.email);
+                TextView link = questionDialog.findViewById(R.id.link);
+                TextView description = questionDialog.findViewById(R.id.description);
+                TextView subscribers = questionDialog.findViewById(R.id.subscribers);
+                CircleImageView chanProfile = questionDialog.findViewById(R.id.chanProfile);
 
-                getInfo.setOnClickListener(view -> {
+                mChannelReference.child(mChannelName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Channel c = dataSnapshot.getValue(Channel.class);
 
-                    mChannelReference.child(mChannelName).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Channel c = dataSnapshot.getValue(Channel.class);
+                        if (c == null) {
+                            return;
+                        }
+                        Picasso.get().load(c.getThumbnail()).placeholder(R.drawable.ic_avatar).into(chanProfile);
+                        link.setText(String.format("%s%s", getString(R.string.channel_link), c.getLink()));
+                        description.setText(MessageFormat.format("{0}:{1}", getString(R.string.description), c.getDescription()));
+                        subscribers.setText(MessageFormat.format("{0}:{1}", getString(R.string.subscribers), c.getSubscribers().size()));
 
-                            if (c == null) {
-                                return;
-                            }
+                        if(c.getPassword().length() == 0){
 
-                            if (passwordEntered.getText().toString().trim().equals(c.getPassword())) {
-                                // Show the according info of the channel
+                            linearLayout.setVisibility(View.GONE);
+                            chanProfile.setVisibility(View.VISIBLE);
+                            link.setVisibility(View.VISIBLE);
+                            description.setVisibility(View.VISIBLE);
+                            subscribers.setVisibility(View.VISIBLE);
 
-                                linearLayout.setVisibility(View.GONE);
-                                if (c.getEmail().length() > 1) {
-                                    // only show email field and password
-                                    password.setVisibility(View.VISIBLE);
-                                    email.setVisibility(View.VISIBLE);
+                        }else{
+                            questionDialog.show();
+                            linearLayout.setVisibility(View.VISIBLE);
+                            getInfo.setOnClickListener(view -> {
+                                if (passwordEntered.getText().toString().trim().equals(c.getPassword())) {
+                                    // Show the according info of the channel
 
-                                    password.setText(String.format("%s %s", getString(R.string.pas_is_), c.getPassword()));
-                                    email.setText(String.format("%d %s", getString(R.string.email_is__), c.getEmail()));
+                                    linearLayout.setVisibility(View.GONE);
+                                    chanProfile.setVisibility(View.VISIBLE);
+                                    link.setVisibility(View.VISIBLE);
+                                    description.setVisibility(View.VISIBLE);
+                                    subscribers.setVisibility(View.VISIBLE);
 
-                                } else {
-                                    // show password, question and answer to question
-                                    password.setVisibility(View.VISIBLE);
-                                    question.setVisibility(View.VISIBLE);
-                                    answer.setVisibility(View.VISIBLE);
+                                    if (c.getEmail().length() > 1) {
+                                        // only show email field and password
+                                        password.setVisibility(View.VISIBLE);
+                                        email.setVisibility(View.VISIBLE);
 
-                                    password.setText(String.format("%s %s", getString(R.string.pas_is_), c.getPassword()));
-                                    question.setText(String.format("%s %s", getString(R.string.ques__is_), c.getQuestion()));
-                                    answer.setText(c.getAnswer());
+                                        password.setText(String.format("%s %s", getString(R.string.pas_is_), c.getPassword()));
+                                        email.setText(String.format("%s %s", getString(R.string.email_is__), c.getEmail()));
+                                        //  email.setText(String.format("%d %s", getString(R.string.email_is__), c.getEmail()));
+
+                                    } else {
+                                        // show password, question and answer to question
+                                        password.setVisibility(View.VISIBLE);
+                                        question.setVisibility(View.VISIBLE);
+                                        answer.setVisibility(View.VISIBLE);
+
+                                        password.setText(String.format("%s %s", getString(R.string.pas_is_), c.getPassword()));
+                                        question.setText(String.format("%s %s", getString(R.string.ques__is_), c.getQuestion()));
+                                        answer.setText(c.getAnswer());
+                                    }
+
                                 }
-
-                            } else {
-                                // Retrieve errors
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            });
 
                         }
-                    });
 
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
                 });
+
+
 
                 break;
 

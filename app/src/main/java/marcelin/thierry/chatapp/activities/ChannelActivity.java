@@ -159,7 +159,7 @@ public class ChannelActivity extends AppCompatActivity {
         channelMap.put("link", link_key);
         channelMap.put("description", mChannelDescription.getText().toString().trim());
         channelMap.put("password", "");
-        channelMap.put("email", "Default");
+        channelMap.put("email", "");
         channelMap.put("question", "");
         channelMap.put("answer", "");
         channelMap.put("locked", "no");

@@ -117,54 +117,51 @@ public class GroupSettings extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle(mChatId);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mSettingsToolbar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(GroupSettings.this);
-                dialog.setIcon(R.drawable.ic_about);
-                dialog.setTitle(R.string.change_group_name);
+        mSettingsToolbar.setOnClickListener(view -> {
+            AlertDialog.Builder dialog = new AlertDialog.Builder(GroupSettings.this);
+            dialog.setIcon(R.drawable.ic_about);
+            dialog.setTitle(R.string.change_group_name);
 
-                EditText changeGroupName = new EditText(GroupSettings.this);
-                setMargins(changeGroupName, 10, 10, 10, 10);
-                changeGroupName.setPadding(40, 40, 40, 40);
-                dialog.setView(changeGroupName);
+            EditText changeGroupName = new EditText(GroupSettings.this);
+            setMargins(changeGroupName, 10, 10, 10, 10);
+            changeGroupName.setPadding(40, 40, 40, 40);
+            dialog.setView(changeGroupName);
 
-                changeGroupName.setText(mSettingsToolbar.getTitle());
+            changeGroupName.setText(mSettingsToolbar.getTitle());
 
-                dialog.setPositiveButton(R.string.ok, (id, dial) ->{
-                    if(!changeGroupName.getText().toString().trim().contentEquals(mSettingsToolbar.getTitle())){
-                        ProgressDialog progressDialog = new ProgressDialog(GroupSettings.this);
-                        progressDialog.setTitle(getString(R.string.saving));
-                        progressDialog.setMessage(getString(R.string.changing_group_name));
-                        progressDialog.show();
+            dialog.setPositiveButton(R.string.ok, (id, dial) ->{
+                if(!changeGroupName.getText().toString().trim().contentEquals(mSettingsToolbar.getTitle())){
+                    ProgressDialog progressDialog = new ProgressDialog(GroupSettings.this);
+                    progressDialog.setTitle(getString(R.string.saving));
+                    progressDialog.setMessage(getString(R.string.changing_group_name));
+                    progressDialog.show();
 
-                        mGroupReference.child(mGroupName).child("newName")
-                                .setValue(changeGroupName.getText().toString().trim()).addOnCompleteListener(task -> {
+                    mGroupReference.child(mGroupName).child("newName")
+                            .setValue(changeGroupName.getText().toString().trim()).addOnCompleteListener(task -> {
 
-                                    if(task.isSuccessful()){
-                                        progressDialog.dismiss();
-                                        mSettingsToolbar.setTitle(changeGroupName.getText().toString().trim());
-                                        Toast.makeText(GroupSettings.this, R.string.group_name_success,
-                                                Toast.LENGTH_SHORT).show();
-                                    }else{
-                                        Toast.makeText(GroupSettings.this, R.string.group_error_name, Toast.LENGTH_SHORT).show();
-                                    }
+                                if(task.isSuccessful()){
+                                    progressDialog.dismiss();
+                                    mSettingsToolbar.setTitle(changeGroupName.getText().toString().trim());
+                                    Toast.makeText(GroupSettings.this, R.string.group_name_success,
+                                            Toast.LENGTH_SHORT).show();
+                                }else{
+                                    Toast.makeText(GroupSettings.this, R.string.group_error_name, Toast.LENGTH_SHORT).show();
+                                }
 
-                                });
+                            });
 
 
-                    }else{
-                        Toast.makeText(GroupSettings.this, R.string.no_changes, Toast.LENGTH_SHORT).show();
-                    }
-                });
+                }else{
+                    Toast.makeText(GroupSettings.this, R.string.no_changes, Toast.LENGTH_SHORT).show();
+                }
+            });
 
-                dialog.setNegativeButton(R.string.cancel, (id, dial) ->{
+            dialog.setNegativeButton(R.string.cancel, (id, dial) ->{
 
-                });
+            });
 
-                AlertDialog alert = dialog.create();
-                alert.show();
-            }
+            AlertDialog alert = dialog.create();
+            alert.show();
         });
 
         mCurrentPhoneNumber = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
@@ -353,6 +350,7 @@ public class GroupSettings extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
 
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -628,18 +626,13 @@ public class GroupSettings extends AppCompatActivity {
                                                 + "?");
                                         aD.show();
                                     }
-
                                 }
-
-
                             }
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
-
                             }
                         });
-
             });
 
             builder.setNegativeButton(R.string.cancel, (dialog, id) -> {

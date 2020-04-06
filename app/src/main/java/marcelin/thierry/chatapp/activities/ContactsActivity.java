@@ -4,6 +4,7 @@ package marcelin.thierry.chatapp.activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
@@ -16,6 +17,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -32,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.ContactAdapter;
 import marcelin.thierry.chatapp.classes.Users;
@@ -42,7 +47,10 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
             .getReference().child("ads_users");
 
     private Toolbar mContactsBar;
+    private TextView title;
+    private ImageView backButton;
     private static RecyclerView mContactsList;
+    private CircleImageView profileImage;
 
     private List<Users> mContactsFromFirebase = new ArrayList<>();
     private ContactAdapter mContactAdapter;
@@ -58,16 +66,28 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
         setContentView(R.layout.activity_contacts);
 
         mContactsBar = findViewById(R.id.contacts_bar_layout);
+        profileImage = findViewById(R.id.profileImage);
         setSupportActionBar(mContactsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.contacts);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         mContactAdapter = new ContactAdapter(mContactsFromFirebase);
+        title = findViewById(R.id.title);
+        title.setTextSize(26);
+        title.setTypeface(null, Typeface.NORMAL);
+        title.setText(R.string.contacts);
+        profileImage.setVisibility(View.GONE);
         mContactsList = findViewById(R.id.contacts_list);
         mContactsList.setHasFixedSize(true);
         mContactsList.setLayoutManager(new LinearLayoutManager(this));
         mContactsList.setAdapter(mContactAdapter);
 
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     @Override
@@ -134,6 +154,7 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
 
         MenuItem searchItem = menu.findItem(R.id.ic_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
+       // searchView.text
         searchView.setOnQueryTextListener(this);
 
         return true;

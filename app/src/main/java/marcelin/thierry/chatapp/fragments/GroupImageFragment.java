@@ -83,7 +83,7 @@ public class GroupImageFragment extends Fragment {
     }
 
 
-    public void getImage(){
+    private void getImage(){
 
         mMessagesList.clear();
 

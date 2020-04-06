@@ -83,10 +83,9 @@ public class ChannelImageFragment extends Fragment {
     }
 
 
-    public void getImage(){
+    private void getImage(){
 
-        mMessagesList.clear();
-
+        //mMessagesList.clear();
 
         mChatReference.child(mChatId).child("messages").addChildEventListener(new ChildEventListener() {
             @Override
@@ -105,9 +104,7 @@ public class ChannelImageFragment extends Fragment {
                             mMessageEmpty.setVisibility(View.GONE);
                             mMessagesList.add(m);
                             mImagesAdapter.notifyDataSetChanged();
-
                         }
-
                         if((mMessagesList.size()) == 0){
                             mMessageEmpty.setVisibility(View.VISIBLE);
                         }

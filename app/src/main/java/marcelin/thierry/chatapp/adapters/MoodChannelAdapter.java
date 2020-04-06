@@ -30,7 +30,7 @@ public class MoodChannelAdapter extends RecyclerView.Adapter<MoodChannelAdapter.
     @Override
     public ChannelViewAdapter onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_main_layout_for_contact_group,
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.users_main_layout,
                 parent, false);
         return new ChannelViewAdapter(view);
     }
@@ -49,13 +49,22 @@ public class MoodChannelAdapter extends RecyclerView.Adapter<MoodChannelAdapter.
         holder.mProfileStatus.setText(currentChannel.getLink());
         //holder.mContactName.setText(usersStoredNames.get(position));
         //@author fmarcelin
-        holder.mContactsLayout.setBackgroundColor(currentChannel.isSelected() ? Color.CYAN : Color.WHITE);
-        holder.setProfilePic(currentChannel.getThumbnail());
+        //holder.mContactsLayout.setBackgroundColor(currentChannel.isSelected() ? Color.CYAN : Color.WHITE);
+       // holder.setProfilePic(currentChannel.getThumbnail());
+        if(currentChannel.isSelected()){
+            holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+        }else{
+            holder.setProfilePic(currentChannel.getThumbnail());
+        }
 
         holder.mContactsLayout.setOnClickListener(view -> {
             currentChannel.setSelected(!currentChannel.isSelected());
-            holder.mContactsLayout.setBackgroundColor(currentChannel.isSelected() ? Color.CYAN : Color.WHITE);
-
+            //holder.mContactsLayout.setBackgroundColor(currentChannel.isSelected() ? Color.CYAN : Color.WHITE);
+            if(currentChannel.isSelected()){
+                holder.mUserProfile.setImageResource(R.drawable.ic_check_circle);
+            }else{
+                holder.setProfilePic(currentChannel.getThumbnail());
+            }
         });
 
     }
@@ -83,7 +92,7 @@ public class MoodChannelAdapter extends RecyclerView.Adapter<MoodChannelAdapter.
             mProfileStatus = mView.findViewById(R.id.profileStatus);
             mProfileName = mView.findViewById(R.id.profileName);
             mUserProfile = mView.findViewById(R.id.profilePic);
-            mContactsLayout = mView.findViewById(R.id.mainContactGroup);
+            mContactsLayout = mView.findViewById(R.id.mainCLayout);
         }
 
         public void setProfilePic(String thumbnail){

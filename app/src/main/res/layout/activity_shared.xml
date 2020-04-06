@@ -16,7 +16,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"></include>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <com.google.android.material.tabs.TabLayout
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -33,6 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/AppBar"
-        ></androidx.viewpager.widget.ViewPager>
+        />
 
 </RelativeLayout>

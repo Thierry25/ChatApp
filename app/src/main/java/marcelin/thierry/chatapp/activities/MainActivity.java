@@ -1583,212 +1583,212 @@ public class MainActivity extends AppCompatActivity {
         return System.currentTimeMillis() - 86400000L;
     }
 
-    private void getStatus() {
-
-        // List to add the statuses added by other users
-        mStatusList.clear();
-
-        // Getting my phoneNumber
-        String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
-
-        //Users.getLocalContactsList has the contacts from user's phone
-        if (Users.getLocalContactList() == null || Users.getLocalContactList().isEmpty()) {
-            //TODO: try to see if thread successfully loaded the users
-            Log.i("ContactList", "user list is empty");
-            return;
-        }
-
-        Set<Map.Entry<String, String>> myList = Users.getLocalContactList().entrySet();
-        for (Map.Entry<String, String> val : myList) {
-
-            //Looping trough the list and search them in DB
-
-            String phoneNumber = val.getKey();
-            final String[] localContactName = {val.getValue()};
-            Log.i("STATUS_PHONE", phoneNumber);
-
-            // Searching for the statuses of that phone number. mStatusReference is the reference to the statuses in the DB
-            mStatusReference.child(phoneNumber).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // Node 'e' has the privacy settings set up (If an user wants other users to see his status)
-                    if (dataSnapshot.hasChild("e")) {
-                        mStatusReference.child(phoneNumber).child("e").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Map<String, Object> m = (Map<String, Object>) dataSnapshot.getValue();
-                                if (m == null) {
-                                    return;
-                                }
-
-                                if (m.containsKey(phone)) {
-                                    //   mStatusList.clear();
-                                } else {
-                                    Log.i("STATUS_E_BEFORE_EVENT ", "CALLED");
-                                    mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
-                                            };
-                                            Map<String, Status> map = dataSnapshot.getValue(gti);
-                                            if (map == null) {
-                                                return;
-                                            }
-
-                                            /* list holds all the values (phone number) that exists in the DB as users that have statuses.
-                                                l is an empty list that will hold the statuses that haven't expired yet (24hours)
-                                             */
-                                            List<Status> list = new ArrayList<>(map.values());
-                                            List<Status> l = new ArrayList<>();
-
-                                            // UserStatus is the class that represents the user and
-                                            UserStatus userStatus = new UserStatus(phoneNumber);
-
-                                            Log.i("STATUS_E_NAME ", localContactName[0]);
-                                            if (localContactName[0].length() > 12) {
-                                                localContactName[0] = localContactName[0]
-                                                        .substring(0, 8) + "...";
-                                            }
-
-                                            Log.i("STATUS_E_LIST_SIZE_ALL ", Integer.toString(list.size()));
-                                            // Setter setNameStoredIPhone is there to set the name of the user that put a new status
-                                            userStatus.setNameStoredInPhone(localContactName[0]);
-
-                                            /* Code for 24 hours statuses, variable milis converts the current time in milliseconds,
-                                            hours converts 24 hours into milliseconds, and the comparison take place, if the
-                                            status time is less than 24 hours, it's added in list l
-                                             */
-                                            long millis = System.currentTimeMillis();
-                                            long hours = 86400000L;
-                                            for (Status s : list) {
-                                                long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
-                                                if (result > hours) {
-                                                    // None
-                                                    //l.clear();
-
-                                                } else {
-                                                    l.add(s);
-                                                }
-                                            }
-
-                                            Log.i("STATUS_E_LIST_SIZE_LESS", Integer.toString(l.size()));
-                                            if (!l.isEmpty()) {
-                                                // Expose the last status uploaded for other users to see
-                                                Status tmp = l.get(l.size() - 1);
-                                                userStatus.setContent(tmp.getContent());
-                                                userStatus.setTimestamp(tmp.getTimestamp());
-                                                userStatus.setStatusList(l);
-                                                if (userStatus.getPhoneNumber().equals(phone)) {
-                                                    userStatus.setNameStoredInPhone(getString(R.string.me_));
-                                                }
-                                                // Adding the userStatus to the arrayList
-                                                mStatusList.add(userStatus);
-                                            }
-                                            Log.i("STATUS_E_LIST_RECYCLER", Integer.toString(mStatusList.size()));
-                                            Collections.reverse(mStatusList);
-                                            Log.i("STATUS_E_DATASET", "CALLED");
-                                            //fab509: clear the recycler view
-                                            mStatusRecyclerView.removeAllViews();
-                                            mStatusAdapter.notifyDataSetChanged();
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                                }
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    } else {
-                        Log.i("STATUS_S_BEFORE_EVENT ", "CALLED");
-                        // Node 's' stands for statuses in the DB and the following is the code that runs if the user doesn't have any value under his 'e' node
-                        mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
-                                };
-                                Map<String, Status> map = dataSnapshot.getValue(gti);
-                                if (map == null) {
-                                    return;
-                                }
-
-                                List<Status> list = new ArrayList<>(map.values());
-                                List<Status> l = new ArrayList<>();
-
-                                /**Collections.sort(list, (Status  a1, Status a2) ->
-                                 Long.compare(a1.getTimestamp(), a2.getTimestamp()));**/
-
-                                UserStatus userStatus = new UserStatus(phoneNumber);
-                                // userStatus.setStatusList(list);
-                                Log.i("STATUS_S_NAME ", localContactName[0]);
-                                if (localContactName[0].length() > 12) {
-                                    localContactName[0] = localContactName[0]
-                                            .substring(0, 8) + "...";
-                                }
-
-                                Log.i("STATUS_S_LIST_SIZE_ALL ", Integer.toString(list.size()));
-                                userStatus.setNameStoredInPhone(localContactName[0]);
-
-//                                Status tmp = list.get(list.size() - 1);
-//                                userStatus.setContent(tmp.getContent());
-//                                userStatus.setTimestamp(tmp.getTimestamp());
-                                long millis = System.currentTimeMillis();
-                                long hours = 86400000L;
-                                for (Status s : list) {//userStatus.getStatusList()){
-                                    long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
-                                    if (result > hours) {
-                                        //
-                                    } else {
-                                        //l.clear();
-                                        l.add(s);
-                                    }
-                                }
-
-                                Log.i("STATUS_S_LIST_SIZE_LESS", Integer.toString(l.size()));
-                                if (!l.isEmpty()) {
-                                    Status tmp = l.get(l.size() - 1);
-                                    userStatus.setContent(tmp.getContent());
-                                    userStatus.setTimestamp(tmp.getTimestamp());
-                                    userStatus.setStatusList(l);
-                                    if (userStatus.getPhoneNumber().equals(phone)) {
-                                        userStatus.setNameStoredInPhone(getString(R.string.me_));
-                                    }
-                                    mStatusList.add(userStatus);
-                                }
-                                Log.i("STATUS_S_LIST_RECYCLER", Integer.toString(mStatusList.size()));
-
-                                Collections.reverse(mStatusList);
-                                Log.i("STATUS_S_DATASET", "CALLED");
-                                mStatusRecyclerView.removeAllViews();
-                                mStatusAdapter.notifyDataSetChanged();
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-
-        }
-    }
+//    private void getStatus() {
+//
+//        // List to add the statuses added by other users
+//        mStatusList.clear();
+//
+//        // Getting my phoneNumber
+//        String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+//
+//        //Users.getLocalContactsList has the contacts from user's phone
+//        if (Users.getLocalContactList() == null || Users.getLocalContactList().isEmpty()) {
+//            //TODO: try to see if thread successfully loaded the users
+//            Log.i("ContactList", "user list is empty");
+//            return;
+//        }
+//
+//        Set<Map.Entry<String, String>> myList = Users.getLocalContactList().entrySet();
+//        for (Map.Entry<String, String> val : myList) {
+//
+//            //Looping trough the list and search them in DB
+//
+//            String phoneNumber = val.getKey();
+//            final String[] localContactName = {val.getValue()};
+//            Log.i("STATUS_PHONE", phoneNumber);
+//
+//            // Searching for the statuses of that phone number. mStatusReference is the reference to the statuses in the DB
+//            mStatusReference.child(phoneNumber).addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(DataSnapshot dataSnapshot) {
+//                    // Node 'e' has the privacy settings set up (If an user wants other users to see his status)
+//                    if (dataSnapshot.hasChild("e")) {
+//                        mStatusReference.child(phoneNumber).child("e").addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                Map<String, Object> m = (Map<String, Object>) dataSnapshot.getValue();
+//                                if (m == null) {
+//                                    return;
+//                                }
+//
+//                                if (m.containsKey(phone)) {
+//                                    //   mStatusList.clear();
+//                                } else {
+//                                    Log.i("STATUS_E_BEFORE_EVENT ", "CALLED");
+//                                    mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
+//                                        @Override
+//                                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                                            GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
+//                                            };
+//                                            Map<String, Status> map = dataSnapshot.getValue(gti);
+//                                            if (map == null) {
+//                                                return;
+//                                            }
+//
+//                                            /* list holds all the values (phone number) that exists in the DB as users that have statuses.
+//                                                l is an empty list that will hold the statuses that haven't expired yet (24hours)
+//                                             */
+//                                            List<Status> list = new ArrayList<>(map.values());
+//                                            List<Status> l = new ArrayList<>();
+//
+//                                            // UserStatus is the class that represents the user and
+//                                            UserStatus userStatus = new UserStatus(phoneNumber);
+//
+//                                            Log.i("STATUS_E_NAME ", localContactName[0]);
+//                                            if (localContactName[0].length() > 12) {
+//                                                localContactName[0] = localContactName[0]
+//                                                        .substring(0, 8) + "...";
+//                                            }
+//
+//                                            Log.i("STATUS_E_LIST_SIZE_ALL ", Integer.toString(list.size()));
+//                                            // Setter setNameStoredIPhone is there to set the name of the user that put a new status
+//                                            userStatus.setNameStoredInPhone(localContactName[0]);
+//
+//                                            /* Code for 24 hours statuses, variable milis converts the current time in milliseconds,
+//                                            hours converts 24 hours into milliseconds, and the comparison take place, if the
+//                                            status time is less than 24 hours, it's added in list l
+//                                             */
+//                                            long millis = System.currentTimeMillis();
+//                                            long hours = 86400000L;
+//                                            for (Status s : list) {
+//                                                long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
+//                                                if (result > hours) {
+//                                                    // None
+//                                                    //l.clear();
+//
+//                                                } else {
+//                                                    l.add(s);
+//                                                }
+//                                            }
+//
+//                                            Log.i("STATUS_E_LIST_SIZE_LESS", Integer.toString(l.size()));
+//                                            if (!l.isEmpty()) {
+//                                                // Expose the last status uploaded for other users to see
+//                                                Status tmp = l.get(l.size() - 1);
+//                                                userStatus.setContent(tmp.getContent());
+//                                                userStatus.setTimestamp(tmp.getTimestamp());
+//                                                userStatus.setStatusList(l);
+//                                                if (userStatus.getPhoneNumber().equals(phone)) {
+//                                                    userStatus.setNameStoredInPhone(getString(R.string.me_));
+//                                                }
+//                                                // Adding the userStatus to the arrayList
+//                                                mStatusList.add(userStatus);
+//                                            }
+//                                            Log.i("STATUS_E_LIST_RECYCLER", Integer.toString(mStatusList.size()));
+//                                            Collections.reverse(mStatusList);
+//                                            Log.i("STATUS_E_DATASET", "CALLED");
+//                                            //fab509: clear the recycler view
+//                                            mStatusRecyclerView.removeAllViews();
+//                                            mStatusAdapter.notifyDataSetChanged();
+//
+//                                        }
+//
+//                                        @Override
+//                                        public void onCancelled(DatabaseError databaseError) {
+//
+//                                        }
+//                                    });
+//                                }
+//
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    } else {
+//                        Log.i("STATUS_S_BEFORE_EVENT ", "CALLED");
+//                        // Node 's' stands for statuses in the DB and the following is the code that runs if the user doesn't have any value under his 'e' node
+//                        mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
+//                            @Override
+//                            public void onDataChange(DataSnapshot dataSnapshot) {
+//                                GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
+//                                };
+//                                Map<String, Status> map = dataSnapshot.getValue(gti);
+//                                if (map == null) {
+//                                    return;
+//                                }
+//
+//                                List<Status> list = new ArrayList<>(map.values());
+//                                List<Status> l = new ArrayList<>();
+//
+//                                /**Collections.sort(list, (Status  a1, Status a2) ->
+//                                 Long.compare(a1.getTimestamp(), a2.getTimestamp()));**/
+//
+//                                UserStatus userStatus = new UserStatus(phoneNumber);
+//                                // userStatus.setStatusList(list);
+//                                Log.i("STATUS_S_NAME ", localContactName[0]);
+//                                if (localContactName[0].length() > 12) {
+//                                    localContactName[0] = localContactName[0]
+//                                            .substring(0, 8) + "...";
+//                                }
+//
+//                                Log.i("STATUS_S_LIST_SIZE_ALL ", Integer.toString(list.size()));
+//                                userStatus.setNameStoredInPhone(localContactName[0]);
+//
+////                                Status tmp = list.get(list.size() - 1);
+////                                userStatus.setContent(tmp.getContent());
+////                                userStatus.setTimestamp(tmp.getTimestamp());
+//                                long millis = System.currentTimeMillis();
+//                                long hours = 86400000L;
+//                                for (Status s : list) {//userStatus.getStatusList()){
+//                                    long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
+//                                    if (result > hours) {
+//                                        //
+//                                    } else {
+//                                        //l.clear();
+//                                        l.add(s);
+//                                    }
+//                                }
+//
+//                                Log.i("STATUS_S_LIST_SIZE_LESS", Integer.toString(l.size()));
+//                                if (!l.isEmpty()) {
+//                                    Status tmp = l.get(l.size() - 1);
+//                                    userStatus.setContent(tmp.getContent());
+//                                    userStatus.setTimestamp(tmp.getTimestamp());
+//                                    userStatus.setStatusList(l);
+//                                    if (userStatus.getPhoneNumber().equals(phone)) {
+//                                        userStatus.setNameStoredInPhone(getString(R.string.me_));
+//                                    }
+//                                    mStatusList.add(userStatus);
+//                                }
+//                                Log.i("STATUS_S_LIST_RECYCLER", Integer.toString(mStatusList.size()));
+//
+//                                Collections.reverse(mStatusList);
+//                                Log.i("STATUS_S_DATASET", "CALLED");
+//                                mStatusRecyclerView.removeAllViews();
+//                                mStatusAdapter.notifyDataSetChanged();
+//
+//                            }
+//
+//                            @Override
+//                            public void onCancelled(DatabaseError databaseError) {
+//
+//                            }
+//                        });
+//                    }
+//                }
+//
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {
+//
+//                }
+//            });
+//
+//
+//        }
+//    }
 
 
     private void presentShowcaseSequence() {
