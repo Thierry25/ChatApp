@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,33 +34,28 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
+import marcelin.thierry.chatapp.utils.CheckInternet_;
 
 
 public class OneToOneChatSettings extends AppCompatActivity {
 
-    private Toolbar mOneToOneBar;
+   // private Toolbar mOneToOneBar;
 
-    private TextView sendMessage;
-    private TextView callUser;
-    private TextView videoCallUser;
-    private TextView infoAboutUser;
     private CircleImageView mProfileImage;
 
     private String mUserPhone;
     private String mUserName;
     private String mUserPicture;
     private String mChatId;
-
-
     private ProgressBar mImageProgress;
 
     private Dialog mDialog;
+    private ImageView mBackArrow, mMoreInfo;
+    private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance()
+            .getReference().child("ads_users");
 
     private static final DatabaseReference mChatReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_chat");
-
-    private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance()
-            .getReference().child("ads_users");
 
     private static final DatabaseReference mMessagesReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_messages");
@@ -81,28 +77,17 @@ public class OneToOneChatSettings extends AppCompatActivity {
         mChatId = getIntent().getStringExtra("chat_id");
         mCurrentPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
-
-        mOneToOneBar = findViewById(R.id.one_to_one_bar);
-        setSupportActionBar(mOneToOneBar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle(mUserName);
-     //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        sendMessage = findViewById(R.id.sendMessage);
-        callUser = findViewById(R.id.callUser);
-        videoCallUser = findViewById(R.id.videoCallUser);
-        infoAboutUser = findViewById(R.id.infoAboutUser);
+        TextView name = findViewById(R.id.name);
+        name.setText(mUserName);
+        TextView phone_number = findViewById(R.id.phone_number);
+        phone_number.setText(mUserPhone);
 
         mImageProgress = findViewById(R.id.imageProgress);
 
         mProfileImage = findViewById(R.id.user_profile_image);
 
-        callUser.setOnClickListener(view ->
-                Toast.makeText(OneToOneChatSettings.this, R.string.in_dev
-                        , Toast.LENGTH_SHORT).show());
-
-        videoCallUser.setOnClickListener(view ->
-                Toast.makeText(OneToOneChatSettings.this, R.string.in_dev
-                        , Toast.LENGTH_SHORT).show());
+        mBackArrow = findViewById(R.id.backArrow);
+        mMoreInfo = findViewById(R.id.moreInfo);
 
         mUsersReference.keepSynced(true);
 
@@ -139,25 +124,20 @@ public class OneToOneChatSettings extends AppCompatActivity {
             startActivity(goToFullScreen);
         }));
 
-        sendMessage.setOnClickListener(view -> {
-
-            Intent goBackToChat = new Intent(OneToOneChatSettings.this,
-                    ChatActivity.class);
-            goBackToChat.putExtra("user_name", mUserName);
-            goBackToChat.putExtra("user_phone", mUserPhone);
-            goBackToChat.putExtra("user_picture", mUserPicture);
-            goBackToChat.putExtra("chat_id", mChatId);
-
-            startActivity(goBackToChat);
-            finish();
-
+        mDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        mMoreInfo.setOnClickListener(v -> {
+            new CheckInternet_(internet -> {
+               if(internet){
+                   showCustomDialog();
+               }else{
+                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+               }
+            });
         });
 
-        mDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-
-
-        infoAboutUser.setOnClickListener(view -> showCustomDialog());
-
+        mBackArrow.setOnClickListener(v ->{
+            finish();
+        });
     }
 
     private void showCustomDialog() {
@@ -285,22 +265,13 @@ public class OneToOneChatSettings extends AppCompatActivity {
               mChatReference.child(mChatId).removeValue().addOnCompleteListener(task -> {
                   Toast.makeText(this, "Conversation Deleted", Toast.LENGTH_SHORT).show();
                   finish();
+                  recreate();
               });
           })
           .OnNegativeClicked(() ->{
 
           })
           .build();
-
-//          builder.setNegativeButton(R.string.cancel, (dialog,id) ->
-//                  Toast.makeText(OneToOneChatSettings.this, "Cancelled", Toast.LENGTH_SHORT)
-//                  .show());
-//
-//          AlertDialog dialog = builder.create();
-//          dialog.setIcon(R.drawable.ic_warning);
-//          dialog.setTitle(R.string.delete);
-//          dialog.setMessage(getString(R.string.delete_conversation));
-//          dialog.show();
 
         });
 

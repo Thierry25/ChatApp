@@ -28,19 +28,14 @@ import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
-import com.google.android.exoplayer2.extractor.ExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
-import com.google.android.exoplayer2.trackselection.TrackSelector;
-import com.google.android.exoplayer2.util.Util;
 
 import java.io.File;
 import java.util.Formatter;
@@ -62,6 +57,7 @@ import static com.islamassem.voicemessager.TimeType.Second;
 public class VoiceMessagerFragment extends Fragment {
     public static final int RequestPermissionCode = 1001;
     private final static String TAG = "test";
+    public int value = 0;
     TextView recordBtn;
     TextView time;
     TextView play_time;
@@ -163,18 +159,16 @@ public class VoiceMessagerFragment extends Fragment {
         recordBtnImage.setOnClickListener(onDoneClickListener);
         recordBtn.setOnClickListener(onRecordBtn);
         recordBtn.setOnClickListener(onRecordBtn);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (onControllerClick != null)
-                    onControllerClick.onSendClick(file());
-            }
+        send.setOnClickListener(view -> {
+            if (onControllerClick != null)
+                onControllerClick.onSendClick(file(), (int)exoPlayer.getDuration()/1000);
         });
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (onControllerClick != null)
                     onControllerClick.onCloseClick();
+                    Log.i("MESSIAH", String.valueOf(exoPlayer.getDuration()));
             }
         });
         Handler handler = new Handler();
@@ -478,14 +472,11 @@ public class VoiceMessagerFragment extends Fragment {
         seekbar.setMax((int) exoPlayer.getDuration() / 1000);
         Log.e("testSeek", "setProgresssEnded");
         if (handler == null) handler = new Handler();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                {
-                    seekbar.setMax((int) exoPlayer.getDuration() / 1000);
-                    seekbar.setProgress(0);
-                    play_time.setText(stringForTime(seekbar.getMax()));
-                }
+        handler.post(() -> {
+            {
+                seekbar.setMax((int) exoPlayer.getDuration() / 1000);
+                seekbar.setProgress(0);
+                play_time.setText(stringForTime(seekbar.getMax()));
             }
         });
     }
@@ -511,7 +502,7 @@ public class VoiceMessagerFragment extends Fragment {
         void onFinishRecording(File file);
 
         //called when user click send button
-        void onSendClick(File file);
+        void onSendClick(File file, int duration);
 
         //called when user want to close message fragment ,you should be removing the fragment here
         void onCloseClick();

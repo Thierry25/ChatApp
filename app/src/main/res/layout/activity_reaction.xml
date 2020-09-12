@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/rootView"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/baz"
+    tools:context=".activities.ReactionActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:alpha=".91" />
+
+    <ImageButton
+        android:id="@+id/delete"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_delete"/>
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/adsReaction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/allura"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"
+        android:text="@string/ads_messenger_reaction"
+        android:textSize="43sp"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/adsReactionCallerText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/allura"
+        android:textColor="@color/white"
+        android:layout_marginTop="24dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_below="@id/adsReaction"
+        android:textSize="25sp"/>
+
+    <RelativeLayout
+        android:id="@+id/reactionLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:layout_margin="8dp"
+        android:visibility="visible"
+        android:layout_alignParentBottom="true">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilePic"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_avatar" />
+
+        <com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/phoneNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/profilePic"
+            android:fontFamily="@font/allura"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:text="@string/_210c"/>
+
+        <com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/acceptReaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/declineReaction"
+            android:layout_below="@id/phoneNumber"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="6dp"
+            android:layout_marginEnd="12dp"
+            android:textSize="18sp"
+            android:text="@string/accept"
+            android:textColor="@color/white"
+            android:background="@drawable/border_call"/>
+
+        <com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/declineReaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/phoneNumber"
+            android:layout_marginTop="8dp"
+            android:drawablePadding="6dp"
+            android:text="@string/decline"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/border_hang_up"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/liveLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp">
+
+        <!-- -->
+
+        <FrameLayout
+            android:id="@+id/localVideo"
+            android:layout_width="0dp"
+            android:layout_height="284dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/border___" />
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:background="#ccc" />
+
+        <FrameLayout
+            android:id="@+id/otherVideo"
+            android:layout_width="0dp"
+            android:layout_height="284dp"
+            android:layout_marginTop="3dp"
+            android:layout_weight="1"
+            android:background="@drawable/border___" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/textLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/messageLinLayout"
+        android:layout_below="@id/liveLayout"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:visibility="visible">
+
+        <!--        <androidx.core.widget.NestedScrollView-->
+        <!--            android:id="@+id/swipe_layout"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            app:layout_constraintBottom_toTopOf="@+id/mainVLayout">-->
+
+        <!-- -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messagesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="3dp"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </androidx.recyclerview.widget.RecyclerView>
+        <!--        </androidx.core.widget.NestedScrollView>-->
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/messageLinLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/border"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/sendEmoji"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/open_emoji_keyboard"
+            android:src="@drawable/ic_send_emoji" />
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/sendText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="@string/type_message"
+            android:imeOptions="actionSend|flagNoExtractUi"
+            android:inputType="textCapSentences|textMultiLine" />
+
+        <ImageButton
+            android:id="@+id/sendTextButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight=".5"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/send_voice"
+            android:src="@drawable/ic_send"
+            android:tag="sendAudio" />
+
+    </LinearLayout>
+
+
+
+
+</RelativeLayout>

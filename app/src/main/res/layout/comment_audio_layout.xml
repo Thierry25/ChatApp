@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profilePic"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_avatar" />
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/commentName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/profilePic"
+        android:text="@string/common_google_play_services_enable_button"
+        android:textColor="@color/black"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="4dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/rLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/sound_on"
+        android:orientation="horizontal"
+        android:layout_marginStart="8dp"
+        android:layout_toEndOf="@id/profilePic"
+        android:layout_below="@id/choices">
+
+        <ImageButton
+            android:id="@+id/play_audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:paddingLeft="8dp"
+            android:paddingTop="8dp"
+            android:paddingRight="4dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/ic_play_circle_filled" />
+
+        <SeekBar
+            android:id="@+id/audio_seekbar"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            app:backgroundTint="@color/white" />
+
+        <pl.droidsonroids.gif.GifTextView
+            android:id="@+id/gif"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_width="120dp"
+            android:layout_height="30dp"
+            android:visibility="gone"
+            android:background="@drawable/e"/>
+
+        <TextView
+            android:id="@+id/audio_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:paddingEnd="3dp"
+            android:paddingRight="3dp"
+            android:paddingBottom="8dp"
+            android:text="@string/_00_00"
+            android:textColor="@color/white"
+            android:textSize="9sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/choices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/profilePic"
+        android:layout_below="@id/commentName"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/audio"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/border"/>
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border"
+            android:text="@string/label_text"/>
+
+        <ImageView
+            android:id="@+id/delete"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:background="@drawable/ic_delete"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"/>
+
+
+    </LinearLayout>
+
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/rLayout"
+        android:layout_toEndOf="@id/profilePic"
+        android:text="@string/_00_00"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/reply"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/time"
+        android:layout_below="@id/rLayout"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"
+        android:text="@string/reply"/>
+
+    <com.vanniktech.emoji.EmojiTextView
+        android:id="@+id/seeReplies"
+        android:layout_below="@id/replyLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/see_replies"
+        android:visibility="visible"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_toEndOf="@id/profilePic"
+        android:textSize="14sp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/repliesList"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seeReplies"
+        android:layout_toEndOf="@id/profilePic"
+        android:layout_marginStart="24dp"/>
+
+    <RelativeLayout
+        android:id="@+id/replyLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/reply"
+        android:visibility="gone"
+        android:layout_toEndOf="@id/profilePic">
+
+        <com.vanniktech.emoji.EmojiTextView
+            android:id="@+id/replying_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="8dp"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:textColor="@color/light_blue"
+            android:text="@string/_00_00" />
+
+        <com.vanniktech.emoji.EmojiEditText
+            android:id="@+id/replyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/replying_to"
+            android:hint="@string/replying_to"
+            android:textSize="12sp"
+            android:inputType="textCapSentences|textMultiLine"
+            android:layout_marginStart="12dp"/>
+
+        <Button
+            android:id="@+id/sendReply"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/replyText"
+            android:layout_alignParentEnd="true"
+            android:text="@string/cancel"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+
+
+</RelativeLayout>

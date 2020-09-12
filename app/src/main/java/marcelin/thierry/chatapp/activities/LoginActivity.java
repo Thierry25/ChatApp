@@ -392,7 +392,7 @@ public class LoginActivity extends AppCompatActivity{
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            if(mEditTextDisplayName.getText().toString().trim().length() >= 4){
+            if(mEditTextDisplayName.getText().toString().trim().length() >= 4 && mEditTextDisplayName.getText().toString().trim().length() < 10 ){
                 mNextButton.show();//setVisibility(View.VISIBLE);
             }else{
                 mNextButton.hide();//setVisibility(View.GONE);

@@ -1204,7 +1204,8 @@ public class MainActivity extends AppCompatActivity {
                 new String[] {ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME,
                         ContactsContract.CommonDataKinds.Phone.NUMBER,
                         ContactsContract.RawContacts.ACCOUNT_TYPE},
-                ContactsContract.RawContacts.ACCOUNT_TYPE + " <> 'google' ",
+//                ContactsContract.RawContacts.ACCOUNT_TYPE + " <> 'google' ",
+                ContactsContract.RawContacts.ACCOUNT_TYPE + " = 'com.google' ",
                 null, null);
         if (cursor.getCount() > 0) {
             while (cursor.moveToNext()) {

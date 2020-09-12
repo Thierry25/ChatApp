@@ -17,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -41,8 +43,12 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.ChannelInteractionAdapter;
+import marcelin.thierry.chatapp.adapters.NotificationAdapter;
 import marcelin.thierry.chatapp.classes.Chat;
 import marcelin.thierry.chatapp.classes.Messages;
+import marcelin.thierry.chatapp.classes.NotificationDropDownMenu;
+import marcelin.thierry.chatapp.classes.ReplyNotification;
+import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.Constant;
 
 public class ChannelSubscriberActivity extends AppCompatActivity {
@@ -81,10 +87,17 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
             .getReference();
     private static final DatabaseReference mMessageReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_channel_messages");
+    private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance().getReference()
+            .child("ads_users");
 
     private TextView title;
     private CircleImageView profileImage;
     private ImageView backButton;
+    private ImageView notification_bell;
+    private TextView unseenReplies;
+
+    private List<ReplyNotification> replyNotificationsList = new ArrayList<>();
+    private NotificationAdapter mNotificationAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,13 +134,18 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         mMessagesList.setLayoutManager(mLinearLayoutManager);
 
         mChannelInteractionAdapter = new ChannelInteractionAdapter(messagesList, this, this);
+        mNotificationAdapter = new NotificationAdapter(this, replyNotificationsList);
         mMessagesList.setAdapter(mChannelInteractionAdapter);
 
         //  getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.ic_try));
 
         mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
+        notification_bell = findViewById(R.id.notification_bell);
+        unseenReplies = findViewById(R.id.unseenReplies);
+
         loadMessages();
+        getComments();
 
 //        mSwipeRefreshLayout.setOnRefreshListener(() -> {
 //
@@ -154,6 +172,18 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         backButton.setOnClickListener(v ->{
             finish();
         });
+
+        notification_bell.setVisibility(View.VISIBLE);
+
+        notification_bell.setOnClickListener(v ->{
+            if(unseenReplies.getVisibility() == View.VISIBLE){
+                showNotifications();
+            }else{
+                Toast.makeText(this, R.string.no_notif, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mRootView.setBackgroundColor(Color.parseColor("#ececec"));
+
     }
 
     @Override
@@ -190,6 +220,105 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         super.onPause();
         isOnActivity = false;
         Log.i("ChatActivity", "onPause() called");
+    }
+
+    private void getComments(){
+        mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(dataSnapshot.exists()){
+                    ReplyNotification replyNotification = dataSnapshot.getValue(ReplyNotification.class);
+                    if(replyNotification == null){
+                        return;
+                    }
+                    if(!replyNotification.getRe().equals(mCurrentUserPhone)){
+                        if(!replyNotification.isSe()){
+                            unseenReplies.setVisibility(View.VISIBLE);
+                            mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Users u = dataSnapshot.getValue(Users.class);
+                                    if(u == null){
+                                        return;
+                                    }
+                                    replyNotification.setReplyImage(u.getThumbnail());
+                                    replyNotification.setReplierName(u.getName());
+                                    replyNotificationsList.add(replyNotification);
+                                    mNotificationAdapter.notifyDataSetChanged();
+
+                                    if(replyNotificationsList.isEmpty()){
+                                        // do something in the list
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void showNotifications() {
+        final NotificationDropDownMenu menu = new NotificationDropDownMenu(this, replyNotificationsList);
+        menu.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        menu.setWidth(getPxFromDp(350));
+        menu.setOutsideTouchable(true);
+        menu.setFocusable(true);
+        menu.showAsDropDown(notification_bell);
+        menu.setAnimationStyle(R.style.emoji_fade_animation_style);
+        menu.setNotificationSelectedListener((position, replyNotification) -> {
+            menu.dismiss();
+            // New Intent to CommentActivity
+            mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).child(replyNotification.getR()).child("se").setValue(true);
+            Intent goToCommentActivity = new Intent(ChannelSubscriberActivity.this, CommentActivity.class);
+            goToCommentActivity.putExtra("channel_name", replyNotification.getCh());
+            goToCommentActivity.putExtra("channel_image",replyNotification.getChi());
+            goToCommentActivity.putExtra("message_type", replyNotification.getTy());
+            goToCommentActivity.putExtra("message_id",replyNotification.getId());
+            goToCommentActivity.putExtra("message_color",replyNotification.getCol());
+            goToCommentActivity.putExtra("message_content",replyNotification.getCo());
+            goToCommentActivity.putExtra("message_timestamp", replyNotification.getT2());
+            goToCommentActivity.putExtra("message_like", replyNotification.getL());
+            goToCommentActivity.putExtra("message_comment", replyNotification.getCc());
+            goToCommentActivity.putExtra("message_seen", replyNotification.getS());
+            goToCommentActivity.putExtra("reply_id", replyNotification.getR());
+            goToCommentActivity.putExtra("from", "Activity");
+            goToCommentActivity.putExtra("isOn", true);
+            goToCommentActivity.putExtra("comment_id", replyNotification.getC());
+          //  goToCommentActivity.putExtra("message_color", replyNotification.getCol());
+            startActivity(goToCommentActivity);
+
+        });
+    }
+
+    private int getPxFromDp(int i) {
+        return (int) (i * getResources().getDisplayMetrics().density);
     }
 
     private void loadMessages() {

@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -34,6 +35,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -103,7 +106,9 @@ import marcelin.thierry.chatapp.utils.CheckInternet_;
 import marcelin.thierry.chatapp.utils.Constant;
 import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 
-public class GroupChatActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener, SearchView.OnQueryTextListener, VoiceMessagerFragment.OnControllerClick {
+public class GroupChatActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener,
+        SearchView.OnQueryTextListener,
+        VoiceMessagerFragment.OnControllerClick {
 
     private static final String[] WALK_THROUGH = new String[]{Manifest.permission.RECORD_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -168,7 +173,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private ImageView backButton;
     private ImageView mSendVoice;
 
-
+     private Handler handler;
 
     /***
      * Reply feature
@@ -191,8 +196,6 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private String mFinalCopiedMessages = "";
     private LinearLayout linearLayout;
     private Fragment fragment;
-
-
 
     private static final StorageReference mImagesStorage = FirebaseStorage.getInstance().getReference();
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
@@ -295,7 +298,9 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         mainVLayout = findViewById(R.id.mainVLayout);
         replyLinearLayout = findViewById(R.id.replyLinearLayout);
 
-        mGroupMessageAdapter = new GroupMessageAdapter(messagesList, mainVLayout, mSelectedMessages, this, this);
+        handler = new Handler();
+
+        mGroupMessageAdapter = new GroupMessageAdapter(messagesList, mainVLayout, mSelectedMessages, this, this, handler);
         mMessagesList.setAdapter(mGroupMessageAdapter);
 
         replyTextLayout = findViewById(R.id.replyTextLayout);
@@ -460,7 +465,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                 linearLayout.setVisibility(View.GONE);
                 record();
             }else{
-                sendMessage();
+                sendMessage(mTextToSend);
             }
         });
 
@@ -479,6 +484,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
             intent.putExtra("chat_id", mChatId);
             overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left );
             startActivity(intent);
+            recreate();
             finish();
         });
 
@@ -495,6 +501,11 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                 e.printStackTrace();
             }
         });
+
+        mSendEmoji.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
+        mSendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
+
+        setUpEmojiPopup();
 
     }
 
@@ -1069,13 +1080,12 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     }
 
 
-    private void sendMessage() {
+    private void sendMessage(EmojiEditText mTextToSend) {
 
+        String message = mTextToSend.getText().toString().trim();
         try {
             new CheckInternet_(internet -> {
                if(internet){
-                       String message = mTextToSend.getText().toString().trim();
-
                        if (!TextUtils.isEmpty(message)) {
 
                            final String message_reference = "ads_group_messages/";
@@ -1148,7 +1158,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
                                                Toast.makeText(GroupChatActivity.this, "Notification Sent",
                                                        Toast.LENGTH_SHORT).show();
-
+                                               mTextToSend.requestFocus();
                                            }
                                        });
                                //mp1.start();
@@ -1244,12 +1254,9 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                                     m.setReplyOn(true);
                                                 }
 
-                                                nested.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
-                                                        nested.fullScroll(View.FOCUS_DOWN);
-                                                    }
+                                                nested.postDelayed(() -> {
+                                                    // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
+                                                    nested.fullScroll(View.FOCUS_DOWN);
                                                 },200);
                                             }
 
@@ -1763,7 +1770,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     }
 
     @Override
-    public void onSendClick(File file) {
+    public void onSendClick(File file, int duration) {
         sendAudio(file);
         findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
         remove(fragment);

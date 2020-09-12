@@ -15,7 +15,7 @@ public class CheckInternet_ extends AsyncTask<Void,Void,Boolean> {
 
     @Override protected Boolean doInBackground(Void... voids) { try {
         Socket sock = new Socket();
-        sock.connect(new InetSocketAddress("8.8.8.8", 53), 1500);
+        sock.connect(new InetSocketAddress("8.8.4.4", 53), 2000);
         sock.close();
         return true;
     } catch (IOException e) { return false; } }

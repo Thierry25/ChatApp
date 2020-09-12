@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="12dp"
     android:layout_marginEnd="8dp">
 
     <RelativeLayout
@@ -34,9 +34,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@id/channel_image"
                 android:maxLength="35"
+                android:textStyle="bold"
                 android:text="@string/channel_name"
                 android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/timestamp"
@@ -113,7 +114,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_toEndOf="@id/play_audio"
-                android:backgroundTint="@color/white"
                 android:padding="14dp" />
 
 
@@ -163,6 +163,7 @@
             android:drawableStart="@drawable/ic_favorite_border"
             android:drawablePadding="8dp"
             android:text="@string/_333l"
+            android:visibility="gone"
             android:textSize="16sp" />
 
         <TextView
@@ -179,6 +180,7 @@
             android:drawableStart="@drawable/ic_chat_bubble_outline"
             android:drawablePadding="8dp"
             android:text="@string/_210c"
+            android:visibility="gone"
             android:textSize="16sp" />
 
         <TextView
@@ -196,6 +198,7 @@
             android:drawablePadding="8dp"
             android:gravity="end"
             android:text="@string/_210c"
+            android:visibility="gone"
             android:textSize="16sp" />
 
     </RelativeLayout>

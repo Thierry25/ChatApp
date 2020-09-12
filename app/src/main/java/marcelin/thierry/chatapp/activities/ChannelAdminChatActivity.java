@@ -4,24 +4,21 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.NotificationChannel;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-
 import com.google.android.material.snackbar.Snackbar;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -34,12 +31,10 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,7 +48,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bestsoft32.tt_fancy_gif_dialog_lib.TTFancyGifDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -71,10 +65,8 @@ import com.islamassem.voicemessager.VoiceMessagerFragment;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
-
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 import net.alhazmy13.mediapicker.Video.VideoPicker;
-
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -85,9 +77,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
@@ -360,9 +350,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
         backButton = findViewById(R.id.backButton);
 
-        backButton.setOnClickListener(v -> {
-            finish();
-        });
+        backButton.setOnClickListener(v -> finish());
 
 
         horizontalScrollView = findViewById(R.id.horizontalScrollView);
@@ -488,7 +476,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 linearLayout.setVisibility(View.GONE);
                 record();
             } else {
-                sendMessage();
+                sendMessage(mTextToSend);
             }
         });
 
@@ -506,9 +494,14 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         notification_bell.setVisibility(View.VISIBLE);
 
         notification_bell.setOnClickListener(v ->{
-            showNotifications();
-           // getComments();
+            if(unseenReplies.getVisibility() == View.VISIBLE){
+                showNotifications();
+            }else{
+                Toast.makeText(this, R.string.no_notif, Toast.LENGTH_SHORT).show();
+            }
         });
+
+        mRootView.setBackgroundColor(Color.parseColor("#ececec"));
     }
 
     private void getComments(){
@@ -523,30 +516,27 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
               //      if(!replyNotification.getRe().equals(mCurrentUserPhone)){
                         if(!replyNotification.isSe()){
                             unseenReplies.setVisibility(View.VISIBLE);
+                            mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    Users u = dataSnapshot.getValue(Users.class);
+                                    if(u == null){
+                                        return;
+                                    }
+                                    replyNotification.setReplyImage(u.getThumbnail());
+                                    replyNotification.setReplierName(u.getName());
+                                    replyNotificationsList.add(replyNotification);
+                                    mNotificationAdapter.notifyDataSetChanged();
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+
+                                }
+                            });
                         }
-                        mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Users u = dataSnapshot.getValue(Users.class);
-                                if(u == null){
-                                    return;
-                                }
-                                replyNotification.setReplyImage(u.getThumbnail());
-                                replyNotification.setReplierName(u.getName());
-                                replyNotificationsList.add(replyNotification);
-                                mNotificationAdapter.notifyDataSetChanged();
 
-                                if(replyNotificationsList.isEmpty()){
-                                    // do something in the list
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-              //      }
+                    //    }
                 }
             }
 
@@ -575,7 +565,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private void showNotifications() {
         final NotificationDropDownMenu menu = new NotificationDropDownMenu(this, replyNotificationsList);
         menu.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        menu.setWidth(getPxFromDp(350));
+        menu.setWidth(getPxFromDp());
         menu.setOutsideTouchable(true);
         menu.setFocusable(true);
         menu.showAsDropDown(notification_bell);
@@ -599,13 +589,14 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             goToCommentActivity.putExtra("from", "Activity");
             goToCommentActivity.putExtra("isOn", true);
             goToCommentActivity.putExtra("comment_id", replyNotification.getC());
+           // goToCommentActivity.putExtra("message_color", replyNotification.getCol());
             startActivity(goToCommentActivity);
 
         });
     }
 
-    private int getPxFromDp(int i) {
-        return (int) (i * getResources().getDisplayMetrics().density);
+    private int getPxFromDp() {
+        return (int) (350 * getResources().getDisplayMetrics().density);
     }
 
 
@@ -1309,12 +1300,13 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     }
 
 
-    private void sendMessage() {
+    private void sendMessage(EmojiEditText mTextToSend) {
 
+        String message = mTextToSend.getText().toString().trim();
         try {
             new CheckInternet_(internet -> {
                 if (internet) {
-                        String message = mTextToSend.getText().toString().trim();
+
 
                         if (!TextUtils.isEmpty(message)) {
 
@@ -1411,6 +1403,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                                         "Notification Sent",
                                                         Toast.LENGTH_SHORT).show();
 
+                                                mTextToSend.requestFocus();
                                             }
                                         });
                                 //mp1.start();
@@ -2005,7 +1998,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     }
 
     @Override
-    public void onSendClick(File file) {
+    public void onSendClick(File file, int duration) {
         sendAudio(file);
         findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
         remove(fragment);

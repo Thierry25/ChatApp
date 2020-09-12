@@ -17,6 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Handler;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,8 +32,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +43,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiTextView;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,10 +53,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.activities.ForwardMessageActivity;
 import marcelin.thierry.chatapp.activities.FullScreenImageActivity;
@@ -78,6 +74,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private FirebaseAuth mAuth;
     private LinearLayout mMainVLayout;
     private Activity mActivity;
+    private Runnable runnable;
+    private Handler handler;
     private final String[] WALK_THROUGH = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
 
@@ -104,13 +102,14 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             .getReference().child("ads_group_messages");
 
     public GroupMessageAdapter(List<Messages> mMessagesList, LinearLayout mMainVLayout, List<Messages> mSelectedMessagesList,
-                               Context mContext, Activity mActivity) {
+                               Context mContext, Activity mActivity, Handler handler) {
 
         this.mMessagesList = mMessagesList;
         this.mMainVLayout = mMainVLayout;
         this.mSelectedMessagesList = mSelectedMessagesList;
         this.mContext = mContext;
         this.mActivity = mActivity;
+        this.handler = handler;
 
         mediaPlayers.clear();
         setHasStableIds(true);
@@ -125,12 +124,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        //       mHolderList.add(holder);
-
         final Messages message = mMessagesList.get(position);
-        //
-//        final Users user = users.get(position);
-
         String dateMessageSend = getDate(message.getTimestamp());
 
         switch (holder.getItemViewType()) {
@@ -139,21 +133,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
             case 0:
                 String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
-//                if(!message.isVisible()){
-//                    ((MessageViewHolder) holder).messageText.setTypeface(null, Typeface.ITALIC);
-//                    ((MessageViewHolder) holder).messageText.setTextColor(Color.parseColor(("#A9A9A9")));
-//                    ((MessageViewHolder)holder).messageText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
-//                            0, 0, 0);
-//                    ((MessageViewHolder) holder).messageText.setCompoundDrawablePadding(20);
-//                    ((MessageViewHolder) holder).messageText.setText(R.string.msg_dell);
-//                    ((MessageViewHolder) holder).messageLinearLayout.setEnabled(false);
-//                    ((MessageViewHolder) holder).messageText.setEnabled(false);
-//                    ((MessageViewHolder) holder).messageTime.setVisibility(View.GONE);
-//                    ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
-//
-////                   ((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
-//                }
-
                 if (!message.isVisible()) {
                     if (!message.getFrom().equals(phone)) {
                         ((MessageViewHolder) holder).messageText.setTypeface(null, Typeface.ITALIC);
@@ -177,23 +156,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         ((MessageViewHolder) holder).messageTime.setVisibility(View.GONE);
                         ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
                     }
-//                   ((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
-//                    notifyItemRangeChanged(position, mMessagesList.size());
                 }
-//                if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//
-//                    ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-//                    if(message.isReplyOn()){
-//                        ((MessageViewHolder) holder).cLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-//                    }
-//                }else{
-//                    if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                    }else{
-//                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_text_background);
-//                    }
-//                }
-
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
@@ -228,89 +191,12 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 }
                 ((MessageViewHolder) holder).messageText.setText(message.getContent());
-
-//                if (message.getContent().length() > 40) {
-//                    ((MessageViewHolder) holder).messageText.setWidth(250);
-//                }
+                if(message.isVisible()) {
+                    ((MessageViewHolder) holder).seen_by.setVisibility(View.VISIBLE);
+                    ((MessageViewHolder) holder).seen_by.setText(String.valueOf(message.getRead_by().size()));
+                }
 
                 ((MessageViewHolder) holder).messageTime.setText(dateMessageSend);
-//                ((MessageViewHolder) holder).messageLinearLayout.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-//                        builder.setTitle(R.string.choose_option)
-//                                .setItems(R.array.options, (dialog, which) -> {
-//                                    switch (which){
-//                                        case 0:
-//                                            switch (message.getType()) {
-//                                                case "text": {
-//
-//                                                    Intent i = new Intent(view.getContext(),
-//                                                            ForwardMessageActivity.class);
-//                                                    String s = "text";
-//                                                    i.putExtra("type", s);
-//                                                    i.putExtra("message", message.getContent());
-//                                                    view.getContext().startActivity(i);
-//
-//                                                    break;
-//                                                }
-//                                                case "channel_link": {
-//
-//                                                    Intent i = new Intent(view.getContext(),
-//                                                            ForwardMessageActivity.class);
-//                                                    String s = "channel_link";
-//                                                    i.putExtra("type", s);
-//                                                    i.putExtra("message", message.getContent());
-//                                                    view.getContext().startActivity(i);
-//
-//                                                    break;
-//                                                }
-//                                                case "group_link": {
-//
-//                                                    Intent i = new Intent(view.getContext(),
-//                                                            ForwardMessageActivity.class);
-//                                                    String s = "group_link";
-//                                                    i.putExtra("type", s);
-//                                                    i.putExtra("message", message.getContent());
-//                                                    view.getContext().startActivity(i);
-//
-//                                                    break;
-//                                                }
-//                                            }
-//
-//                                        case 1:
-//                                            if (!message.getFrom().equals(Objects.requireNonNull
-//                                                    (mAuth.getCurrentUser()).getPhoneNumber())) {
-//                                                Toast.makeText(view.getContext(), R.string.cannot +
-//                                                        R.string.coming, Toast.LENGTH_SHORT).show();
-//                                            }else{
-//                                                mMessageReference.child(message.getMessageId())
-//                                                        .child("visible").setValue(false);
-//
-//                                                mMessageReference.child(message.getMessageId())
-//                                                        .child("content").setValue("Message Deleted");
-//
-//                                                //((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
-//
-//                                                Toast.makeText(view.getContext(), "Message deleted",
-//                                                        Toast.LENGTH_SHORT).show();
-//                                            }
-//                                            break;
-//
-//                                        case 2:
-//                                            break;
-//
-//                                        default:
-//                                            return;
-//                                    }
-//                                });
-//                        AlertDialog dialog = builder.create();
-//                        dialog.show();
-//
-//
-//                    }
-//                })
-
 
                 if (message.getType().equals("channel_link")) {
                     ((MessageViewHolder) holder).messageText.setTextColor(Color.rgb(0, 100, 0));
@@ -501,12 +387,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                 });
 
-//                ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
-//                if (message.isSeen() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((MessageViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
-
                 if (message.isSent() && message.getFrom().equals(Objects.requireNonNull(
                         mAuth.getCurrentUser()).getPhoneNumber())) {
                     ((MessageViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
@@ -532,27 +412,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if(message.isReplyOn()){
                     if(message.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())){
                         ((MessageViewHolder) holder).replyLayout.setVisibility(View.VISIBLE);
-//                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_lay);
-//                        ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upper);
-
                     }else{
 
                         ((MessageViewHolder) holder).replyLayout.setVisibility(View.VISIBLE);
-//                        ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_layy);
-//                        ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upperr);
                     }
-
-
-
-//                    if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//                       mMainVLayout.setBackgroundResource(R.drawable.message_selected_layout);
-//                    }else{
-//                        if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                            mMainVLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                        }else{
-//                            mMainVLayout.setBackgroundResource(R.drawable.message_text_background);
-//                        }
-//                    }
 
                     mMessageReference.child(message.getParent()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -566,18 +429,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     m.getFrom();
                             if(m.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())){
                                 ((MessageViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                        (Color.parseColor("#FFD700"));
-//
-//                                ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                             }else{
                                 ((MessageViewHolder) holder).senderOfMessage.setText(nameStored);
-//                                ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                        (Color.parseColor("#FF4500"));
-//                                ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.other_linear_background);
-//                                ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
-
                             }
 
                             switch (m.getType()){
@@ -852,7 +705,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     });
                 }
 
-
+               if(message.isVisible()) {
+                   ((ImageViewHolder) holder).seen_by.setVisibility(View.VISIBLE);
+                   ((ImageViewHolder) holder).seen_by.setText(String.valueOf(message.getRead_by().size()));
+               }
                 Picasso.get().load(message.getContent())
                         .placeholder(R.drawable.ic_avatar)
                         .into(((ImageViewHolder) holder).messageImage, new Callback() {
@@ -900,18 +756,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
 
                 }
-
-//                if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//
-//                    ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-//
-//                }else{
-//                    if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                        ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                    }else{
-//                        ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background);
-//                    }
-//                }
 
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
                     ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
@@ -1006,12 +850,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                         LinearLayout replyLayout = mMainVLayout.findViewById(R.id.replyLinearLayout);
                                         replyLayout.setVisibility(View.VISIBLE);
 
-//                                        if (sender.getText().toString().trim().equals(mContext.getResources().getString(R.string.you))) {
-//                                            sender.setTextColor(Color.parseColor("#FFD700"));
-//                                        } else {
-//                                            sender.setTextColor(Color.parseColor("#FF4500"));
-//                                        }
-
                                         Messages.setClickedMessageId(message.getMessageId());
 
                                         closeReply.setOnClickListener(view12 -> {
@@ -1055,28 +893,11 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         if (list.contains(vid)) {
                             i.putExtra("video", alreadyThere);
                         } else {
-//                            String fileName = downloadFile(mContext, message.getMessageId(),
-//                                    ".mp4", f.getAbsolutePath(), message.getContent());
-//                            i.putExtra("video", f.getAbsolutePath() + "/" + fileName);
                             i.putExtra("video", message.getContent());
                         }
                     }
-                    //  i.putExtra("time", getDate(message.getTimestamp()));
                     view.getContext().startActivity(i);
                 });
-
-//                if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//
-//                    ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-//
-//                }else{
-//                    if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                        ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                    }else{
-//                        ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background);
-//                    }
-//                }
-
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
@@ -1136,18 +957,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     m.getFrom();
                             if (m.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                 ((VideoViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#20BF9F"));
-//
-//                                    ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                             } else {
                                 ((VideoViewHolder) holder).senderOfMessage.setText(nameStored);
-//                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFFFFF"));
-//                                    ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
-
                             }
 
                             switch (m.getType()) {
@@ -1270,6 +1081,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 }
 
+               if(message.isVisible()){
+                   ((VideoViewHolder) holder).seen_by.setVisibility(View.VISIBLE);
+                   ((VideoViewHolder) holder).seen_by.setText(String.valueOf(message.getRead_by().size()));
+               }
                 ((VideoViewHolder) holder).rLayout.setOnClickListener(view -> {
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
@@ -1408,10 +1223,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         if (list.contains(mess)) {
                             mediaPlayer.setDataSource(alreadyThere);
                         } else {
-//                            String fileName = downloadFile(mContext, message.getMessageId(),
-//                                    ".gp3", f.getAbsolutePath(), message.getContent());
 //
-//                            mediaPlayer.setDataSource(f.getAbsolutePath() + "/" + fileName);
                             mediaPlayer.setDataSource(message.getContent());
                         }
                     }
@@ -1427,19 +1239,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         );
 
 
-                        ((AudioViewHolder) holder).seekBarAudio.setMax(duration[0]);
+                        ((AudioViewHolder) holder).seekBarAudio.setMax(mediaPlayer12.getDuration());
+                        ((AudioViewHolder) holder).audioTime.setText(time[0]);
 
-                        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-                        service.scheduleWithFixedDelay(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                ((AudioViewHolder)holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
-                            }
-                        }, 1, 1, TimeUnit.MICROSECONDS);
-
-                        // ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
+                        if(message.isVisible()) {
+                            ((AudioViewHolder) holder).listened_to.setVisibility(View.VISIBLE);
+                            ((AudioViewHolder) holder).listened_to.setText(String.valueOf(message.getRead_by().size()));
+                        }
                     });
 
                     mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
@@ -1449,6 +1255,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         } else {
                             ((AudioViewHolder) holder).playAudioFile.setImageResource(R.drawable.ic_play_copy);
                         }
+                        mediaPlayer.seekTo(0);
                     });
 
                     mediaPlayer.setOnErrorListener((mp, what, extra) -> {
@@ -1484,6 +1291,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     m.stop();
                                 }
                                 mediaPlayer.start();
+                                updateSeekBar(mediaPlayer, ((AudioViewHolder) holder).seekBarAudio);
                             }
                         }
 
@@ -1644,8 +1452,11 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean input) {
 
-                            if (input) {
+                            if (!input) {
+                                return;
+                            } else {
                                 mediaPlayer.seekTo(progress);
+                                seekBar.setProgress(progress);
                             }
 
                         }
@@ -1665,12 +1476,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     Log.e("MediaPlayerException", e.getMessage());
                     e.printStackTrace();
                 }
-
-//                ((AudioViewHolder) holder).messageCheck.setVisibility(View.GONE);
-//                if (message.isSeen() && message.getFrom().equals(Objects.requireNonNull(
-//                        mAuth.getCurrentUser()).getPhoneNumber())) {
-//                    ((AudioViewHolder) holder).messageCheck.setVisibility(View.VISIBLE);
-//                }
 
                 if (message.isSent() && message.getFrom().equals(Objects.requireNonNull(
                         mAuth.getCurrentUser()).getPhoneNumber())) {
@@ -1803,18 +1608,6 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 });
 
-//                if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-//
-//                    ((AudioViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-//
-//                }else{
-//                    if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())){
-//                        ((AudioViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-//                    }else{
-//                        ((AudioViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background);
-//                    }
-//                }
-
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((AudioViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
@@ -1846,8 +1639,11 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 9:
 
                 ((DocumentViewHolder) holder).timeMessage.setText(dateMessageSend);
+               if(message.isVisible()){
+                   ((DocumentViewHolder) holder).seen_by.setVisibility(View.VISIBLE);
+                   ((DocumentViewHolder) holder).seen_by.setText(String.valueOf(message.getRead_by().size()));
+               }
                 String st = message.getContent();
-
                 if(st.length() > 25){
                     st = st.substring(0, 21) + "...";
                     ((DocumentViewHolder) holder).documentName.setText(st);
@@ -2314,6 +2110,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView audioSent;
         TextView documentSent;
         TextView videoSent;
+        TextView seen_by;
 
         RelativeLayout messageLinearLayout;
 
@@ -2349,6 +2146,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             infoLayout = itemView.findViewById(R.id.infoLayout);
             inforLayout = itemView.findViewById(R.id.inforLayout);
+            seen_by = itemView.findViewById(R.id.seen_by);
 
         }
     }
@@ -2366,6 +2164,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView audioSent;
         TextView documentSent;
         TextView videoSent;
+        TextView seen_by;
 
         RelativeLayout rLayout;
         TouchImageView imageSent;
@@ -2390,6 +2189,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             audioSent = itemView.findViewById(R.id.audioSent);
             documentSent = itemView.findViewById(R.id.documentSent);
             videoSent = itemView.findViewById(R.id.videoSent);
+            seen_by = itemView.findViewById(R.id.seen_by);
 
             rLayout = itemView.findViewById(R.id.rLayout);
             infoLayout = itemView.findViewById(R.id.infoLayout);
@@ -2413,6 +2213,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView audioSent;
         TextView documentSent;
         TextView videoSent;
+        TextView seen_by;
 
         TouchImageView imageSent;
 
@@ -2435,6 +2236,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             imageSent = itemView.findViewById(R.id.imageSent);
             infoLayout = itemView.findViewById(R.id.infoLayout);
             inforLayout = itemView.findViewById(R.id.inforLayout);
+            seen_by = itemView.findViewById(R.id.seen_by);
 
         }
     }
@@ -2446,7 +2248,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         ImageView messageCheck;
         TextView sender, senderOfMessage , messageContent, audioSent, documentSent,
-                videoSent;
+                videoSent, listened_to,audioTime;
         TouchImageView imageSent;
         LinearLayout rLayout, inforLayout, infoLayout;
 
@@ -2464,11 +2266,13 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             documentSent = itemView.findViewById(R.id.documentSent);
             videoSent = itemView.findViewById(R.id.videoSent);
             imageSent = itemView.findViewById(R.id.imageSent);
+            listened_to = itemView.findViewById(R.id.listened_to);
 
             infoLayout = itemView.findViewById(R.id.infoLayout);
             inforLayout = itemView.findViewById(R.id.inforLayout);
 
             rLayout = itemView.findViewById(R.id.rLayout);
+            audioTime = itemView.findViewById(R.id.audio_time);
 
         }
     }
@@ -2487,6 +2291,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView audioSent;
         TextView documentSent;
         TextView videoSent;
+        TextView seen_by;
         TouchImageView imageSent;
 
         LinearLayout infoLayout;
@@ -2511,6 +2316,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             imageSent = itemView.findViewById(R.id.imageSent);
             infoLayout = itemView.findViewById(R.id.infoLayout);
             inforLayout = itemView.findViewById(R.id.inforLayout);
+            seen_by = itemView.findViewById(R.id.seen_by);
 
         }
 
@@ -2571,6 +2377,17 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         RunTimePermissionWrapper.handleRunTimePermission(mActivity,
                 RunTimePermissionWrapper.REQUEST_CODE.MULTIPLE_WALKTHROUGH, WALK_THROUGH);
     }
+
+    private void updateSeekBar(MediaPlayer mediaPlayer, SeekBar seekBar) {
+        try {
+            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            runnable = () -> updateSeekBar(mediaPlayer, seekBar);
+            handler.postDelayed(runnable, 1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class CommentChannel {
+public class CommentChannel  {
     private String commentId;
     private List<Messages> replyMessages;
     private String name;
@@ -14,6 +14,7 @@ public class CommentChannel {
     private String content;
     private String parent;
     private String from;
+    private String color;
     private Long timestamp;
     private String initialCommentId;
     private String initialCommentContent;
@@ -34,6 +35,32 @@ public class CommentChannel {
     public CommentChannel(String commentId) {
         this();
         this.commentId = commentId;
+    }
+
+    public CommentChannel(String commentId, List<Messages> replyMessages, String name, String profilePic, String channelName,
+                          String content, String parent, String from, String color, Long timestamp, String initialCommentId, String initialCommentContent,
+                          String initialChannelImage, String initialMessageType, String initialColor, Long initialTimestamp,
+                          int initialLikesCount, int initialCommentsCount, int seeInitalCount, Map<String, Object> r) {
+        this.commentId = commentId;
+        this.replyMessages = replyMessages;
+        this.name = name;
+        this.profilePic = profilePic;
+        this.channelName = channelName;
+        this.content = content;
+        this.parent = parent;
+        this.from = from;
+        this.color = color;
+        this.timestamp = timestamp;
+        this.initialCommentId = initialCommentId;
+        this.initialCommentContent = initialCommentContent;
+        this.initialChannelImage = initialChannelImage;
+        this.initialMessageType = initialMessageType;
+        this.initialColor = initialColor;
+        this.initialTimestamp = initialTimestamp;
+        this.initialLikesCount = initialLikesCount;
+        this.initialCommentsCount = initialCommentsCount;
+        this.seeInitalCount = seeInitalCount;
+        this.r = r;
     }
 
     public String getCommentId() {
@@ -190,6 +217,14 @@ public class CommentChannel {
 
     public void setSeeInitalCount(int seeInitalCount) {
         this.seeInitalCount = seeInitalCount;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     @Override

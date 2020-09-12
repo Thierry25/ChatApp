@@ -17,12 +17,14 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Objects;
 
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.activities.ChannelSubscriberActivity;
 import marcelin.thierry.chatapp.activities.ChatActivity;
 import marcelin.thierry.chatapp.activities.GroupChatActivity;
 import marcelin.thierry.chatapp.activities.MainActivity;
+import marcelin.thierry.chatapp.activities.ReactionActivity;
 import marcelin.thierry.chatapp.activities.ReceiveActivity;
 import marcelin.thierry.chatapp.activities.ReceiveVideoActivity;
 
@@ -39,7 +41,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         if (remoteMessage.getData().get("channel_id") != null) {
 
-            if(remoteMessage.getData().get("channel_id").length() == 20) {
+            if(Objects.requireNonNull(remoteMessage.getData().get("channel_id")).length() == 20) {
                 Log.i("FIRE_VIDEO_DATA", "CALLED");
                 Intent intent = new Intent(this, ReceiveVideoActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -48,6 +50,14 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 intent.putExtra("user_phone", remoteMessage.getData().get("user_phone"));
                 getApplicationContext().startActivity(intent);
 
+            }else if(Objects.requireNonNull(remoteMessage.getData().get("channel_id")).length() == 18){
+                Log.i("FIRE_LIVE_DATA", "CALLED");
+                Intent intent = new Intent(this, ReactionActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra("channel_id", remoteMessage.getData().get("channel_id"));
+                intent.putExtra("user_phone", remoteMessage.getData().get("user_phone"));
+                getApplicationContext().startActivity(intent);
             } else {
                 Log.i("FIRE_CALL_DATA", "CALLED");
                 Intent intent = new Intent(this, ReceiveActivity.class);

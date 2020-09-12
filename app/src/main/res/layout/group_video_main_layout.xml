@@ -11,7 +11,6 @@
         android:layout_height="210dp"
         android:layout_marginTop="4dp"
         android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
         android:orientation="horizontal"
         app:layout_constraintWidth_percent="0.7"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -107,16 +106,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="89dp"
-            android:layout_marginLeft="89dp"
             android:layout_marginTop="90dp"
             android:layout_marginEnd="90dp"
-            android:layout_marginRight="90dp"
             android:layout_marginBottom="89dp"
             app:srcCompat="@drawable/ic_play_icon" />
 
@@ -125,11 +120,29 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
+            android:layout_marginBottom="18dp"
+            android:textSize="12sp"
             android:text="@string/_00_00"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/seen_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_visibilty_2"
+            android:text="@string/_1"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp"
+            android:textSize="9sp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="6dp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:drawablePadding="2dp" />
 
     </RelativeLayout>
 
@@ -145,5 +158,4 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

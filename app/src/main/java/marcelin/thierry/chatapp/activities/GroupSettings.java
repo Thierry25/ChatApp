@@ -537,6 +537,7 @@ public class GroupSettings extends AppCompatActivity {
                                     overridePendingTransition(R.anim.slide_left_in, R.anim.slide_left_out);
                                     finish();
 
+
                                 } else {
                                     Toast.makeText(GroupSettings.this, R.string.not_admin,
                                             Toast.LENGTH_SHORT).show();

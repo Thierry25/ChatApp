@@ -512,5 +512,19 @@
     <string name="close_replies">Close Replies</string>
     <string name="replied">replied to your comment</string>
     <string name="message_sent">Reply sent</string>
+    <string name="no_notif">You have no new notifications at this time</string>
+    <string name="audio_warning">Voice can only be 30 seconds long, if longer will not be sent</string>
+    <string name="audio_not_sent">Voice too long, can only be 30 seconds or less</string>
+    <string name="audio">Audio</string>
+    <string name="sel_pic">Select Picture</string>
+    <string name="chat_background">Chat Background</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="ads_messenger_reaction">😍😛ADS Messenger Reaction😎😉</string>
+    <string name="waiting_rq">Waiting on %s to accept or decline your request</string>
+    <string name="reqst_react">%s is requesting your reaction</string>
+    <string name="left">%s has left</string>
+    <string name="refresh">Refresh</string>
+    <string name="refreshed">Refreshed</string>
 
 </resources>

@@ -116,6 +116,20 @@
                 android:textSize="12sp"
                 android:textColor="@android:color/black" />
 
+            <TextView
+                android:id="@+id/seen_by"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_visibility_1"
+                android:text="@string/_1"
+                android:textStyle="bold"
+                android:textSize="9sp"
+                android:layout_marginStart="3dp"
+                android:layout_marginEnd="6dp"
+                android:textColor="@color/black"
+                android:visibility="gone"
+                android:drawablePadding="2dp" />
+
             <ImageView
                 android:id="@+id/messageCheck"
                 android:layout_width="wrap_content"
@@ -139,5 +153,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

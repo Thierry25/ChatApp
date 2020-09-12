@@ -20,7 +20,6 @@
         android:layout_height="0dp"
         android:layout_weight=".2"
         android:orientation="horizontal"
-
         android:padding="10dp"
         android:weightSum="3">
 
@@ -30,7 +29,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|center_horizontal"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="22dp"
             android:layout_weight=".3"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/open_emoji_keyboard"
@@ -42,6 +41,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
+            android:layout_marginBottom="8dp"
             android:layout_weight="2.4"
             android:background="@drawable/border"
             android:hint="@string/type_message"
@@ -54,7 +54,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginEnd="2dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="24dp"
             android:layout_weight=".3"
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/send_voice"

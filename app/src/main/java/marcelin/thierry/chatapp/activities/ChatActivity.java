@@ -6,15 +6,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -45,17 +49,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
+import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,6 +91,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.islamassem.voicemessager.VoiceMessagerFragment;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 
@@ -96,6 +110,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -128,6 +143,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private static final int GALLERY_PICK = 1;
     private static final int MAX_ATTACHMENT_COUNT = 20;
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
+    private static final int PICK_IMAGE_REQUEST = 1001;
 
     private static final StorageReference mImagesStorage = FirebaseStorage.getInstance().getReference();
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
@@ -155,6 +171,10 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             .getReference().child("ads_except");
 
     private static boolean isOnActivity = false;
+    private Uri mImageUri;
+    private Runnable runnable;
+    private Handler handler;
+
 
     private static String mFileName = null;
     final String lexicon = "ABCDEFGHIJKLMNOPQRSTUVWXYZ12345674890";
@@ -251,8 +271,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         loadLocale();
-
         setContentView(R.layout.activity_chat);
+        mRootView = findViewById(R.id.rootView);
+        getImageBackground();
         mAlertDialogHelper = new AlertDialogHelper(this);
 
         Log.i("testingTag", String.valueOf(testingFlag));
@@ -319,6 +340,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             finish();
         });
 
+
 //        nested.postDelayed(() -> {
 //            nested.fling(0);
 //            nested.fullScroll(View.FOCUS_DOWN);
@@ -326,7 +348,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         title.setText(mChatName);
         mTextToSend = findViewById(R.id.send_text);
-
         mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
 
@@ -338,8 +359,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         mainVLayout = findViewById(R.id.mainVLayout);
         replyLinearLayout = findViewById(R.id.replyLinearLayout);
+        handler = new Handler();
 
-        mMessageAdapter = new MessageAdapter(messagesList, mainVLayout, mSelectedMessages, this, this);
+        mMessageAdapter = new MessageAdapter(messagesList, mainVLayout, mSelectedMessages, this, this, handler);
         new ItemTouchHelper(mItemTouchHelperCallback).attachToRecyclerView(mMessagesList);
         mMessagesList.setItemAnimator(new DefaultItemAnimator());
 
@@ -512,7 +534,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         mDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
 
-        mRootView = findViewById(R.id.rootView);
          mSendVoice = findViewById(R.id.send_voice);
 
         mSendVoice.setOnClickListener(v -> {
@@ -520,7 +541,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 linearLayout.setVisibility(View.GONE);
                 record();
             }else{
-                sendMessage();
+                sendMessage(mTextToSend);
             }
         });
 
@@ -865,7 +886,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                         mUsersReference.child(mChatPhone).child("conversation")
                                                                 .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                        mTextToSend.setText("");
+                                                       // mTextToSend.setText("");
 
                                                         Map<String, Object> chatUnderId = new HashMap<>();
                                                         chatUnderId.put("msgId", push_id);
@@ -989,7 +1010,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                                             mUsersReference.child(mChatPhone).child("conversation")
                                                                                     .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                            mTextToSend.setText("");
+                                                                         //   mTextToSend.setText("");
 
                                                                             Map<String, Object> chatUnderId = new HashMap<>();
                                                                             chatUnderId.put("msgId", push_id);
@@ -1145,7 +1166,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                             mUsersReference.child(mChatPhone).child("conversation")
                                                                                     .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
-                                                                            mTextToSend.setText("");
+//                                                                            mTextToSend.setText("");
                                                                             mRootReference.updateChildren(messageUserMap);
 
                                                                             Map<String, Object> chatUnderId = new HashMap<>();
@@ -1313,7 +1334,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                     messageUserMap.put(chat_reference +
                                                             conversation_id, chatRefMap);
 
-                                                    mTextToSend.setText("");
+//                                                    mTextToSend.setText("");
                                                     mRootReference.updateChildren(messageUserMap);
 
                                                     Map<String, Object> chatUnderId = new HashMap<>();
@@ -1390,7 +1411,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                         });
 
-
+                    mTextToSend.setText("");
                 }else{
                     Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
                 }
@@ -1402,33 +1423,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
     }
 
-    private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSamplingRate(16000);
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        mRecorder.start();
-    }
-
-    private void stopRecording() {
-
-        try {
-            mRecorder.stop();
-        } catch (RuntimeException stopException) {
-            stopException.printStackTrace();
-        }
-        mRecorder.release();
-        mRecorder = null;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -1513,7 +1507,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                 mUsersReference.child(mChatPhone).child("conversation")
                                                         .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                mTextToSend.setText("");
+                                              //  mTextToSend.setText("");
 
                                                 Map<String, Object> chatUnderId = new HashMap<>();
                                                 chatUnderId.put("msgId", push_id);
@@ -1633,7 +1627,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                             });
 
 
-                                                                    mTextToSend.setText("");
+                                                                   // mTextToSend.setText("");
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
                                                                     chatUnderId.put("msgId", push_id);
@@ -1788,7 +1782,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                     messageUserMap.put(chat_reference +
                                                                             conversation_id, chatRefMap);
 
-                                                                    mTextToSend.setText("");
+                                                                 //   mTextToSend.setText("");
                                                                     mRootReference.updateChildren(messageUserMap);
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
@@ -1956,7 +1950,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                             messageUserMap.put(chat_reference +
                                                     conversation_id, chatRefMap);
 
-                                            mTextToSend.setText("");
+                                         //   mTextToSend.setText("");
                                             mRootReference.updateChildren(messageUserMap);
 
                                             Map<String, Object> chatUnderId = new HashMap<>();
@@ -2044,7 +2038,8 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 new VideoCompressAsyncTask(this).execute(mVideosData.get(0).toString(), f.getPath());
             }
 
-        } else if (requestCode == FilePickerConst.REQUEST_CODE_DOC && resultCode == Activity.RESULT_OK && data != null) {
+        }
+        else if (requestCode == FilePickerConst.REQUEST_CODE_DOC && resultCode == Activity.RESULT_OK && data != null) {
 
             mDocPath = new ArrayList<>();
 
@@ -2126,7 +2121,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                 mUsersReference.child(mChatPhone).child("conversation")
                                                         .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                mTextToSend.setText("");
+                                             //   mTextToSend.setText("");
 
                                                 Map<String, Object> chatUnderId = new HashMap<>();
                                                 chatUnderId.put("msgId", push_id);
@@ -2246,7 +2241,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                                     mUsersReference.child(mChatPhone).child("conversation")
                                                                             .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                    mTextToSend.setText("");
+                                                             //       mTextToSend.setText("");
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
                                                                     chatUnderId.put("msgId", push_id);
@@ -2401,7 +2396,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                     messageUserMap.put(chat_reference +
                                                                             conversation_id, chatRefMap);
 
-                                                                    mTextToSend.setText("");
+                                                                //    mTextToSend.setText("");
                                                                     mRootReference.updateChildren(messageUserMap);
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
@@ -2723,7 +2718,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                             mUsersReference.child(mChatPhone).child("conversation")
                                                     .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                            mTextToSend.setText("");
+//                                            mTextToSend.setText("");
 
                                             Map<String, Object> chatUnderId = new HashMap<>();
                                             chatUnderId.put("msgId", push_id);
@@ -2845,7 +2840,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                                 mUsersReference.child(mChatPhone).child("conversation")
                                                                         .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                mTextToSend.setText("");
+//                                                                mTextToSend.setText("");
 
                                                                 Map<String, Object> chatUnderId = new HashMap<>();
                                                                 chatUnderId.put("msgId", push_id);
@@ -3001,7 +2996,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                 messageUserMap.put(chat_reference +
                                                                         conversation_id, chatRefMap);
 
-                                                                mTextToSend.setText("");
+//                                                                mTextToSend.setText("");
                                                                 mRootReference.updateChildren(messageUserMap);
 
                                                                 Map<String, Object> chatUnderId = new HashMap<>();
@@ -3168,7 +3163,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                         mUsersReference.child(mChatPhone).child("conversation")
                                                 .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                        mTextToSend.setText("");
+                                     //   mTextToSend.setText("");
                                         mRootReference.updateChildren(messageUserMap);
 
                                         Map<String, Object> chatUnderId = new HashMap<>();
@@ -3244,6 +3239,43 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
             });
 
+        }
+        else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            if(data != null){
+                mImageUri = data.getData();
+
+                // Removes Uri Permission so that when you restart the device, it will be allowed to reload.
+                this.grantUriPermission(this.getPackageName(), mImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                this.getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+
+                // Saves image URI as string to Default Shared Preferences
+                SharedPreferences preferences =
+                        PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("image", String.valueOf(mImageUri));
+                editor.apply();
+
+                Picasso.get().load(mImageUri).into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        mRootView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        Log.d("TAG", "FAILED");
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.d("TAG", "Prepare Load");
+
+                    }
+                });
+
+            }
         }
 
     }
@@ -3379,7 +3411,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     }
 
     private void loadMessages() {
-
         if(mChatId == null) { return; }
 
         //[fm] setting unread message to 0
@@ -3780,14 +3811,15 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 .build();
     }
 
-    private void sendMessage() {
+    private void sendMessage(EmojiEditText  mTextToSend) {
+        String message = Objects.requireNonNull(mTextToSend.getText()).toString().trim();
 
         try {
-
+//TODO:5 // to remove if not working
             new CheckInternet_(internet -> {
                 if (internet){
                     testingFlag = false;
-                    String message = Objects.requireNonNull(mTextToSend.getText()).toString().trim();
+//                    String message = Objects.requireNonNull(mTextToSend.getText()).toString().trim();
 
                     if (!TextUtils.isEmpty(message)) {
 
@@ -3862,7 +3894,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                 mUsersReference.child(mChatPhone).child("conversation")
                                                         .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
 
-                                                mTextToSend.setText("");
+                                             //   mTextToSend.setText("");
 
                                                 Map<String, Object> chatUnderId = new HashMap<>();
                                                 chatUnderId.put("msgId", push_id);
@@ -3931,7 +3963,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                                                         ChatActivity.this,
                                                                                                         "Notification Sent",
                                                                                                         Toast.LENGTH_SHORT).show();
-
+                                                                                                mTextToSend.requestFocus();
                                                                                             }
                                                                                         });
                                                                             }
@@ -3946,7 +3978,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                             //TODO: add sent mark
 
                                                         });
-
+                                                mTextToSend.setText("");
+//                                                mTextToSend.setFocusableInTouchMode(true);
+//                                                mTextToSend.setFocusable(true);
                                             } else {
                                                 mRootReference.child("ads_users")
                                                         .child(mCurrentUserPhone)
@@ -3995,7 +4029,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                                     mUsersReference.child(mChatPhone).child("conversation")
                                                                             .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                    mTextToSend.setText("");
+//                                                                    mTextToSend.setText("");
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
                                                                     chatUnderId.put("msgId", push_id);
@@ -4042,6 +4076,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                                                                     ChatActivity.this,
                                                                                                                     "Notification Sent",
                                                                                                                     Toast.LENGTH_SHORT).show();
+                                                                                                            mTextToSend.requestFocus();
 
                                                                                                         }
                                                                                                     });
@@ -4141,7 +4176,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                     messageUserMap.put(chat_reference +
                                                                             conversation_id, chatRefMap);
 
-                                                                    mTextToSend.setText("");
+//                                                                    mTextToSend.setText("");
                                                                     mRootReference.updateChildren(messageUserMap);
 
                                                                     Map<String, Object> chatUnderId = new HashMap<>();
@@ -4189,7 +4224,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                                                                     ChatActivity.this,
                                                                                                                     "Notification Sent",
                                                                                                                     Toast.LENGTH_SHORT).show();
-
+                                                                                                            mTextToSend.requestFocus();
                                                                                                         }
                                                                                                     });
                                                                                             //mp1.start();
@@ -4204,7 +4239,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                                 });
 
                                                                             });
-                                                                    loadMessages();
+                                                                /////    loadMessages();
                                                                     //Chat.setChatListenerCalled(true);
                                                                 }
 
@@ -4215,7 +4250,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                             }
                                                         });
-
+                                                mTextToSend.setText("");
+//                                                mTextToSend.setFocusableInTouchMode(true);
+//                                                mTextToSend.setFocusable(true);
                                             }
                                         } else {
 
@@ -4297,7 +4334,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                             messageUserMap.put(chat_reference +
                                                     conversation_id, chatRefMap);
 
-                                            mTextToSend.setText("");
+//                                            mTextToSend.setText("");
                                             mRootReference.updateChildren(messageUserMap);
 
                                             mUsersReference.child(mCurrentUserPhone).child("conversation")
@@ -4351,7 +4388,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                                             ChatActivity.this,
                                                                                             "Notification Sent",
                                                                                             Toast.LENGTH_SHORT).show();
-
+                                                                                    mTextToSend.requestFocus();
                                                                                 }
                                                                             });
                                                                     //mp1.start();
@@ -4367,7 +4404,10 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
 
                                                     });
-                                            loadMessages();
+                                     /////       loadMessages();
+                                         //   mTextToSend.setText("");
+//                                            mTextToSend.setFocusableInTouchMode(true);
+//                                            mTextToSend.setFocusable(true);
                                             //Chat.setChatListenerCalled(true);
                                         }
                                     }
@@ -4379,6 +4419,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                 });
 
                     }
+                     mTextToSend.setText("");
+//                    mTextToSend.setFocusableInTouchMode(true);
+//                    mTextToSend.setFocusable(true);
                 }else{
                     Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
 
@@ -4387,9 +4430,8 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
+
 
     private String randomIdentifier() {
         StringBuilder builder = new StringBuilder();
@@ -4405,20 +4447,19 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         return builder.toString();
     }
 
-//    private String randomIdentifier_() {
-//        StringBuilder builder = new StringBuilder();
-//        while (builder.toString().length() == 0) {
-//            int length = rand.nextInt(6) + 6;
-//            for (int i = 0; i < length; i++) {
-//                builder.append(lexicon.charAt(rand.nextInt(lexicon.length())));
-//            }
-//            if (identifiers.contains(builder.toString())) {
-//                builder = new StringBuilder();
-//            }
-//        }
-//        return builder.toString();
-//    }
 
+    protected String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
 
     private void askPermission() {
         if (RunTimePermissionWrapper.isAllPermissionGranted(this, WALK_THROUGH)) {
@@ -4566,13 +4607,38 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             case R.id.menu_media:
                 try{
                     new CheckInternet_(internet -> {
-//                        Intent getMedia = new Intent(this, );
-//                        getMedia.putExtra();
+                       imageSelect();
                     });
                 }catch (Exception e){
                     e.printStackTrace();
                 }
                 break;
+
+            case R.id.menu_live:
+                try{
+                    new CheckInternet_(internet -> {
+                        if(internet){
+                            Map<String, Object> m = new HashMap<>();
+                            m.put("from", mCurrentUserPhone);
+
+                            String voiceChannelId = getSaltString();
+                            mCallReference.child(mChatPhone).child(voiceChannelId).setValue(m).addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Intent goToPhoneCall = new Intent(ChatActivity.this, ReactionActivity.class);
+                                    goToPhoneCall.putExtra("userPhone", mChatPhone);
+                                    goToPhoneCall.putExtra("user_my_phone", mCurrentUserPhone);
+                                    goToPhoneCall.putExtra("channel_id_chat_activity", voiceChannelId);
+                                    goToPhoneCall.putExtra("from_me", true);
+                                    startActivity(goToPhoneCall);
+                                }
+                            });
+                        }else{
+                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
 
             default:
                 return true;
@@ -4878,7 +4944,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     }
 
     @Override
-    public void onSendClick(File file) {
+    public void onSendClick(File file, int duration) {
         sendAudio(file);
         findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
         remove(fragment);
@@ -5003,7 +5069,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                             mUsersReference.child(mChatPhone).child("conversation")
                                                     .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                            mTextToSend.setText("");
+//                                            mTextToSend.setText("");
 
                                             Map<String, Object> chatUnderId = new HashMap<>();
                                             chatUnderId.put("msgId", push_id);
@@ -5124,7 +5190,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                                 mUsersReference.child(mChatPhone).child("conversation")
                                                                         .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                                                mTextToSend.setText("");
+//                                                                mTextToSend.setText("");
 
                                                                 Map<String, Object> chatUnderId = new HashMap<>();
                                                                 chatUnderId.put("msgId", push_id);
@@ -5281,7 +5347,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                                 messageUserMap.put(chat_reference +
                                                                         conversation_id, chatRefMap);
 
-                                                                mTextToSend.setText("");
+//                                                                mTextToSend.setText("");
                                                                 mRootReference.updateChildren(messageUserMap);
 
                                                                 Map<String, Object> chatUnderId = new HashMap<>();
@@ -5449,7 +5515,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                         mUsersReference.child(mChatPhone).child("conversation")
                                                 .child(mConvoRef).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                                        mTextToSend.setText("");
+//                                        mTextToSend.setText("");
                                         mRootReference.updateChildren(messageUserMap);
 
                                         Map<String, Object> chatUnderId = new HashMap<>();
@@ -5752,14 +5818,14 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     }
 
     public void record() {
-        if (getMicrophoneAvailable(this)){
+        if (getMicrophoneAvailable()){
             findViewById(R.id.fragment_contaainer).setVisibility(View.VISIBLE);
             showFragment(fragment);}
         else
             Toast.makeText(this,"Microphone not available...",Toast.LENGTH_SHORT).show();
     }
     //returns whether the microphone is available
-    public static boolean getMicrophoneAvailable(Context context) {
+    public static boolean getMicrophoneAvailable() {
         MediaRecorder recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
@@ -5779,5 +5845,36 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         return available;
     }
 
+    public void imageSelect() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.sel_pic)),
+                PICK_IMAGE_REQUEST);
+    }
 
+    private void getImageBackground() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String mImageUri = preferences.getString("image", null);
+        if (mImageUri != null) {
+            Picasso.get().load(Uri.parse(mImageUri)).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mRootView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+                }
+
+                @Override
+                public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                    Log.d("TAG", "FAILED");
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    Log.d("TAG", "Prepare Load");
+
+                }
+            });
+        }
+    }
 }

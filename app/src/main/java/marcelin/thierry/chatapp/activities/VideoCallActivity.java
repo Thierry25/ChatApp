@@ -250,8 +250,9 @@ public class VideoCallActivity extends AppCompatActivity {
     }
 
     private void leaveChannel() {
-
-        mRtcEngine.leaveChannel();
+        if(mRtcEngine!= null) {
+            mRtcEngine.leaveChannel();
+        }
 
         // Newly added
         RtcEngine.destroy();

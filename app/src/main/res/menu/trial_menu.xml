@@ -30,7 +30,11 @@
     <item
         android:id="@+id/menu_media"
         android:icon="@drawable/ic_send_contact"
-        android:title="@string/medias" />
+        android:title="@string/chat_background" />
+
+    <item
+        android:id="@+id/menu_live"
+        android:title="Live"/>
 
 
 </menu>

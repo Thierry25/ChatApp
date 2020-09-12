@@ -39,6 +39,25 @@ public class Messages implements Serializable, Comparable<Messages>{
     private Map<String, Object> c, l, r;
 
     @Exclude
+    private String initialCommentId;
+    @Exclude
+    private String initialCommentContent;
+    @Exclude
+    private String initialChannelImage;
+    @Exclude
+    private String initialMessageType;
+    @Exclude
+    private String initialColor;
+    @Exclude
+    private Long initialTimestamp;
+    @Exclude
+    private int initialLikesCount;
+    @Exclude
+    private int initialCommentsCount;
+    @Exclude
+    private int seeInitalCount;
+
+    @Exclude
     private List<String> admins = new ArrayList<>();
 
     // For Firebase
@@ -234,6 +253,78 @@ public class Messages implements Serializable, Comparable<Messages>{
         this.visible = visible;
     }
 
+    @Exclude
+    public String getInitialCommentId() {
+        return initialCommentId;
+    }
+    @Exclude
+    public void setInitialCommentId(String initialCommentId) {
+        this.initialCommentId = initialCommentId;
+    }
+    @Exclude
+    public String getInitialCommentContent() {
+        return initialCommentContent;
+    }
+    @Exclude
+    public void setInitialCommentContent(String initialCommentContent) {
+        this.initialCommentContent = initialCommentContent;
+    }
+    @Exclude
+    public String getInitialChannelImage() {
+        return initialChannelImage;
+    }
+    @Exclude
+    public void setInitialChannelImage(String initialChannelImage) {
+        this.initialChannelImage = initialChannelImage;
+    }
+    @Exclude
+    public String getInitialMessageType() {
+        return initialMessageType;
+    }
+    @Exclude
+    public void setInitialMessageType(String initialMessageType) {
+        this.initialMessageType = initialMessageType;
+    }
+    @Exclude
+    public String getInitialColor() {
+        return initialColor;
+    }
+    @Exclude
+    public void setInitialColor(String initialColor) {
+        this.initialColor = initialColor;
+    }
+    @Exclude
+    public Long getInitialTimestamp() {
+        return initialTimestamp;
+    }
+    @Exclude
+    public void setInitialTimestamp(Long initialTimestamp) {
+        this.initialTimestamp = initialTimestamp;
+    }
+    @Exclude
+    public int getInitialLikesCount() {
+        return initialLikesCount;
+    }
+    @Exclude
+    public void setInitialLikesCount(int initialLikesCount) {
+        this.initialLikesCount = initialLikesCount;
+    }
+    @Exclude
+    public int getInitialCommentsCount() {
+        return initialCommentsCount;
+    }
+    @Exclude
+    public void setInitialCommentsCount(int initialCommentsCount) {
+        this.initialCommentsCount = initialCommentsCount;
+    }
+    @Exclude
+    public int getSeeInitalCount() {
+        return seeInitalCount;
+    }
+    @Exclude
+    public void setSeeInitalCount(int seeInitalCount) {
+        this.seeInitalCount = seeInitalCount;
+    }
 
     @Override
     public boolean equals(Object obj) {

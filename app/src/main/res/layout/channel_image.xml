@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
+    android:layout_marginTop="12dp"
     android:layout_marginEnd="8dp">
 
-    <RelativeLayout
+
+<RelativeLayout
         android:id="@+id/rLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,8 +36,9 @@
                 android:layout_toEndOf="@id/channel_image"
                 android:maxLength="35"
                 android:text="@string/channel_name"
+                android:textStyle="bold"
                 android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/timestamp"
@@ -56,7 +57,8 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="8dp"
-                android:src="@drawable/ic_more_horiz" />
+                android:src="@drawable/ic_more_horiz"
+                android:contentDescription="@string/_00_00" />
 
         </RelativeLayout>
 
@@ -112,6 +114,7 @@
             android:drawableStart="@drawable/ic_favorite_border"
             android:drawablePadding="8dp"
             android:text="@string/_333l"
+            android:visibility="gone"
             android:textSize="16sp" />
 
         <TextView
@@ -128,6 +131,7 @@
             android:drawableStart="@drawable/ic_chat_bubble_outline"
             android:drawablePadding="8dp"
             android:text="@string/_210c"
+            android:visibility="gone"
             android:textSize="16sp" />
 
         <TextView
@@ -145,6 +149,7 @@
             android:drawablePadding="8dp"
             android:gravity="end"
             android:text="@string/_210c"
+            android:visibility="gone"
             android:textSize="16sp" />
 
     </RelativeLayout>

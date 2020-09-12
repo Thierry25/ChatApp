@@ -4,18 +4,33 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,35 +48,40 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.islamassem.voicemessager.VoiceMessagerFragment;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.TimeUnit;
+
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.CommentAdapter;
-import marcelin.thierry.chatapp.adapters.RepliesAdapter;
 import marcelin.thierry.chatapp.classes.Chat;
 import marcelin.thierry.chatapp.classes.CommentChannel;
 import marcelin.thierry.chatapp.classes.Messages;
-import marcelin.thierry.chatapp.classes.ReplyNotification;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.CheckInternet_;
 
-public class CommentActivity extends AppCompatActivity {
+public class CommentActivity extends AppCompatActivity implements VoiceMessagerFragment.OnControllerClick {
 
     private CircleImageView mChannelImage, profilePic;
     private EmojiTextView mChannelName, textEntered, commentName;
@@ -72,6 +92,9 @@ public class CommentActivity extends AppCompatActivity {
     private RecyclerView commentList;
     private LinearLayoutManager mLinearLayoutManager;
     private LinearLayout messageLinLayout;
+    private MediaPlayer mediaPlayer;
+    Runnable runnable;
+    Handler handler;
 
     private ImageButton mSendEmoji, mSend;
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -87,13 +110,17 @@ public class CommentActivity extends AppCompatActivity {
     String commentPosition;
 
     private boolean isOn;
+    boolean available = true;
 
     long timestamp;
     int likes, comments, seen;
 
-    private LinearLayout rootView;
+    private LinearLayout rootView, linearLayout, list;
     private EmojiPopup emojiPopup;
-
+    private static String mFileName = null;
+    final String lexicon = "ABCDEFGHIJKLMNOPQRSTUVWXYZ12345674890";
+    final java.util.Random rand = new java.util.Random();
+    final Set<String> identifiers = new HashSet<>();
 
     private ConstraintLayout commentMessage, commentImage, commentAudio, commentVideo, commentDocument;
 
@@ -106,7 +133,10 @@ public class CommentActivity extends AppCompatActivity {
     private DatabaseReference mCommentReference = FirebaseDatabase.getInstance().getReference().child("c");
     private DatabaseReference mChannelMessagesReference = FirebaseDatabase.getInstance().getReference().child("ads_channel_messages");
 
+    private static final StorageReference mAudioStorage = FirebaseStorage.getInstance().getReference();
+
     private DatabaseReference mRootReference = FirebaseDatabase.getInstance().getReference();
+    private Map<String, Object> repliesMap = new HashMap<>();
 
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
     private static final int SECOND_MILLIS = 1000;
@@ -116,12 +146,21 @@ public class CommentActivity extends AppCompatActivity {
     private static final int WEEK_MILLIS = 7 * DAY_MILLIS;
 
     private NestedScrollView nestedView;
+    private Fragment fragment;
+    private FrameLayout fragmentContainer;
+
+    private RelativeLayout mChannelDefaultComment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadLocale();
         setContentView(R.layout.activity_comment);
 
+        mediaPlayer = new MediaPlayer();
+        handler = new Handler();
+
+        fragment = VoiceMessagerFragment.build(this, true);
         mChannelImage = findViewById(R.id.channel_image);
         mChannelName = findViewById(R.id.channel_name);
         mTimestamp = findViewById(R.id.timestamp);
@@ -144,7 +183,13 @@ public class CommentActivity extends AppCompatActivity {
         commentVideo = findViewById(R.id.comment_video);
         commentDocument = findViewById(R.id.comment_document);
         rootView = findViewById(R.id.rootView);
+        fragmentContainer = findViewById(R.id.fragment_contaainer);
         messageLinLayout = findViewById(R.id.messageLinLayout);
+        linearLayout = findViewById(R.id.linearLayout);
+        list = findViewById(R.id.list);
+
+        mFileName = Objects.requireNonNull(getExternalCacheDir()).getAbsolutePath();
+        mFileName += "/" + randomIdentifier() + ".3gp";
 
         channelName = getIntent().getStringExtra("channel_name");
         channelImage = getIntent().getStringExtra("channel_image");
@@ -167,7 +212,7 @@ public class CommentActivity extends AppCompatActivity {
         commentList.setLayoutManager(mLinearLayoutManager);
         commentList.setNestedScrollingEnabled(false);
 
-        commentAdapter = new CommentAdapter(commentsAndReplies, this, isOn);
+        commentAdapter = new CommentAdapter(commentsAndReplies, this, isOn, linearLayout, available,fragmentContainer);
         commentList.setAdapter(commentAdapter);
         nestedView = findViewById(R.id.nestedView);
 
@@ -178,7 +223,7 @@ public class CommentActivity extends AppCompatActivity {
         numberOfSeen.setText(String.valueOf(seen));
         numberOfLikes.setText(String.valueOf(likes));
         numberOfComments.setText(String.valueOf(comments));
-
+  
 
         if(from.equals("Adapter")){
             getCommentsAndReplies();
@@ -186,7 +231,6 @@ public class CommentActivity extends AppCompatActivity {
             getSingleCommentAndReplies();
         }
 
-        Map<String, Object> repliesMap = new HashMap<>();
         repliesMap.put(myPhone, myPhone);
 
         Map<String, Object> commentContentMap = new HashMap<>();
@@ -221,37 +265,11 @@ public class CommentActivity extends AppCompatActivity {
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {
-
-                        send(mSendText, commentContentMap);
-//                       if (!TextUtils.isEmpty(message)) {
-//                           commentContentMap.put("content", message);
-//                           DatabaseReference msg_push = mChannelReference.push();
-//                           String push_id = msg_push.getKey();
-//                           Map<String, Object> commentMap = new HashMap<>();
-//                           commentMap.put(push_id, commentContentMap);
-//
-//                           mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-//                           });
-//
-//                           Map<String, Object> commentLink = new HashMap<>();
-//                           commentLink.put("msgId", push_id);
-//                           commentLink.put("timestamp", ServerValue.TIMESTAMP);
-//
-//                           Map<String, Object> commentByMap = new HashMap<>();
-//                           commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-//
-//                           mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-//                                   .updateChildren(commentLink, (databaseError, databaseReference) -> {
-//                                   });
-//
-//                           mChannelMessagesReference.child(messageId).child("c").child(push_id)
-//                                   .updateChildren(commentByMap, (databaseError, databaseReference) ->{
-//                                   });
-//                           mSendText.setText("");
-                        //     }
-//                   else{
-//                           Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-//
+                        if(mSend.getTag().equals("sendMessage")) {
+                            send(mSendText, commentContentMap);
+                        }else{
+                            record();
+                        }
                     } else {
                         Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
@@ -292,55 +310,34 @@ public class CommentActivity extends AppCompatActivity {
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {
-
-                        send(mSendText, commentContentMap);
-//                        String message = mSendText.getText().toString().trim();
-//
-//                        if (!TextUtils.isEmpty(message)) {
-//                            commentContentMap.put("content", message);
-//                            DatabaseReference msg_push = mChannelReference.push();
-//                            String push_id = msg_push.getKey();
-//                            Map<String, Object> commentMap = new HashMap<>();
-//                            commentMap.put(push_id, commentContentMap);
-//
-//                            mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-//                            });
-//
-//                            Map<String, Object> commentLink = new HashMap<>();
-//                            commentLink.put("msgId", push_id);
-//                            commentLink.put("timestamp", ServerValue.TIMESTAMP);
-//
-//                            Map<String, Object> commentByMap = new HashMap<>();
-//                            commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-//
-//                            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
-//                                    });
-//
-//                            mChannelMessagesReference.child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentByMap, (databaseError, databaseReference) ->{
-//                                    });
-//                            mSendText.setText("");
-//                        }else{
-//                            Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-//                        }
+                        if(mSend.getTag().equals("sendMessage")) {
+                            send(mSendText, commentContentMap);
+                        }else{
+                            record();
+                        }
                     } else {
                         Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
                 }));
 
+                messageImage.setOnClickListener(v->{
+                    Intent i = new Intent(this, FullScreenImageActivity.class);
+                    i.putExtra("image_shown",messageContent);
+                    startActivity(i);
+                });
+
                 break;
 
             case "audio":
 
-                TextView audioTime, audioText;
+                TextView audioTime;//audioText;
                 ImageView playAudio;
                 SeekBar audioSeekbar;
 
                 audioTime = commentAudio.findViewById(R.id.audio_time);
                 playAudio = commentAudio.findViewById(R.id.play_audio);
                 audioSeekbar = commentAudio.findViewById(R.id.audio_seekbar);
-                audioText = commentAudio.findViewById(R.id.audioText);
+              //  audioText = commentAudio.findViewById(R.id.audioText);
 
                 commentMessage.setVisibility(View.GONE);
                 //  commentImage.setVisibility(View.GONE);
@@ -363,44 +360,78 @@ public class CommentActivity extends AppCompatActivity {
                 mChannelName.setText(channelName);
                 Picasso.get().load(channelImage).placeholder(R.drawable.ic_avatar).into(mChannelImage);
                 mMoreSettings.setVisibility(View.GONE);
-                audioSeekbar.setVisibility(View.GONE);
-                playAudio.setVisibility(View.GONE);
-                audioTime.setVisibility(View.GONE);
-                audioText.setVisibility(View.VISIBLE);
+                audioSeekbar.setVisibility(View.VISIBLE);
+                playAudio.setVisibility(View.VISIBLE);
+                audioTime.setVisibility(View.VISIBLE);
+//                audioText.setVisibility(View.VISIBLE);
+
+                mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mediaPlayer.reset();
+
+                try {
+                    mediaPlayer.setDataSource(messageContent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mediaPlayer.prepareAsync();
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    audioSeekbar.setMax(mp.getDuration());
+
+                    String time = String.format("%02d:%02d",
+                            TimeUnit.MILLISECONDS.toMinutes(mp.getDuration()),
+                            TimeUnit.MILLISECONDS.toSeconds(mp.getDuration()) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(mp.getDuration()))
+                    );
+                    audioTime.setText(time);
+
+                });
+
+                playAudio.setOnClickListener((View view) -> {
+                        if (mediaPlayer.isPlaying()) {
+                          playAudio.setImageResource(R.drawable.ic_channel_play);
+                            mediaPlayer.pause();
+                        } else {
+                         playAudio.setImageResource(R.drawable.ic_channel_pause);
+                            mediaPlayer.start();
+                            updateSeekbar(audioSeekbar);
+                        }
+                });
+
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    mediaPlayer.pause();
+                    playAudio.setImageResource(R.drawable.ic_channel_play);
+                    mediaPlayer.seekTo(0);
+                });
+
+                audioSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                        if(fromUser){
+                            mediaPlayer.seekTo(progress);
+                            audioSeekbar.setProgress(progress);
+                        }
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
+                    }
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+
+                    }
+                });
+
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {
-                        send(mSendText, commentContentMap);
-//                        String message = mSendText.getText().toString().trim();
-//
-//                        if (!TextUtils.isEmpty(message)) {
-//                            commentContentMap.put("content", message);
-//                            DatabaseReference msg_push = mChannelReference.push();
-//                            String push_id = msg_push.getKey();
-//                            Map<String, Object> commentMap = new HashMap<>();
-//                            commentMap.put(push_id, commentContentMap);
-//
-//                            mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-//                            });
-//
-//                            Map<String, Object> commentLink = new HashMap<>();
-//                            commentLink.put("msgId", push_id);
-//                            commentLink.put("timestamp", ServerValue.TIMESTAMP);
-//
-//                            Map<String, Object> commentByMap = new HashMap<>();
-//                            commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-//
-//                            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
-//                                    });
-//
-//                            mChannelMessagesReference.child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentByMap, (databaseError, databaseReference) ->{
-//                                    });
-//                            mSendText.setText("");
-//                        }else{
-//                            Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-//                        }
+                        if(mSend.getTag().equals("sendMessage")) {
+                            send(mSendText, commentContentMap);
+                        }else{
+                            record();
+                        }
                     } else {
                         Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
@@ -431,37 +462,11 @@ public class CommentActivity extends AppCompatActivity {
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {
-                        send(mSendText, commentContentMap);
-//                        String message = mSendText.getText().toString().trim();
-//
-//                        if (!TextUtils.isEmpty(message)) {
-//                            commentContentMap.put("content", message);
-//                            DatabaseReference msg_push = mChannelReference.push();
-//                            String push_id = msg_push.getKey();
-//                            Map<String, Object> commentMap = new HashMap<>();
-//                            commentMap.put(push_id, commentContentMap);
-//
-//                            mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-//                            });
-//
-//                            Map<String, Object> commentLink = new HashMap<>();
-//                            commentLink.put("msgId", push_id);
-//                            commentLink.put("timestamp", ServerValue.TIMESTAMP);
-//
-//                            Map<String, Object> commentByMap = new HashMap<>();
-//                            commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-//
-//                            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
-//                                    });
-//
-//                            mChannelMessagesReference.child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentByMap, (databaseError, databaseReference) ->{
-//                                    });
-//                            mSendText.setText("");
-//                        }else{
-//                            Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-//                        }
+                        if(mSend.getTag().equals("sendMessage")) {
+                            send(mSendText, commentContentMap);
+                        }else{
+                            record();
+                        }
                     } else {
                         Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
@@ -496,37 +501,11 @@ public class CommentActivity extends AppCompatActivity {
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {
-                        send(mSendText, commentContentMap);
-//                        String message = mSendText.getText().toString().trim();
-//
-//                        if (!TextUtils.isEmpty(message) ){
-//                            commentContentMap.put("content", message);
-//                            DatabaseReference msg_push = mChannelReference.push();
-//                            String push_id = msg_push.getKey();
-//                            Map<String, Object> commentMap = new HashMap<>();
-//                            commentMap.put(push_id, commentContentMap);
-//
-//                            mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-//                            });
-//
-//                            Map<String, Object> commentLink = new HashMap<>();
-//                            commentLink.put("msgId", push_id);
-//                            commentLink.put("timestamp", ServerValue.TIMESTAMP);
-//
-//                            Map<String, Object> commentByMap = new HashMap<>();
-//                            commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-//
-//                            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
-//                                    });
-//
-//                            mChannelMessagesReference.child(messageId).child("c").child(push_id)
-//                                    .updateChildren(commentByMap, (databaseError, databaseReference) ->{
-//                                    });
-//                            mSendText.setText("");
-//                        }else{
-//                            Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-//                        }
+                        if(mSend.getTag().equals("sendMessage")) {
+                            send(mSendText, commentContentMap);
+                        }else{
+                            record();
+                        }
                     } else {
                         Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
@@ -544,46 +523,75 @@ public class CommentActivity extends AppCompatActivity {
         mSendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
 
         setUpEmojiPopup();
-
-//        if(reply_Id.length() > 0){
-//            commentPosition = commentsAndReplies.indexOf(reply_Id);
-//        }
-
-
+        mSendText.addTextChangedListener(textWatcher);
     }
 
+    private void updateSeekbar(SeekBar seekBar) {
+        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+        runnable = () -> updateSeekbar(seekBar);
+        handler.postDelayed(runnable ,1000);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        commentAdapter.stopMediaPlayers();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        commentAdapter.stopMediaPlayers();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        commentAdapter.stopMediaPlayers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        commentAdapter.stopMediaPlayers();
+    }
 
     private void send(EmojiEditText mSendText, Map<String, Object> commentContentMap) {
         String message = mSendText.getText().toString().trim();
 
-        if (!TextUtils.isEmpty(message)) {
-            commentContentMap.put("content", message);
-            DatabaseReference msg_push = mChannelReference.push();
-            String push_id = msg_push.getKey();
-            Map<String, Object> commentMap = new HashMap<>();
-            commentMap.put(push_id, commentContentMap);
+        new CheckInternet_(internet -> {
+            if(internet){
+                if (!TextUtils.isEmpty(message)) {
+                    commentContentMap.put("content", message);
+                    DatabaseReference msg_push = mChannelReference.push();
+                    String push_id = msg_push.getKey();
+                    Map<String, Object> commentMap = new HashMap<>();
+                    commentMap.put(push_id, commentContentMap);
 
-            mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
-            });
-
-            Map<String, Object> commentLink = new HashMap<>();
-            commentLink.put("msgId", push_id);
-            commentLink.put("timestamp", ServerValue.TIMESTAMP);
-
-            Map<String, Object> commentByMap = new HashMap<>();
-            commentByMap.put(myPhone, ServerValue.TIMESTAMP);
-
-            mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
-                    .updateChildren(commentLink, (databaseError, databaseReference) -> {
+                    mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
                     });
 
-            mChannelMessagesReference.child(messageId).child("c").child(push_id)
-                    .updateChildren(commentByMap, (databaseError, databaseReference) -> {
-                    });
-            mSendText.setText("");
-        } else {
-            Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
-        }
+                    Map<String, Object> commentLink = new HashMap<>();
+                    commentLink.put("msgId", push_id);
+                    commentLink.put("timestamp", ServerValue.TIMESTAMP);
+
+                    Map<String, Object> commentByMap = new HashMap<>();
+                    commentByMap.put(myPhone, ServerValue.TIMESTAMP);
+
+                    mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
+                            .updateChildren(commentLink, (databaseError, databaseReference) -> {
+                            });
+
+                    mChannelMessagesReference.child(messageId).child("c").child(push_id)
+                            .updateChildren(commentByMap, (databaseError, databaseReference) -> {
+                            });
+                    mSendText.setText("");
+                } else {
+                    Toast.makeText(this, "Please enter a comment before sending", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     private void getCommentsAndReplies() {
@@ -644,12 +652,20 @@ public class CommentActivity extends AppCompatActivity {
                                                             reply.setProfilePic(user.getThumbnail());
                                                             reply.setMessageId(m);
                                                             reply.setChannelName(channelName);
+                                                            reply.setInitialCommentId(messageId);
+                                                            reply.setInitialCommentContent(messageContent);
+                                                            reply.setInitialChannelImage(channelImage);
+                                                            reply.setInitialMessageType(messageType);
+                                                            reply.setInitialColor(color);
+                                                            reply.setInitialTimestamp(timestamp);
+                                                            reply.setInitialLikesCount(likes);
+                                                            reply.setInitialCommentsCount(comments);
+                                                            reply.setSeeInitalCount(seen);
                                                             if(!currentCommentChannel.getReplyMessages().contains(reply)) {
                                                                 currentCommentChannel.getReplyMessages().add(reply);
                                                                 Collections.sort(currentCommentChannel.getReplyMessages());
                                                                 Collections.reverse(currentCommentChannel.getReplyMessages());
                                                                 commentAdapter.notifyDataSetChanged();
-
                                                             }
                                                             if (pos < 0) {
                                                                 currentCommentChannel.setName(user.getName());
@@ -660,6 +676,7 @@ public class CommentActivity extends AppCompatActivity {
                                                                 currentCommentChannel.setR(reply.getR());
                                                                 currentCommentChannel.setContent(reply.getContent());
                                                                 currentCommentChannel.setFrom(reply.getFrom());
+                                                                currentCommentChannel.setColor(reply.getColor());
 
                                                                 currentCommentChannel.setInitialCommentId(messageId);
                                                                 currentCommentChannel.setInitialCommentContent(messageContent);
@@ -718,6 +735,8 @@ public class CommentActivity extends AppCompatActivity {
                                         //  currentCommentChannel.setParent(comment.getParent());
                                         currentCommentChannel.setContent(comment.getContent());
                                         currentCommentChannel.setFrom(comment.getFrom());
+                                        currentCommentChannel.setColor(comment.getColor());
+                                        //currentCommentChannel.setCommentId(comment.getMessageId());
                                         //Set values to be able to pass as intent values when coming to this Activity
                                         currentCommentChannel.setInitialCommentId(messageId);
                                         currentCommentChannel.setInitialCommentContent(messageContent);
@@ -728,8 +747,14 @@ public class CommentActivity extends AppCompatActivity {
                                         currentCommentChannel.setInitialLikesCount(likes);
                                         currentCommentChannel.setInitialCommentsCount(comments);
                                         currentCommentChannel.setSeeInitalCount(seen);
-                                        commentsAndReplies.add(currentCommentChannel);
+                                        if(!commentsAndReplies.contains(currentCommentChannel)) {
+                                            currentCommentChannel.setContent(comment.getContent());
+                                            commentsAndReplies.add(currentCommentChannel);
+                                            commentAdapter.notifyDataSetChanged();
+                                        }
                                         commentAdapter.notifyDataSetChanged();
+//                                        commentsAndReplies.add(currentCommentChannel);
+//                                        commentAdapter.notifyDataSetChanged();
                                         //commentList.scrollToPosition(commentPosition);
                                     }
 
@@ -806,6 +831,16 @@ public class CommentActivity extends AppCompatActivity {
                                                     reply.setProfilePic(user.getThumbnail());
                                                     reply.setMessageId(m);
                                                     reply.setChannelName(channelName);
+                                                    reply.setInitialCommentId(messageId);
+                                                    reply.setInitialCommentContent(messageContent);
+                                                    reply.setInitialChannelImage(channelImage);
+                                                    reply.setInitialMessageType(messageType);
+                                                    reply.setInitialColor(color);
+
+                                                    reply.setInitialTimestamp(timestamp);
+                                                    reply.setInitialLikesCount(likes);
+                                                    reply.setInitialCommentsCount(comments);
+                                                    reply.setSeeInitalCount(seen);
                                                     if(!currentCommentChannel.getReplyMessages().contains(reply)) {
                                                         currentCommentChannel.getReplyMessages().add(reply);
                                                         Collections.sort(currentCommentChannel.getReplyMessages());
@@ -823,6 +858,7 @@ public class CommentActivity extends AppCompatActivity {
                                                         currentCommentChannel.setR(reply.getR());
                                                         currentCommentChannel.setContent(reply.getContent());
                                                         currentCommentChannel.setFrom(reply.getFrom());
+                                                        currentCommentChannel.setColor(reply.getColor());
 
                                                         currentCommentChannel.setInitialCommentId(messageId);
                                                         currentCommentChannel.setInitialCommentContent(messageContent);
@@ -879,6 +915,7 @@ public class CommentActivity extends AppCompatActivity {
                                 currentCommentChannel.setInitialChannelImage(channelImage);
                                 currentCommentChannel.setInitialMessageType(messageType);
                                 currentCommentChannel.setInitialColor(color);
+                                currentCommentChannel.setColor(comment.getColor());
                                 currentCommentChannel.setInitialTimestamp(timestamp);
                                 currentCommentChannel.setInitialLikesCount(likes);
                                 currentCommentChannel.setInitialCommentsCount(comments);
@@ -943,6 +980,199 @@ public class CommentActivity extends AppCompatActivity {
                 .setKeyboardAnimationStyle(R.style.emoji_slide_animation_style)
                 //   .setPageTransformer(new RotateUpTransformer())
                 .build(mSendText);
+    }
+
+    @Override
+    public void onRecordClick() {
+        Toast.makeText(this, R.string.audio_warning, Toast.LENGTH_LONG).show();
+        linearLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onFinishRecording(File file) {
+
+    }
+
+    @Override
+    public void onSendClick(File file, int duration) {
+        if(duration > 0 && duration < 31) {
+            sendAudio(file);
+            findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
+            remove(fragment);
+            linearLayout.setVisibility(View.VISIBLE);
+        }else{
+            Toast.makeText(this, R.string.audio_not_sent, Toast.LENGTH_SHORT).show();
+            findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
+            remove(fragment);
+            linearLayout.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void sendAudio(File file) {
+        try{
+            new CheckInternet_(internet -> {
+                Map<String, Object> commentContentMap = new HashMap<>();
+                commentContentMap.put("color", "#FFFFFF");
+                commentContentMap.put("from", myPhone);
+                commentContentMap.put("parent", "Default");
+                commentContentMap.put("r", repliesMap);
+                commentContentMap.put("timestamp", ServerValue.TIMESTAMP);
+
+                DatabaseReference msg_push1 = mRootReference.child("c").push();
+
+                String push_id1= msg_push1.getKey();
+
+                StorageReference filePath = mAudioStorage.child("c_au").child(push_id1+ ".gp3");
+
+                Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
+
+                filePath.putFile(voiceUri).addOnCompleteListener(task -> {
+                   if(task.isSuccessful()){
+                       String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
+                               .toString();
+                       commentContentMap.put("content", downloadUrl);
+                       DatabaseReference msg_push = mChannelReference.push();
+                       String push_id = msg_push.getKey();
+                       Map<String, Object> commentMap = new HashMap<>();
+                       commentMap.put(push_id, commentContentMap);
+
+                       mCommentReference.updateChildren(commentMap, (databaseError, databaseReference) -> {
+                       });
+
+                       Map<String, Object> commentLink = new HashMap<>();
+                       commentLink.put("msgId", push_id);
+                       commentLink.put("timestamp", ServerValue.TIMESTAMP);
+
+                       Map<String, Object> commentByMap = new HashMap<>();
+                       commentByMap.put(myPhone, ServerValue.TIMESTAMP);
+
+                       mChannelReference.child(channelName).child("messages").child(messageId).child("c").child(push_id)
+                               .updateChildren(commentLink, (databaseError, databaseReference) -> {
+                               });
+
+                       mChannelMessagesReference.child(messageId).child("c").child(push_id)
+                               .updateChildren(commentByMap, (databaseError, databaseReference) -> {
+                               });
+                   }else{
+                       Toast.makeText(CommentActivity.this, "There was an error", Toast.LENGTH_SHORT).show();
+                   }
+                });
+
+
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onCloseClick() {
+        findViewById(R.id.fragment_contaainer).setVisibility(View.GONE);
+        remove(fragment);
+        linearLayout.setVisibility(View.VISIBLE);
+    }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if(TextUtils.isEmpty(mSendText.getText().toString().trim())){
+                mSend.setImageResource(R.drawable.mic);
+                mSend.setTag("sendAudio");
+            }else{
+                mSend.setImageResource(R.drawable.ic_send);
+                mSend.setTag("sendMessage");
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    private void setLocale(String lang) {
+        Locale locale = new Locale(lang);
+        Locale.setDefault(locale);
+        Configuration configuration = new Configuration();
+        configuration.locale = locale;
+        getBaseContext().getResources().updateConfiguration(configuration, getBaseContext().getResources().getDisplayMetrics());
+
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_Lang", lang);
+        editor.apply();
+    }
+
+    public void loadLocale() {
+        SharedPreferences preferences = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        String language = preferences.getString("My_Lang", "");
+        setLocale(language);
+    }
+
+    private String randomIdentifier() {
+        StringBuilder builder = new StringBuilder();
+        while (builder.toString().length() == 0) {
+            int length = rand.nextInt(5) + 5;
+            for (int i = 0; i < length; i++) {
+                builder.append(lexicon.charAt(rand.nextInt(lexicon.length())));
+            }
+            if (identifiers.contains(builder.toString())) {
+                builder = new StringBuilder();
+            }
+        }
+        return builder.toString();
+    }
+
+    public void showFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+        if (fragment.isAdded())
+            fragmentTransaction.show( fragment );
+        else
+            fragmentTransaction.add(R.id.fragment_contaainer, fragment , "h").addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+    public void remove(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+        if (fragment.isAdded())
+            fragmentTransaction.remove( fragment );
+        fragmentTransaction.commit();
+    }
+
+    public void record() {
+        if (getMicrophoneAvailable()){
+            findViewById(R.id.fragment_contaainer).setVisibility(View.VISIBLE);
+            showFragment(fragment);}
+        else
+            Toast.makeText(this,"Microphone not available...",Toast.LENGTH_SHORT).show();
+    }
+    //returns whether the microphone is available
+    public boolean getMicrophoneAvailable() {
+        MediaRecorder recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT);
+//        recorder.setOutputFile(new File(context.getCacheDir(), "MediaUtil#micAvailTestFile").getAbsolutePath());
+        recorder.setOutputFile(mFileName);
+         available = true;
+        try {
+            recorder.prepare();
+            recorder.start();
+
+        }
+        catch (Exception exception) {
+            available = false;
+        }
+        recorder.release();
+        return available;
     }
 
 }

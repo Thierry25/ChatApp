@@ -11,10 +11,12 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
@@ -75,7 +77,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
     private Activity mActivity;
 
     private static List<MediaPlayer> mediaPlayers = new ArrayList<>();
-    private final String[] WALK_THROUGH = new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private final String[] WALK_THROUGH = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private final static DatabaseReference mChannelReference = FirebaseDatabase.getInstance().
             getReference().child("ads_channel");
@@ -135,10 +137,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
             case 0:
 
-                if(!message.isVisible()){
+                if (!message.isVisible()) {
                     ((MessageViewHolder) holder).textEntered.setTypeface(null, Typeface.ITALIC);
                     ((MessageViewHolder) holder).textEntered.setTextColor(Color.parseColor(("#A9A9A9")));
-                    ((MessageViewHolder)holder).textEntered.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
+                    ((MessageViewHolder) holder).textEntered.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
                             0, 0, 0);
                     ((MessageViewHolder) holder).textEntered.setCompoundDrawablePadding(50);
                     ((MessageViewHolder) holder).textEntered.setText(R.string.msg_dell);
@@ -151,41 +153,46 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     ((MessageViewHolder) holder).main.setEnabled(false);
                 }
                 ((MessageViewHolder) holder).textEntered.setText(message.getContent());
+                ((MessageViewHolder) holder).numberOfSeen.setVisibility(View.VISIBLE);
+                ((MessageViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
+                ((MessageViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
 
-                if(message.getContent().length() < 50){
+                if (message.getContent().length() < 50) {
                     ((MessageViewHolder) holder).textEntered.setTextSize(20);
-                }else{
+                } else {
                     ((MessageViewHolder) holder).textEntered.setTextSize(16);
                 }
 
-                ((MessageViewHolder) holder).numberOfComments.setOnClickListener(v ->{
-                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
-                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
-                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
-                    goToCommentActivity.putExtra("message_type", message.getType());
-                    goToCommentActivity.putExtra("message_id", message.getMessageId());
-                    goToCommentActivity.putExtra("message_content", message.getContent());
-                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
-                    goToCommentActivity.putExtra("message_color", message.getColor());
-                    goToCommentActivity.putExtra("message_like", message.getL().size());
-                    goToCommentActivity.putExtra("message_comment", message.getC().size());
-                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
-                    goToCommentActivity.putExtra("from", "Adapter");
-                    goToCommentActivity.putExtra("isOn", false);
-                    v.getContext().startActivity(goToCommentActivity);
+                ((MessageViewHolder) holder).numberOfComments.setOnClickListener(v -> {
+                    if (message.isVisible()) {
+                        Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                        goToCommentActivity.putExtra("message_type", message.getType());
+                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                        goToCommentActivity.putExtra("message_content", message.getContent());
+                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                        goToCommentActivity.putExtra("message_color", message.getColor());
+                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                        goToCommentActivity.putExtra("from", "Adapter");
+                        goToCommentActivity.putExtra("isOn", false);
+                        v.getContext().startActivity(goToCommentActivity);
+                    }
                 });
 
-                if(message.getAdmins().contains(phone)){
+                if (message.getAdmins().contains(phone)) {
                     ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((MessageViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((MessageViewHolder) holder).numberOfLikes.setFocusable(false);
                 }
 
-                for(String s : message.getL().keySet()){
-                    if(s.equals(phone)){
+                for (String s : message.getL().keySet()) {
+                    if (s.equals(phone)) {
                         isShown = true;
                         ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-                    }else{
+                    } else {
                         isShown = false;
                         ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                     }
@@ -193,11 +200,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((MessageViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
                     isShown = !isShown;
-                    if(isShown && !message.getAdmins().contains(phone)){
+                    if (isShown && !message.getAdmins().contains(phone)) {
                         ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                         mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
 
-                    }else {
+                    } else {
                         mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
                         ((MessageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     }
@@ -206,12 +213,12 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((MessageViewHolder) holder).channelName.setText(message.getChannelName());
                 ((MessageViewHolder) holder).setProfilePic(message.getChannelImage());
 
-                if(message.getColor().equals("#7016a8") || message.getColor().equals("#FFFFFF") || !message.isVisible() ){
-                //    ((MessageViewHolder) holder).messageLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                if (message.getColor().equals("#7016a8") || message.getColor().equals("#FFFFFF") || !message.isVisible()) {
+                    //    ((MessageViewHolder) holder).messageLayout.setBackgroundColor(Color.parseColor("#FFFFFF"));
                     ((MessageViewHolder) holder).textEntered.setTextColor(Color.parseColor("#000000"));
                     ((MessageViewHolder) holder).messageLayout.setGravity(Gravity.START);
                 }
-                if(!message.getColor().equals("#7016a8") && (!message.getColor().equals("#FFFFFF")&& message.getContent().length() < 150 && message.isVisible())){
+                if (!message.getColor().equals("#7016a8") && (!message.getColor().equals("#FFFFFF") && message.getContent().length() < 150 && message.isVisible())) {
                     ((MessageViewHolder) holder).messageLayout.setBackgroundColor(Color.parseColor(message.getColor()));
                     ViewGroup.LayoutParams params = ((MessageViewHolder) holder).messageLayout.getLayoutParams();
                     params.height = 500;
@@ -225,73 +232,74 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((MessageViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((MessageViewHolder) holder).moreSettings.setOnClickListener(view -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.message_options, (dialog, which) -> {
-                                switch (which){
-                                    case 0:
-                                        switch (message.getType()) {
-                                            case "text": {
+                    if (message.isVisible()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.message_options, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
+                                            switch (message.getType()) {
+                                                case "text": {
 
-                                                Intent i = new Intent(view.getContext(),
-                                                        ForwardMessageActivity.class);
-                                                String s = "text";
-                                                i.putExtra("type", s);
-                                                i.putExtra("message", message.getContent());
-                                                view.getContext().startActivity(i);
+                                                    Intent i = new Intent(view.getContext(),
+                                                            ForwardMessageActivity.class);
+                                                    String s = "text";
+                                                    i.putExtra("type", s);
+                                                    i.putExtra("message", message.getContent());
+                                                    view.getContext().startActivity(i);
 
-                                                break;
+                                                    break;
+                                                }
+                                                case "channel_link": {
+
+                                                    Intent i = new Intent(view.getContext(),
+                                                            ForwardMessageActivity.class);
+                                                    String s = "channel_link";
+                                                    i.putExtra("type", s);
+                                                    i.putExtra("message", message.getContent());
+                                                    view.getContext().startActivity(i);
+
+                                                    break;
+                                                }
+                                                case "group_link": {
+
+                                                    Intent i = new Intent(view.getContext(),
+                                                            ForwardMessageActivity.class);
+                                                    String s = "group_link";
+                                                    i.putExtra("type", s);
+                                                    i.putExtra("message", message.getContent());
+                                                    view.getContext().startActivity(i);
+
+                                                    break;
+                                                }
                                             }
-                                            case "channel_link": {
+                                            break;
+                                        case 1:
+                                            if (!message.getFrom().equals(Objects.requireNonNull
+                                                    (mAuth.getCurrentUser()).getPhoneNumber())) {
+                                                Toast.makeText(view.getContext(), R.string.cannot +
+                                                        R.string.coming, Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                mMessageReference.child(message.getMessageId())
+                                                        .child("visible").setValue(false);
 
-                                                Intent i = new Intent(view.getContext(),
-                                                        ForwardMessageActivity.class);
-                                                String s = "channel_link";
-                                                i.putExtra("type", s);
-                                                i.putExtra("message", message.getContent());
-                                                view.getContext().startActivity(i);
+                                                mMessageReference.child(message.getMessageId())
+                                                        .child("content").setValue("Message Deleted");
 
-                                                break;
+                                                //((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
+
+                                                Toast.makeText(view.getContext(), "Message deleted",
+                                                        Toast.LENGTH_SHORT).show();
                                             }
-                                            case "group_link": {
+                                            break;
 
-                                                Intent i = new Intent(view.getContext(),
-                                                        ForwardMessageActivity.class);
-                                                String s = "group_link";
-                                                i.putExtra("type", s);
-                                                i.putExtra("message", message.getContent());
-                                                view.getContext().startActivity(i);
-
-                                                break;
-                                            }
-                                        }
-
-                                    case 1:
-                                        if (!message.getFrom().equals(Objects.requireNonNull
-                                                (mAuth.getCurrentUser()).getPhoneNumber())) {
-                                            Toast.makeText(view.getContext(), R.string.cannot +
-                                                   R.string.coming, Toast.LENGTH_SHORT).show();
-                                        }else{
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("visible").setValue(false);
-
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("content").setValue("Message Deleted");
-
-                                            //((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
-
-                                            Toast.makeText(view.getContext(), "Message deleted",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
-
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
 
                 });
 
@@ -302,7 +310,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((MessageViewHolder) holder).textEntered.setOnClickListener(view -> {
                     String st = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
-                    if(message.getType().equals("channel_link")){
+                    if (message.getType().equals("channel_link")) {
                         mLinkReference.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -315,10 +323,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     Channel c = dataSnapshot.getValue(Channel.class);
                                                     if (c != null) {
-                                                        if(c.getSubscribers().containsKey(st)){
+                                                        if (c.getSubscribers().containsKey(st)) {
                                                             Toast.makeText(view.getContext(), R.string.already,
                                                                     Toast.LENGTH_SHORT).show();
-                                                        }else{
+                                                        } else {
                                                             AlertDialog.Builder builder = new AlertDialog.
                                                                     Builder(view.getContext());
                                                             builder.setPositiveButton(R.string.ok,
@@ -336,14 +344,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                                                                         mUsersReference.child(st)
                                                                                 .child("conversation")
-                                                                                .child("C-"+c.getName())
+                                                                                .child("C-" + c.getName())
                                                                                 .updateChildren(v);
 
                                                                         mRootReference.child("ads_channel")
                                                                                 .child(c.getName())
                                                                                 .child("subscribers")
                                                                                 .updateChildren
-                                                                                        (m, (databaseError, databaseReference) -> {});
+                                                                                        (m, (databaseError, databaseReference) -> {
+                                                                                        });
 
                                                                     });
                                                             builder.setNegativeButton(R.string.cancel,
@@ -353,7 +362,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                                             AlertDialog dialog = builder.create();
                                                             dialog.setTitle(R.string.subscribe);
                                                             String s = mContext.getResources()
-                                                            .getString(R.string.subs_to);
+                                                                    .getString(R.string.subs_to);
                                                             dialog.setMessage(s +
                                                                     " " + c.getName());
                                                             dialog.show();
@@ -392,7 +401,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                             }
                         });
 
-                    }else if(message.getType().equals("group_link")){
+                    } else if (message.getType().equals("group_link")) {
                         mGroupLinkReference.addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -405,10 +414,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                                     Group g = dataSnapshot.getValue(Group.class);
                                                     if (g != null) {
-                                                        if(g.getUsers().containsKey(st)){
+                                                        if (g.getUsers().containsKey(st)) {
                                                             Toast.makeText(view.getContext(), R.string.already_,
                                                                     Toast.LENGTH_SHORT).show();
-                                                        }else{
+                                                        } else {
                                                             AlertDialog.Builder builder = new AlertDialog.
                                                                     Builder(view.getContext());
                                                             builder.setPositiveButton(R.string.ok,
@@ -426,14 +435,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                                                                         mUsersReference.child(st)
                                                                                 .child("conversation")
-                                                                                .child("G-"+g.getName())
+                                                                                .child("G-" + g.getName())
                                                                                 .updateChildren(v);
 
                                                                         mRootReference.child("ads_group")
                                                                                 .child(g.getName())
                                                                                 .child("users")
                                                                                 .updateChildren
-                                                                                        (m, (databaseError, databaseReference) -> {});
+                                                                                        (m, (databaseError, databaseReference) -> {
+                                                                                        });
 
                                                                     });
                                                             builder.setNegativeButton(R.string.cancel,
@@ -443,7 +453,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                                             AlertDialog dialog = builder.create();
                                                             dialog.setTitle(R.string.subscribe);
                                                             String s = mContext.getResources()
-                                                            .getString(R.string.enter);
+                                                                    .getString(R.string.enter);
                                                             dialog.setMessage(s +
                                                                     " " + g.getName());
                                                             dialog.show();
@@ -484,7 +494,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                     }
                 });
-                
+
                 ((MessageViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
                 ((MessageViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
                 ((MessageViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
@@ -492,6 +502,9 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 break;
 
             case 1:
+                ((ImageViewHolder) holder).numberOfSeen.setVisibility(View.VISIBLE);
+                ((ImageViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
+                ((ImageViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
                 ((ImageViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((ImageViewHolder) holder).messageProgress.setVisibility(View.VISIBLE);
                 ((ImageViewHolder) holder).channelName.setText(message.getChannelName());
@@ -523,56 +536,57 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
 
                 showTextEntered(message, ((ImageViewHolder) holder).textEntered);
-              
+
                 ((ImageViewHolder) holder).moreSettings.setOnClickListener(view -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.channel_options, (dialog, which) -> {
-                                switch (which){
-                                    case 0:
+                    if (message.isVisible()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.channel_options, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
 
-                                        Intent i = new Intent(view.getContext(),
-                                                ForwardMessageActivity.class);
-                                        String s = "image";
-                                        i.putExtra("type", s);
-                                        i.putExtra("message", message.getContent());
-                                        view.getContext().startActivity(i);
+                                            Intent i = new Intent(view.getContext(),
+                                                    ForwardMessageActivity.class);
+                                            String s = "image";
+                                            i.putExtra("type", s);
+                                            i.putExtra("message", message.getContent());
+                                            view.getContext().startActivity(i);
 
-                                        break;
+                                            break;
 
-                                    case 1:
+                                        case 1:
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("visible").setValue(false);
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("type").setValue("text");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("visible").setValue(false);
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("type").setValue("text");
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("content").setValue("Message Deleted");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("content").setValue("Message Deleted");
 
-                                    //    ((ImageViewHolder) holder).rLayout.setEnabled(false);
+                                            //    ((ImageViewHolder) holder).rLayout.setEnabled(false);
 
-                                        Toast.makeText(view.getContext(), "Message deleted",
-                                                Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(view.getContext(), "Message deleted",
+                                                    Toast.LENGTH_SHORT).show();
 
-                                        break;
+                                            break;
 
-                                    case 2:
-                                        File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
-                                        File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()){
-                                            askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
-                                            askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
-                                        }
-                                        break;
+                                        case 2:
+                                            File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
+                                            File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                            if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()) {
+                                                askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
+                                                askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
+                                            }
+                                            break;
 
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
 
                 });
 
@@ -580,7 +594,8 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((ImageViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
                 ((ImageViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
-                ((ImageViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                ((ImageViewHolder) holder).numberOfComments.setOnClickListener(v -> {
+                    if(message.isVisible()){
                     Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
                     goToCommentActivity.putExtra("channel_name", message.getChannelName());
                     goToCommentActivity.putExtra("channel_image", message.getChannelImage());
@@ -595,19 +610,20 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("from", "Adapter");
                     goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
+                }
                 });
 
-                if(message.getAdmins().contains(phone)){
+                if (message.getAdmins().contains(phone)) {
                     ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((ImageViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((ImageViewHolder) holder).numberOfLikes.setFocusable(false);
                 }
 
-                for(String s : message.getL().keySet()){
-                    if(s.equals(phone)){
+                for (String s : message.getL().keySet()) {
+                    if (s.equals(phone)) {
                         isShown = true;
                         ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-                    }else{
+                    } else {
                         isShown = false;
                         ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                     }
@@ -615,11 +631,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((ImageViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
                     isShown = !isShown;
-                    if(isShown && !message.getAdmins().contains(phone)){
+                    if (isShown && !message.getAdmins().contains(phone)) {
                         ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                         mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
 
-                    }else {
+                    } else {
                         mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
                         ((ImageViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     }
@@ -627,7 +643,9 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 break;
 
             case 2:
-
+                ((VideoViewHolder) holder).numberOfSeen.setVisibility(View.VISIBLE);
+                ((VideoViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
+                ((VideoViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
                 ((VideoViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((VideoViewHolder) holder).setProfilePic(message.getChannelImage());
                 ((VideoViewHolder) holder).channelName.setText(message.getChannelName());
@@ -654,10 +672,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 showTextEntered(message, ((VideoViewHolder) holder).textEntered);
                 ((VideoViewHolder) holder).moreSettings.setOnClickListener(view -> {
+                    if(message.isVisible()){
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.channel_options, (dialog, which) -> {
-                                switch (which){
+                                switch (which) {
                                     case 0:
 
                                         Intent i = new Intent(view.getContext(),
@@ -666,7 +685,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         i.putExtra("type", s);
                                         i.putExtra("message", message.getContent());
                                         view.getContext().startActivity(i);
-                                        
+
                                         break;
 
                                     case 1:
@@ -679,7 +698,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         mMessageReference.child(message.getMessageId())
                                                 .child("content").setValue("Message Deleted");
 
-                                  //      ((VideoViewHolder) holder).rLayout.setEnabled(false);
+                                        //      ((VideoViewHolder) holder).rLayout.setEnabled(false);
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
@@ -688,7 +707,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                     case 2:
                                         File rootFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
                                         File adsFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFil.mkdirs() || rootFil.isDirectory() && adsFil.mkdirs() || adsFil.isDirectory()){
+                                        if (rootFil.mkdirs() || rootFil.isDirectory() && adsFil.mkdirs() || adsFil.isDirectory()) {
                                             askPermission(mContext, message, ".mp4", rootFil.getAbsolutePath());
                                             askPermission(mContext, message, ".mp4", adsFil.getAbsolutePath());
                                         }
@@ -701,15 +720,15 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
-
+                }
                 });
 
                 ((VideoViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
                 ((VideoViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
                 ((VideoViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
-                ((VideoViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                ((VideoViewHolder) holder).numberOfComments.setOnClickListener(v -> {
+                    if(message.isVisible()){
                     Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
                     goToCommentActivity.putExtra("channel_name", message.getChannelName());
                     goToCommentActivity.putExtra("channel_image", message.getChannelImage());
@@ -724,19 +743,20 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("from", "Adapter");
                     goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
+                }
                 });
 
-                if(message.getAdmins().contains(phone)){
+                if (message.getAdmins().contains(phone)) {
                     ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((VideoViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((VideoViewHolder) holder).numberOfLikes.setFocusable(false);
                 }
 
-                for(String s : message.getL().keySet()){
-                    if(s.equals(phone)){
+                for (String s : message.getL().keySet()) {
+                    if (s.equals(phone)) {
                         isShown = true;
                         ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-                    }else{
+                    } else {
                         isShown = false;
                         ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                     }
@@ -744,11 +764,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((VideoViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
                     isShown = !isShown;
-                    if(isShown && !message.getAdmins().contains(phone)){
+                    if (isShown && !message.getAdmins().contains(phone)) {
                         ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                         mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
 
-                    }else {
+                    } else {
                         mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
                         ((VideoViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     }
@@ -760,8 +780,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((AudioViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((AudioViewHolder) holder).setProfilePic(message.getChannelImage());
                 ((AudioViewHolder) holder).channelName.setText(message.getChannelName());
-                
 
+                ((AudioViewHolder) holder).numberOfSeen.setVisibility(View.VISIBLE);
+                ((AudioViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
+                ((AudioViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
                 //TODO: Investigate dead thread on first media
                 MediaPlayer mediaPlayer = new MediaPlayer();
                 final boolean[] isReady = {false};
@@ -769,7 +791,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 mediaPlayers.add(mediaPlayer);
 
                 showTextEntered(message, ((AudioViewHolder) holder).textEntered);
-                
+
                 try {
                     Log.i("((MediaPlayer))", "MediaPlayer called");
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -806,7 +828,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                         ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
                         service.scheduleWithFixedDelay(() ->
-                                ((AudioViewHolder)holder).audioSeekbar.setProgress(mediaPlayer12.getCurrentPosition()), 1, 1, TimeUnit.MICROSECONDS);
+                                ((AudioViewHolder) holder).audioSeekbar.setProgress(mediaPlayer12.getCurrentPosition()), 1, 1, TimeUnit.MICROSECONDS);
 
                         // ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
                     });
@@ -831,8 +853,8 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                         return true;
                     });
 
-                    ((AudioViewHolder) holder).pauseAudio.setOnClickListener(v ->{
-                        if(isReady[0]){
+                    ((AudioViewHolder) holder).pauseAudio.setOnClickListener(v -> {
+                        if (isReady[0]) {
                             if (mediaPlayer.isPlaying()) {
                                 ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_play);
                                 ((AudioViewHolder) holder).pauseAudio.setVisibility(View.GONE);
@@ -887,17 +909,18 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                     mediaPlayer.prepareAsync();
 
-        } catch (Exception e) {
+                } catch (Exception e) {
                     Log.e("MediaPlayerException", e.getMessage());
                     e.printStackTrace();
                 }
                 ((AudioViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
 
                 ((AudioViewHolder) holder).moreSettings.setOnClickListener(view -> {
+                    if(message.isVisible()){
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.channel_options, (dialog, which) -> {
-                                switch (which){
+                                switch (which) {
                                     case 0:
 
                                         Intent i = new Intent(view.getContext(),
@@ -920,7 +943,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         mMessageReference.child(message.getMessageId())
                                                 .child("type").setValue("text");
 
-                               //         ((AudioViewHolder) holder).rLayout.setEnabled(false);
+                                        //         ((AudioViewHolder) holder).rLayout.setEnabled(false);
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
@@ -928,9 +951,9 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                                     case 2:
 
-                                        File rootFolder= new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
+                                        File rootFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
                                         File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()){
+                                        if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()) {
                                             askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
                                             askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
                                         }
@@ -942,7 +965,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
-
+                }
 
                 });
 
@@ -950,7 +973,8 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((AudioViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
                 ((AudioViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
-                ((AudioViewHolder) holder).numberOfComments.setOnClickListener(v ->{
+                ((AudioViewHolder) holder).numberOfComments.setOnClickListener(v -> {
+                    if(message.isVisible()){
                     Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
                     goToCommentActivity.putExtra("channel_name", message.getChannelName());
                     goToCommentActivity.putExtra("channel_image", message.getChannelImage());
@@ -965,19 +989,20 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     goToCommentActivity.putExtra("from", "Adapter");
                     goToCommentActivity.putExtra("isOn", false);
                     v.getContext().startActivity(goToCommentActivity);
+                }
                 });
 
-                if(message.getAdmins().contains(phone)){
+                if (message.getAdmins().contains(phone)) {
                     ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((AudioViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((AudioViewHolder) holder).numberOfLikes.setFocusable(false);
                 }
 
-                for(String s : message.getL().keySet()){
-                    if(s.equals(phone)){
+                for (String s : message.getL().keySet()) {
+                    if (s.equals(phone)) {
                         isShown = true;
                         ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-                    }else{
+                    } else {
                         isShown = false;
                         ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                     }
@@ -985,11 +1010,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((AudioViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
                     isShown = !isShown;
-                    if(isShown && !message.getAdmins().contains(phone)){
+                    if (isShown && !message.getAdmins().contains(phone)) {
                         ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                         mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
 
-                    }else {
+                    } else {
                         mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
                         ((AudioViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     }
@@ -999,18 +1024,21 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 break;
 
             case 4:
+                ((DocumentViewHolder) holder).numberOfSeen.setVisibility(View.VISIBLE);
+                ((DocumentViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
+                ((DocumentViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
                 ((DocumentViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((DocumentViewHolder) holder).setProfilePic(message.getChannelImage());
                 ((DocumentViewHolder) holder).channelName.setText(message.getChannelName());
-             //   ((DocumentViewHolder) holder).textEntered()
+                //   ((DocumentViewHolder) holder).textEntered()
                 String s = message.getContent();
 
                 showTextEntered(message, ((DocumentViewHolder) holder).textEntered);
-                
-                if(s.length() >60){
+
+                if (s.length() > 60) {
                     s = s.substring(0, 56) + "...";
                     ((DocumentViewHolder) holder).documentLink.setText(s);
-                }else{
+                } else {
                     ((DocumentViewHolder) holder).documentLink.setText(message.getContent());
                 }
                 ((DocumentViewHolder) holder).documentGif.setOnClickListener(view -> {
@@ -1024,10 +1052,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
                 ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
                 ((DocumentViewHolder) holder).moreSettings.setOnClickListener(view -> {
+                    if(message.isVisible()){
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.message_options, (dialog, which) -> {
-                                switch (which){
+                                switch (which) {
                                     case 0:
 
                                         Intent i = new Intent(view.getContext(),
@@ -1050,7 +1079,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                                         mMessageReference.child(message.getMessageId())
                                                 .child("type").setValue("text");
 
-                                       // ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
+                                        // ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
 
                                         Toast.makeText(view.getContext(), "Message deleted",
                                                 Toast.LENGTH_SHORT).show();
@@ -1062,40 +1091,43 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                             });
                     AlertDialog dialog = builder.create();
                     dialog.show();
+                }
                 });
 
                 ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
                 ((DocumentViewHolder) holder).numberOfComments.setText(String.valueOf(message.getC().size()));
                 ((DocumentViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
-                ((DocumentViewHolder) holder).numberOfComments.setOnClickListener(v ->{
-                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
-                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
-                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
-                    goToCommentActivity.putExtra("message_type", message.getType());
-                    goToCommentActivity.putExtra("message_id", message.getMessageId());
-                    goToCommentActivity.putExtra("message_content", message.getContent());
-                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
-                    goToCommentActivity.putExtra("message_color", message.getColor());
-                    goToCommentActivity.putExtra("message_like", message.getL().size());
-                    goToCommentActivity.putExtra("message_comment", message.getC().size());
-                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
-                    goToCommentActivity.putExtra("from", "Adapter");
-                    goToCommentActivity.putExtra("isOn", false);
-                    v.getContext().startActivity(goToCommentActivity);
+                ((DocumentViewHolder) holder).numberOfComments.setOnClickListener(v -> {
+                    if(message.isVisible()) {
+                        Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                        goToCommentActivity.putExtra("message_type", message.getType());
+                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                        goToCommentActivity.putExtra("message_content", message.getContent());
+                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                        goToCommentActivity.putExtra("message_color", message.getColor());
+                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                        goToCommentActivity.putExtra("from", "Adapter");
+                        goToCommentActivity.putExtra("isOn", false);
+                        v.getContext().startActivity(goToCommentActivity);
+                    }
                 });
 
-                if(message.getAdmins().contains(phone)){
+                if (message.getAdmins().contains(phone)) {
                     ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     ((DocumentViewHolder) holder).numberOfLikes.setEnabled(false);
                     ((DocumentViewHolder) holder).numberOfLikes.setFocusable(false);
                 }
 
-                for(String ts : message.getL().keySet()){
-                    if(ts.equals(phone)){
+                for (String ts : message.getL().keySet()) {
+                    if (ts.equals(phone)) {
                         isShown = true;
                         ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
-                    }else{
+                    } else {
                         isShown = false;
                         ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                     }
@@ -1103,11 +1135,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 ((DocumentViewHolder) holder).numberOfLikes.setOnClickListener(v -> {
                     isShown = !isShown;
-                    if(isShown && !message.getAdmins().contains(phone)){
+                    if (isShown && !message.getAdmins().contains(phone)) {
                         ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite_border, 0, 0, 0);
                         mMessageReference.child(message.getMessageId()).child("l").child(phone).removeValue();
 
-                    }else {
+                    } else {
                         mMessageReference.child(message.getMessageId()).child("l").updateChildren(likeMap);
                         ((DocumentViewHolder) holder).numberOfLikes.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_favorite, 0, 0, 0);
                     }
@@ -1172,7 +1204,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         final Messages message = mMessagesList.get(position);
 
-      //  String from_user = message.getFrom();
+        //  String from_user = message.getFrom();
 
         String type = message.getType();
 
@@ -1224,7 +1256,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         }
 
-        public void setProfilePic(String thumbnail){
+        public void setProfilePic(String thumbnail) {
 
             channelImage = itemView.findViewById(R.id.channel_image);
 
@@ -1257,7 +1289,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
             messageProgress = itemView.findViewById(R.id.messageProgressBar);
         }
 
-        public void setProfilePic(String thumbnail){
+        public void setProfilePic(String thumbnail) {
 
             channelImage = itemView.findViewById(R.id.channel_image);
 
@@ -1293,7 +1325,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         }
 
 
-        public void setProfilePic(String thumbnail){
+        public void setProfilePic(String thumbnail) {
 
             channelImage = itemView.findViewById(R.id.channel_image);
 
@@ -1334,7 +1366,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         }
 
-        public void setProfilePic(String thumbnail){
+        public void setProfilePic(String thumbnail) {
 
             channelImage = itemView.findViewById(R.id.channel_image);
 
@@ -1369,7 +1401,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
         }
 
-        public void setProfilePic(String thumbnail){
+        public void setProfilePic(String thumbnail) {
 
             channelImage = itemView.findViewById(R.id.channel_image);
 
@@ -1390,7 +1422,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    public void updateList(List<Messages> newList){
+    public void updateList(List<Messages> newList) {
         mMessagesList = new ArrayList<>();
         mMessagesList.addAll(newList);
         notifyDataSetChanged();
@@ -1422,7 +1454,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 RunTimePermissionWrapper.REQUEST_CODE.MULTIPLE_WALKTHROUGH, WALK_THROUGH);
     }
 
-    private void showTextEntered(Messages message, TextView textview){
+    private void showTextEntered(Messages message, TextView textview) {
         String text = message.getParent();
         if (text.length() > 7 && text.contains("Default%")) {
             String[] parts = text.split("Default%");

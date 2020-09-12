@@ -34,14 +34,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:orientation="vertical"
         android:layout_weight="1">
 
+
+        <!--   android:layout_above="@+id/mainVLayout"
+            android:layout_below="@+id/chat_bar_main"
+        -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/mainVLayout"
-            android:layout_below="@+id/chat_bar_main"
             app:layout_constraintBottom_toTopOf="@+id/mainVLayout">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -190,7 +193,6 @@
             android:visibility="gone">
 
             <LinearLayout
-
                 android:id="@+id/replyLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -317,6 +319,7 @@
                     android:layout_weight="0.5"
                     android:background="?android:attr/selectableItemBackground"
                     android:contentDescription="@string/open_emoji_keyboard"
+                    android:tint="@color/black"
                     android:src="@drawable/ic_send_emoji" />
 
                 <com.vanniktech.emoji.EmojiEditText
@@ -325,7 +328,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
                     android:hint="@string/type_message"
-                    android:imeOptions="actionSend|flagNoExtractUi"
                     android:inputType="textCapSentences|textMultiLine" />
 
 

@@ -6,26 +6,22 @@ import android.app.Dialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.Contacts;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -53,9 +48,8 @@ import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiTextView;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,8 +60,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -93,9 +85,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private FirebaseAuth mAuth;
     private LinearLayout mMainVLayout;
     private Dialog mDialog;
+    private final static String TAG = "test";
+    private Runnable runnable;
+    private Handler handler;
     private static List<MediaPlayer> mediaPlayers = new ArrayList<>();
     private final String[] WALK_THROUGH = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
 
     private final static DatabaseReference mChannelReference = FirebaseDatabase.getInstance().
             getReference().child("ads_channel");
@@ -121,16 +115,17 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final static DatabaseReference mStatusReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_status");
 
+    private boolean isPlaying;
 
     public MessageAdapter(List<Messages> mMessagesList, LinearLayout mMainVLayout, List<Messages> mSelectedMessagesList,
-                          Context mContext, Activity mActivity) {
+                          Context mContext, Activity mActivity, Handler handler) {
 
         this.mMessagesList = mMessagesList;
         this.mMainVLayout = mMainVLayout;
         this.mSelectedMessagesList = mSelectedMessagesList;
         this.mContext = mContext;
         this.mActivity = mActivity;
-
+        this.handler = handler;
         mediaPlayers.clear();
         setHasStableIds(true);
     }
@@ -150,7 +145,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String dateMessageSend = getDate(message.getTimestamp());
 
         mDialog = new Dialog(mContext, R.style.CustomDialogTheme);
-
 
         switch (holder.getItemViewType()) {
 
@@ -182,13 +176,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         ((MessageViewHolder) holder).messageTime.setVisibility(View.GONE);
                         ((MessageViewHolder) holder).messageCheck.setVisibility(View.GONE);
                     }
-//                   ((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
-//                    notifyItemRangeChanged(position, mMessagesList.size());
+//
                 }
-      /*          if(mSelectedMessagesList.contains(mMessagesList.get(position))){
-                    ((MessageViewHolder) holder).messageLinearLayout.setBackgroundColor(Color
-                            .parseColor("#cbfdcb"));
-                }*/
+
 
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
@@ -200,19 +190,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                     }
                 } else {
-                    if(message.isReplyOn()){
-                        if(message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser().getPhoneNumber()))){
+                    if (message.isReplyOn()) {
+                        if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser().getPhoneNumber()))) {
                             ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
                             ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((MessageViewHolder) holder).cLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
-                        }else{
+                        } else {
                             ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
                             ((MessageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.message_text_background);
                             ((MessageViewHolder) holder).cLayout.setBackgroundResource(R.drawable.message_text_background);
                             ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_text_background);
                         }
-                    }else{
+                    } else {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((MessageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((MessageViewHolder) holder).cLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
@@ -525,18 +515,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         m.getFrom();
                                 if (m.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                                     ((MessageViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFFFFF"));
-
-//                                    ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                                 } else {
                                     ((MessageViewHolder) holder).senderOfMessage.setText(nameStored);
-//                                    ((MessageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFFFFF"));
-//                                    ((MessageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((MessageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
-
+//
                                 }
 
                                 switch (m.getType()) {
@@ -600,7 +581,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 
                                                 ((MessageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-                                                // ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
                                                 mmr.release();
                                             } else {
 
@@ -674,14 +654,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     ((ImageViewHolder) holder).rLayout.setLayoutParams(params);
                     if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                         ((ImageViewHolder) holder).infoLayout.setVisibility(View.VISIBLE);
-//                        ((ImageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_lay);
-//                        ((ImageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upper);
-
                     } else {
 
                         ((ImageViewHolder) holder).inforLayout.setVisibility(View.VISIBLE);
-//                        ((ImageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_layy);
-//                        ((ImageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upperr);
                     }
 
                     String string = message.getParent();
@@ -703,17 +678,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         part2;
                                 if (part2.equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                     ((ImageViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((ImageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#20BF9F"));
 //
-//                                    ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                                 } else {
                                     ((ImageViewHolder) holder).senderOfMessage.setText(nameStored + " " + "•" + mContext.getString(R.string.s));
-//                                    ((ImageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FF4500"));
-//                                    ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
+//
                                 }
                                 switch (message.getType()) {
 
@@ -761,73 +729,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                             Picasso.get().load(s.getContent()).placeholder(R.drawable.ic_avatar).into(((ImageViewHolder) holder).imageSent);
                                         }
                                         break;
-//                                    case "audio":
-//
-//                                        ((ImageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
-//                                        ((ImageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((ImageViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
-//                                                0, 0, 0);
-//                                        ((ImageViewHolder) holder).audioSent.setCompoundDrawablePadding(30);
-//
-//                                        MediaMetadataRetriever mmr;
-//
-//                                        try {
-//
-//                                            mmr = new MediaMetadataRetriever();
-//                                            if (Build.VERSION.SDK_INT >= 14) {
-//
-//                                                mmr.setDataSource(message.getContent(), new HashMap<String, String>());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//                                                ((ImageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                //     ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
-//                                                mmr.release();
-//                                            } else {
-//
-//                                                mmr.setDataSource(message.getContent());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                                                ((ImageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                mmr.release();
-//                                            }
-//
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        break;
-//
-//                                    case "video":
-//
-//                                        ((ImageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).videoSent.setVisibility(View.VISIBLE);
-//
-//                                        ((ImageViewHolder) holder).videoSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new__video,
-//                                                0, 0, 0);
-//                                        ((ImageViewHolder) holder).videoSent.setCompoundDrawablePadding(30);
-//                                        ((ImageViewHolder) holder).videoSent.setText(R.string.v);
-//
-//                                        break;
-//
-//                                    case "document":
-//
-//                                        ((ImageViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).documentSent.setVisibility(View.VISIBLE);
-//                                        ((ImageViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((ImageViewHolder) holder).documentSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_document,
-//                                                0, 0, 0);
-//                                        ((ImageViewHolder) holder).documentSent.setCompoundDrawablePadding(30);
-//                                        ((ImageViewHolder) holder).documentSent.setText(R.string.d);
-//
-//                                        break;
 
                                     default:
                                         return;
@@ -855,17 +756,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                 if (m.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                     ((ImageViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((ImageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFFFFF"));
-//
-//                                    ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                                 } else {
                                     ((ImageViewHolder) holder).senderOfMessage.setText(nameStored);
-//                                    ((ImageViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFFFFF"));
-//                                    ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
+                                    ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
 
                                 }
 
@@ -1027,12 +920,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
                     ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                         ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                     }
                 } else {
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((ImageViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
@@ -1040,7 +933,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background);
                             ((ImageViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
                         }
-                    }else{
+                    } else {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((ImageViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                         } else {
@@ -1073,7 +966,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 (mAuth.getCurrentUser()).getPhoneNumber())) {
                                             Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
                                                     mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        }else {
+                                        } else {
 
                                             mMessageReference.child(message.getMessageId())
                                                     .child("visible").setValue(false);
@@ -1176,13 +1069,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             if (list.contains(vid)) {
                                 i.putExtra("video", alreadyThere);
                             } else {
-//                            String fileName = downloadFile(mContext, message.getMessageId(),
-//                                    ".mp4", f.getAbsolutePath(), message.getContent());
-//                            i.putExtra("video", f.getAbsolutePath() + "/" + fileName);
+
                                 i.putExtra("video", message.getContent());
                             }
                         }
-                        //  i.putExtra("time", getDate(message.getTimestamp()));
                         view.getContext().startActivity(i);
                     }
 
@@ -1191,14 +1081,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (message.isReplyOn()) {
                     if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                         ((VideoViewHolder) holder).infoLayout.setVisibility(View.VISIBLE);
-//                        ((ImageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_lay);
-//                        ((ImageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upper);
+
 
                     } else {
 
                         ((VideoViewHolder) holder).inforLayout.setVisibility(View.VISIBLE);
-//                        ((ImageViewHolder) holder).messageLinearLayout.setBackgroundResource(R.drawable.reply_layy);
-//                        ((ImageViewHolder) holder).replyLayout.setBackgroundResource(R.drawable.reply_lay_upperr);
                     }
                     String string = message.getParent();
                     if (string.contains("/")) {
@@ -1219,17 +1106,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         part2;
                                 if (part2.equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                     ((VideoViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FFD700"));
-//
-//                                    ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
+
                                 } else {
                                     ((VideoViewHolder) holder).senderOfMessage.setText(nameStored + " " + "•" + mContext.getString(R.string.s));
-//                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#FF4500"));
-//                                    ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.other_linear_background);
-//                                    ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
+
 
                                 }
                                 switch (message.getType()) {
@@ -1271,45 +1151,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         }
 
                                         break;
-//
-//                                    case "audio":
-//
-//                                        ((VideoViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
-//                                        ((VideoViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((ImageViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((VideoViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
-//                                                0, 0, 0);
-//                                        ((VideoViewHolder) holder).audioSent.setCompoundDrawablePadding(30);
-//
-//                                        MediaMetadataRetriever mmr;
-//
-//                                        try {
-//
-//                                            mmr = new MediaMetadataRetriever();
-//                                            if (Build.VERSION.SDK_INT >= 14) {
-//
-//                                                mmr.setDataSource(message.getContent(), new HashMap<String, String>());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//                                                ((VideoViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                //     ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
-//                                                mmr.release();
-//                                            } else {
-//
-//                                                mmr.setDataSource(message.getContent());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                                                ((VideoViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                mmr.release();
-//                                            }
-//
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        break;
-//
+
                                     case "video":
 
                                         if (s.getFrom().equals("text")) {
@@ -1329,33 +1171,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                             Picasso.get().load(s.getContent()).placeholder(R.drawable.ic_avatar).into(((VideoViewHolder) holder).imageSent);
                                         }
-//                                        ((VideoViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).videoSent.setVisibility(View.VISIBLE);
-//
-//                                        ((VideoViewHolder) holder).videoSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new__video,
-//                                                0, 0, 0);
-//                                        ((VideoViewHolder) holder).videoSent.setCompoundDrawablePadding(30);
-//                                        ((VideoViewHolder) holder).videoSent.setText(R.string.v);
 
                                         break;
-//
-//                                    case "document":
-//
-//                                        ((VideoViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((VideoViewHolder) holder).documentSent.setVisibility(View.VISIBLE);
-//                                        ((VideoViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((VideoViewHolder) holder).documentSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_document,
-//                                                0, 0, 0);
-//                                        ((VideoViewHolder) holder).documentSent.setCompoundDrawablePadding(30);
-//                                        ((VideoViewHolder) holder).documentSent.setText(R.string.d);
-//
-//                                        break;
 
                                     default:
                                         return;
@@ -1381,11 +1198,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         m.getFrom();
                                 if (m.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                     ((VideoViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
-//                                            (Color.parseColor("#20BF9F"));
-//
-//                                    ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                    ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
+
                                 } else {
                                     ((VideoViewHolder) holder).senderOfMessage.setText(nameStored);
 //                                    ((VideoViewHolder) holder).senderOfMessage.setTextColor
@@ -1439,7 +1252,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                         ((VideoViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
                                         ((VideoViewHolder) holder).imageSent.setVisibility(View.GONE);
                                         ((VideoViewHolder) holder).documentSent.setVisibility(View.GONE);
-                                        ((ImageViewHolder) holder).videoSent.setVisibility(View.GONE);
+                                        ((VideoViewHolder) holder).videoSent.setVisibility(View.GONE);
 
                                         ((VideoViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
                                                 0, 0, 0);
@@ -1519,12 +1332,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                         ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                     }
                 } else {
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((VideoViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
@@ -1532,7 +1345,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background);
                             ((VideoViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
                         }
-                    }else{
+                    } else {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((VideoViewHolder) holder).rLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                         } else {
@@ -1562,7 +1375,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 (mAuth.getCurrentUser()).getPhoneNumber())) {
                                             Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
                                                     mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        }else {
+                                        } else {
                                             mMessageReference.child(message.getMessageId())
                                                     .child("visible").setValue(false);
                                             mMessageReference.child(message.getMessageId())
@@ -1670,6 +1483,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 try {
                     Log.i("((MediaPlayer))", "MediaPlayer call-ed");
                     mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                    //Toremove if not working
+                    //    mediaPlayer.reset();
                     File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
                     if (f.mkdirs() || f.isDirectory()) {
                         String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".gp3";
@@ -1682,10 +1497,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         } else {
                             mediaPlayer.setDataSource(message.getContent());
                         }
-
-
                     }
-
+                    //TODO: Uncomment if problem
+                    mediaPlayer.prepareAsync();
                     mediaPlayer.setOnPreparedListener(mediaPlayer12 -> {
                         isReady[0] = true;
                         duration[0] = mediaPlayer12.getDuration();
@@ -1696,19 +1510,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                 TimeUnit.MILLISECONDS.toSeconds(duration[0]) -
                                         TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration[0]))
                         );
-
-
-                        ((AudioViewHolder) holder).seekBarAudio.setMax(duration[0]);
-                        //  ((AudioViewHolder) holder).seekBarAudio.getProgressDrawable().setColorFilter(mContext.getResources().getColor(R.color.white), PorterDuff.Mode.SRC_IN);
+                        ((AudioViewHolder) holder).seekBarAudio.setMax(mediaPlayer12.getDuration());
                         ((AudioViewHolder) holder).audioTime.setText(time[0]);
-
-                        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-                        service.scheduleWithFixedDelay(() ->
-                                ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition()), 1, 1, TimeUnit.MICROSECONDS);
-
-                        // ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
                     });
-
                     mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
                         mediaPlayer1.pause();
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
@@ -1716,6 +1520,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         } else {
                             ((AudioViewHolder) holder).playAudioFile.setImageResource(R.drawable.ic_play_copy);
                         }
+                        mediaPlayer.seekTo(0);
                     });
 
                     mediaPlayer.setOnErrorListener((mp, what, extra) -> {
@@ -1751,6 +1556,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                     m.stop();
                                 }
                                 mediaPlayer.start();
+                                updateSeekBar(mediaPlayer, ((AudioViewHolder) holder).seekBarAudio);
                             }
                         }
 
@@ -1855,71 +1661,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 Picasso.get().load(s.getContent()).placeholder(R.drawable.ic_avatar).into(((AudioViewHolder) holder).imageSent);
                                             }
 
-//                                            ((AudioViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
-//                                            ((AudioViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                            ((AudioViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
-//                                                    0, 0, 0);
-//                                            ((AudioViewHolder) holder).audioSent.setCompoundDrawablePadding(30);
-//
-//                                            MediaMetadataRetriever mmr;
-//
-//                                            try {
-//
-//                                                mmr = new MediaMetadataRetriever();
-//                                                if (Build.VERSION.SDK_INT >= 14) {
-//
-//                                                    mmr.setDataSource(message.getContent(), new HashMap<String, String>());
-//                                                    String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//                                                    ((ImageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                    //     ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
-//                                                    mmr.release();
-//                                                } else {
-//
-//                                                    mmr.setDataSource(message.getContent());
-//                                                    String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                                                    ((ImageViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                    mmr.release();
-//                                                }
-//
-//                                            } catch (Exception e) {
-//                                                e.printStackTrace();
-//                                            }
                                             break;
-//
-//                                        case "video":
-//
-//                                            ((AudioViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).videoSent.setVisibility(View.VISIBLE);
-//
-//                                            ((AudioViewHolder) holder).videoSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new__video,
-//                                                    0, 0, 0);
-//                                            ((AudioViewHolder) holder).videoSent.setCompoundDrawablePadding(30);
-//                                            ((AudioViewHolder) holder).videoSent.setText(R.string.v);
-//
-//                                            break;
-//
-//                                        case "document":
-//
-//                                            ((AudioViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                            ((AudioViewHolder) holder).documentSent.setVisibility(View.VISIBLE);
-//                                            ((AudioViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                            ((AudioViewHolder) holder).documentSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_document,
-//                                                    0, 0, 0);
-//                                            ((AudioViewHolder) holder).documentSent.setCompoundDrawablePadding(30);
-//                                            ((AudioViewHolder) holder).documentSent.setText(R.string.d);
-//
-//                                            break;
 
                                         default:
                                             return;
@@ -1946,17 +1688,9 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                             m.getFrom();
                                     if (m.getFrom().equals(mAuth.getCurrentUser().getPhoneNumber())) {
                                         ((AudioViewHolder) holder).senderOfMessage.setText(mContext.getResources().getString(R.string.you));
-//                                        ((AudioViewHolder) holder).senderOfMessage.setTextColor
-//                                                (Color.parseColor("#FFD700"));
-//
-//                                        ((AudioViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
-//                                        ((AudioViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout_from_me);
                                     } else {
                                         ((AudioViewHolder) holder).senderOfMessage.setText(nameStored);
-//                                        ((AudioViewHolder) holder).senderOfMessage.setTextColor
-//                                                (Color.parseColor("#FF4500"));
-//                                        ((AudioViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.other_linear_background);
-//                                        ((AudioViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
+
 
                                     }
 
@@ -2081,14 +1815,20 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                     }
 
+                    ((AudioViewHolder) holder).seekBarAudio.requestFocus();
 
                     ((AudioViewHolder) holder).seekBarAudio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                         @Override
                         public void onProgressChanged(SeekBar seekBar, int progress, boolean input) {
 
-                            if (input) {
+                            if (!input) {
+                                return;
+                            } else {
                                 mediaPlayer.seekTo(progress);
+                                seekBar.setProgress(progress);
                             }
+
+                           // mediaPlayer.seekTo(progress * 1000);
 
                         }
 
@@ -2107,7 +1847,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 //                    Log.e("MediaPlayerException", e.getMessage());
                     e.printStackTrace();
                 }
-
                 ((AudioViewHolder) holder).messageCheck.setVisibility(View.GONE);
                 if (message.isSeen() && message.getFrom().equals(Objects.requireNonNull(
                         mAuth.getCurrentUser()).getPhoneNumber())) {
@@ -2142,7 +1881,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 (mAuth.getCurrentUser()).getPhoneNumber())) {
                                             Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
                                                     mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        }else{
+                                        } else {
                                             mMessageReference.child(message.getMessageId())
                                                     .child("visible").setValue(false);
 
@@ -2233,12 +1972,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((AudioViewHolder) holder).lLayout.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         ((AudioViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                         ((AudioViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                     }
                 } else {
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((AudioViewHolder) holder).lLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((AudioViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
@@ -2246,7 +1985,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             ((AudioViewHolder) holder).lLayout.setBackgroundResource(R.drawable.message_text_background);
                             ((AudioViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
                         }
-                    }else{
+                    } else {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((AudioViewHolder) holder).lLayout.setBackgroundResource(R.drawable.message_text_background_for_me);
                         } else {
@@ -2254,6 +1993,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     }
                 }
+
 
                 break;
 
@@ -2371,59 +2111,6 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
                                         break;
 
-//                                    case "audio":
-//
-//                                        ((DocumentViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).audioSent.setVisibility(View.VISIBLE);
-//                                        ((DocumentViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).videoSent.setVisibility(View.GONE);
-//
-//                                        ((DocumentViewHolder) holder).audioSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new_audio,
-//                                                0, 0, 0);
-//                                        ((DocumentViewHolder) holder).audioSent.setCompoundDrawablePadding(30);
-//
-//                                        MediaMetadataRetriever mmr;
-//
-//                                        try {
-//
-//                                            mmr = new MediaMetadataRetriever();
-//                                            if (Build.VERSION.SDK_INT >= 14) {
-//
-//                                                mmr.setDataSource(message.getContent(), new HashMap<String, String>());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//
-//                                                ((DocumentViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                //     ((MessageViewHolder) holder).audioSent.setTextColor(R.color.bg_gray);
-//                                                mmr.release();
-//                                            } else {
-//
-//                                                mmr.setDataSource(message.getContent());
-//                                                String duration = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-//                                                ((DocumentViewHolder) holder).audioSent.setText(formatTimeOfAudio(duration));
-//                                                mmr.release();
-//                                            }
-//
-//                                        } catch (Exception e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        break;
-//
-//                                    case "video":
-//
-//                                        ((DocumentViewHolder) holder).messageContent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).audioSent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).imageSent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).documentSent.setVisibility(View.GONE);
-//                                        ((DocumentViewHolder) holder).videoSent.setVisibility(View.VISIBLE);
-//
-//                                        ((DocumentViewHolder) holder).videoSent.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_new__video,
-//                                                0, 0, 0);
-//                                        ((DocumentViewHolder) holder).videoSent.setCompoundDrawablePadding(30);
-//                                        ((DocumentViewHolder) holder).videoSent.setText(R.string.v);
-//
-//                                        break;
-//
                                     case "document":
 
 
@@ -2637,7 +2324,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 (mAuth.getCurrentUser()).getPhoneNumber())) {
                                             Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
                                                     mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        }else {
+                                        } else {
                                             mMessageReference.child(message.getMessageId())
                                                     .child("visible").setValue(false);
 
@@ -2729,12 +2416,12 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (mSelectedMessagesList.contains(mMessagesList.get(position))) {
 
                     ((DocumentViewHolder) holder).mainDoc.setBackgroundResource(R.drawable.message_selected_layout_for_me);
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         ((DocumentViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                         ((DocumentViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.reply_is_on_and_selected);
                     }
                 } else {
-                    if(message.isReplyOn()){
+                    if (message.isReplyOn()) {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((DocumentViewHolder) holder).mainDoc.setBackgroundResource(R.drawable.message_text_background_for_me);
                             ((DocumentViewHolder) holder).infoLayout.setBackgroundResource(R.drawable.linear_background);
@@ -2742,7 +2429,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             ((DocumentViewHolder) holder).mainDoc.setBackgroundResource(R.drawable.message_text_background);
                             ((DocumentViewHolder) holder).inforLayout.setBackgroundResource(R.drawable.final_lin_layout);
                         }
-                    }else{
+                    } else {
                         if (message.getFrom().equals(Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber())) {
                             ((DocumentViewHolder) holder).mainDoc.setBackgroundResource(R.drawable.message_text_background_for_me);
                         } else {
@@ -2780,7 +2467,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                                                 (mAuth.getCurrentUser()).getPhoneNumber())) {
                                             Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
                                                     mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        }else {
+                                        } else {
                                             mMessageReference.child(message.getMessageId())
                                                     .child("visible").setValue(false);
 
@@ -3406,6 +3093,16 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
         RunTimePermissionWrapper.handleRunTimePermission(mActivity,
                 RunTimePermissionWrapper.REQUEST_CODE.MULTIPLE_WALKTHROUGH, WALK_THROUGH);
+    }
+
+    private void updateSeekBar(MediaPlayer mediaPlayer, SeekBar seekBar) {
+        try {
+            seekBar.setProgress(mediaPlayer.getCurrentPosition());
+            runnable = () -> updateSeekBar(mediaPlayer, seekBar);
+            handler.postDelayed(runnable, 1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 
