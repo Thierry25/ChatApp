@@ -151,7 +151,7 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
     public boolean onCreateOptionsMenu(Menu menu)
     {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.contacts_menu, menu);
+        inflater.inflate(R.menu.search_menu, menu);
 
         MenuItem searchItem = menu.findItem(R.id.ic_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -159,16 +159,6 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
         searchView.setOnQueryTextListener(this);
 
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.ic_refresh){
-            recreate();
-            Toast.makeText(this, R.string.refreshed, Toast.LENGTH_SHORT).show();
-
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

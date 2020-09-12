@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiEditText;
+import com.vanniktech.emoji.EmojiPopup;
 import com.vanniktech.emoji.EmojiTextView;
 
 import java.util.ArrayList;
@@ -92,6 +94,7 @@ public class ReactionActivity extends AppCompatActivity {
     private RelativeLayout mReactionLayout;
     private EmojiTextView mAdsReaction, mAdsReactionCallerText,
             mPhoneNumber, mAcceptReaction, mDeclineReaction;
+    private EmojiPopup emojiPopup;
     private CircleImageView mProfilePic;
     private LinearLayout mLiveLayout, mTextLayout, mMessageLinLayout;
     private FrameLayout mLocalVideo, mOtherVideo;
@@ -304,6 +307,10 @@ public class ReactionActivity extends AppCompatActivity {
         });
 
         loadReactionMessages();
+        mSendEmoji.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
+        mSendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
+
+        setUpEmojiPopup();
     }
 
     private void initAgoraEngineAndJoinChannel() {
@@ -608,5 +615,18 @@ public class ReactionActivity extends AppCompatActivity {
                 }
             });
         }
+    private void setUpEmojiPopup() {
+        emojiPopup = EmojiPopup.Builder.fromRootView(mRootView)
+                .setOnEmojiBackspaceClickListener(ignore -> Log.d("ChatActivity", "Clicked on Backspace"))
+                .setOnEmojiClickListener((ignore, ignore2) -> Log.d("ChatActivity", "Clicked on emoji"))
+                .setOnEmojiPopupShownListener(() -> mSendEmoji.setImageResource(R.drawable.ic_keyboard))
+                .setOnSoftKeyboardOpenListener(ignore -> Log.d("ChatActivity", "Opened soft keyboard"))
+                .setOnEmojiPopupDismissListener(() -> mSendEmoji.setImageResource(R.drawable.emoji_ios_category_smileysandpeople))
+                .setOnSoftKeyboardCloseListener(() -> Log.d("ChatActivity", "Closed soft keyboard"))
+                .setKeyboardAnimationStyle(R.style.emoji_slide_animation_style)
+                //   .setPageTransformer(new RotateUpTransformer())
+                .build(mSendText);
     }
+
+}
 

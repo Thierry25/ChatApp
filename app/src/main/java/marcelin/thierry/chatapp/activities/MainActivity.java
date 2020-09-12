@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         mConversationList.setHasFixedSize(true);
         mConversationList.setLayoutManager(linearLayoutManager);
 
+
         if (currrentUser != null) {
             mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
             //TODO: [fm] gol-a-main -> adding own phone number in the list
