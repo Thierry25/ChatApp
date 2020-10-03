@@ -131,14 +131,16 @@ public class UsersInCurrentChannelAdapter extends RecyclerView.Adapter
                                     AlertDialog.Builder alBuilder = new AlertDialog.Builder(view.getContext());
                                     alBuilder.setPositiveButton(R.string.ok, (dial, id_) ->{
 
-                                        mChannelReference.child(currentUser.getChatId()).child("users")
+//                                        mChannelReference.child(currentUser.getChatId()).child("users")
+//                                                .child(currentUser.getPhoneNumber()).removeValue();
+
+                                        mChannelReference.child(currentUser.getChatId()).child("subscribers")
                                                 .child(currentUser.getPhoneNumber()).removeValue();
-                                        mChannelReference.child(currentUser.getPhoneNumber())
+                                        mUsersReference.child(currentUser.getPhoneNumber())
                                                 .child("conversation").child("C-"+currentUser.getChatId())
                                                 .removeValue();
                                         Toast.makeText(view.getContext(), R.string.us_dl_chan,
                                                 Toast.LENGTH_SHORT).show();
-
 
 
                                     });
@@ -181,8 +183,8 @@ public class UsersInCurrentChannelAdapter extends RecyclerView.Adapter
 
                                                             view.getContext().startActivity(goToOneAndOneChat);
                                                         }else{
-                                                            Toast.makeText(view.getContext(), R.string.no_conv
-                                                                    , Toast.LENGTH_SHORT).show();
+//                                                            Toast.makeText(view.getContext(), R.string.no_conv
+//                                                                    , Toast.LENGTH_SHORT).show();
                                                         }
                                                     }
 

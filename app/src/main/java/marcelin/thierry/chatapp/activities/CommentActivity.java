@@ -34,10 +34,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MediaController;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -459,6 +461,17 @@ public class CommentActivity extends AppCompatActivity implements VoiceMessagerF
                 mChannelName.setText(channelName);
                 Picasso.get().load(channelImage).placeholder(R.drawable.ic_avatar).into(mChannelImage);
                 mMoreSettings.setVisibility(View.GONE);
+
+                VideoView messageLayout = commentVideo.findViewById(R.id.messageLayout);
+                Uri uri = Uri.parse(messageContent);
+                messageLayout.setVideoURI(uri);
+                messageLayout.start();
+
+                MediaController mediaController = new MediaController(this);
+                messageLayout.setMediaController(mediaController);
+                mediaController.setAnchorView(messageLayout);
+
+
 
                 mSend.setOnClickListener(v -> new CheckInternet_(internet -> {
                     if (internet) {

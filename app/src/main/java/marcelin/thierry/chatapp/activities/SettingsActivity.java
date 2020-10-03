@@ -323,57 +323,50 @@ public class SettingsActivity extends AppCompatActivity{
                 final StorageReference image_path = mStorageRef.child("profile_pics").child(mCurrentUser.getUid() + ".jpg");
                 final StorageReference thumb_filepath = mStorageRef.child("profile_pics").child("thumbs").child(mCurrentUser.getUid() + ".jpg");
 
-                image_path.putFile(resultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                image_path.putFile(resultUri).addOnCompleteListener(task -> {
 
-                        if (task.isSuccessful()) {
-                            final String download_url = task.getResult().getDownloadUrl().toString();
+                    if (task.isSuccessful()) {
+                        final String download_url = task.getResult().getDownloadUrl().toString();
 
-                            UploadTask uploadTask = thumb_filepath.putBytes(thum_byte);
-                            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> thumb_task) {
+                        UploadTask uploadTask = thumb_filepath.putBytes(thum_byte);
+                        uploadTask.addOnCompleteListener(thumb_task -> {
 
-                                    String thumb_downloadUrl = thumb_task.getResult().getDownloadUrl().toString();
-                                    if (thumb_task.isSuccessful()) {
+                            String thumb_downloadUrl = thumb_task.getResult().getDownloadUrl().toString();
+                            if (thumb_task.isSuccessful()) {
 
-                                        Map updateHashMap = new HashMap();
-                                        updateHashMap.put("image", download_url);
-                                        updateHashMap.put("thumbnail", thumb_downloadUrl);
+                                Map updateHashMap = new HashMap();
+                                updateHashMap.put("image", download_url);
+                                updateHashMap.put("thumbnail", thumb_downloadUrl);
 
-                                        mDatabaseRef.updateChildren(updateHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
+                                mDatabaseRef.updateChildren(updateHashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task1) {
 
-                                                if (task.isSuccessful()) {
+                                        if (task1.isSuccessful()) {
 
-                                                    uploadDialog.dismiss();
-                                                    Toast.makeText(SettingsActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
+                                            uploadDialog.dismiss();
+                                            Toast.makeText(SettingsActivity.this, R.string.upload_success, Toast.LENGTH_SHORT).show();
 
-                                                } else {
-                                                    Toast.makeText(context, R.string.upload_error, Toast.LENGTH_SHORT).show();
-                                                }
+                                        } else {
+                                            Toast.makeText(context, R.string.upload_error, Toast.LENGTH_SHORT).show();
+                                        }
 
-                                            }
-                                        });
-                                    } else {
-                                        Toast.makeText(getApplicationContext(), R.string.thumbnail_error, Toast.LENGTH_SHORT).show();
-                                        uploadDialog.dismiss();
                                     }
+                                });
+                            } else {
+                                Toast.makeText(getApplicationContext(), R.string.thumbnail_error, Toast.LENGTH_SHORT).show();
+                                uploadDialog.dismiss();
+                            }
 
-                                }
-                            });
+                        });
 
-                        } else {
-                            // TODO: Learn about the specific errors that can happen to handle them more efficiently
-                            Toast.makeText(context, R.string.err, Toast.LENGTH_SHORT).show();
-                            uploadDialog.dismiss();
-                        }
-
-
+                    } else {
+                        // TODO: Learn about the specific errors that can happen to handle them more efficiently
+                        Toast.makeText(context, R.string.err, Toast.LENGTH_SHORT).show();
+                        uploadDialog.dismiss();
                     }
+
+
                 });
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {

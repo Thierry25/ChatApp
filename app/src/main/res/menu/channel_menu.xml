@@ -10,7 +10,7 @@
         android:title="@string/searched"
         app:showAsAction="ifRoom|collapseActionView"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        android:icon="@drawable/ic_search"/>
+        android:icon="@drawable/ic_search_black_24dp"/>
 
     <item android:title="@string/invite_via_link"
         android:id="@+id/menu_invite_link"/>

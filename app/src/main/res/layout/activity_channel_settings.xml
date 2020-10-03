@@ -12,7 +12,7 @@
 
     <include
         android:id="@+id/channel_settings_bar"
-        layout="@layout/app_bar_layout" />
+        layout="@layout/custom_chat_layout" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cstLayout"
@@ -131,6 +131,7 @@
         android:layout_alignEnd="@+id/frmLayout"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="11dp"
+        app:backgroundTint="@color/light_blue"
         android:src="@android:drawable/ic_menu_send"
         android:layout_alignRight="@+id/frmLayout" />
 </RelativeLayout>

@@ -54,6 +54,18 @@
                 android:text="@string/time_created"
                 android:textSize="12sp" />
 
+            <TextView
+                android:id="@+id/text_edited"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/edited"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="8dp"
+                android:visibility="gone"
+                android:layout_toStartOf="@id/more_settings"
+                android:textColor="@color/black"
+                android:textSize="16sp"/>
+
             <ImageView
                 android:id="@+id/more_settings"
                 android:layout_width="24dp"

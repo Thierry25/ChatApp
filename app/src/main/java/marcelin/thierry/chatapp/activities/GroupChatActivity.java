@@ -11,10 +11,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -37,6 +39,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -51,6 +54,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,8 +79,10 @@ import com.vanniktech.emoji.EmojiPopup;
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 import net.alhazmy13.mediapicker.Video.VideoPicker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -105,6 +111,8 @@ import marcelin.thierry.chatapp.utils.AlertDialogHelper;
 import marcelin.thierry.chatapp.utils.CheckInternet_;
 import marcelin.thierry.chatapp.utils.Constant;
 import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
+
+import static marcelin.thierry.chatapp.activities.MainActivity.getDateDiff;
 
 public class GroupChatActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener,
         SearchView.OnQueryTextListener,
@@ -188,14 +196,22 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private TextView audioSent;
     private TextView documentSent;
 
-    private LinearLayout messageLinLayout;
+    private LinearLayout messageLinLayout, recycler_layout;
     private RelativeLayout replyTextLayout;
+    private ImageView mCloseEditMode;
 
     //Copy Feature
 
     private String mFinalCopiedMessages = "";
     private LinearLayout linearLayout;
     private Fragment fragment;
+
+    private boolean editModeIsOn = false;
+    private String clickedMessageId = "";
+    private Long clickedMessageTimeStamp = 0L;
+
+    private RecyclerItemClickListener recyclerItemClickListener;
+
 
     private static final StorageReference mImagesStorage = FirebaseStorage.getInstance().getReference();
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
@@ -209,6 +225,10 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
             .getReference().child("ads_notifications");
     private static final DatabaseReference mMessagesReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_group_messages");
+
+    private LinearLayout mUploadLayout;
+    private TextView mFilePath, mFileSize, mFilePercentage;
+    private ProgressBar mProgress;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @SuppressLint("ClickableViewAccessibility")
@@ -230,6 +250,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         senderOfMessage = findViewById(R.id.senderOfMessage);
         messageReceived = findViewById(R.id.messageReceived);
         close_reply = findViewById(R.id.close_reply);
+        mCloseEditMode = findViewById(R.id.closeEditMode);
 
         Intent i = getIntent();
         mGroupName = i.getStringExtra("Group_id");
@@ -245,6 +266,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 //        actionBar.setDisplayShowCustomEnabled(true);
 
         // mSend = findViewById(R.id.send);
+        linearLayout = findViewById(R.id.linearLayout);
         getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.ic_try));
 
         // Saving the URI returned by the video and image library
@@ -291,6 +313,14 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         });
         // actionBar.setTitle(mChatId);
 
+        recycler_layout = findViewById(R.id.recycler_layout);
+
+        mUploadLayout = findViewById(R.id.uploadLayout);
+        mFilePath = findViewById(R.id.filePath);
+        mFileSize = findViewById(R.id.fileSize);
+        mFilePercentage = findViewById(R.id.filePercentage);
+        mProgress = findViewById(R.id.progress);
+
         mLinearLayoutManager = new LinearLayoutManager(this);
 
         mMessagesList.setHasFixedSize(true);
@@ -309,7 +339,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         mSendEmoji = findViewById(R.id.send_emoji);
         mSendAttachment = findViewById(R.id.send_attachment);
 
-        mMessagesList.addOnItemTouchListener(new RecyclerItemClickListener(this, mMessagesList, new RecyclerItemClickListener.OnItemClickListener() {
+       recyclerItemClickListener = new RecyclerItemClickListener(this, mMessagesList, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 if(isMultiSelect){
@@ -322,7 +352,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                         builder.setTitle(R.string.choose_option)
-                                .setItems(R.array.options, (dialog, which) -> {
+                                .setItems(R.array.options_msg, (dialog, which) -> {
                                     switch (which) {
                                         case 0:
                                             switch (message.getType()) {
@@ -427,6 +457,37 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                                 messageLinLayout.setBackgroundResource(R.drawable.border);
                                                 replyLayout.setVisibility(View.GONE);
                                             });
+                                            break;
+
+                                        case 3:
+                                            long millis = System.currentTimeMillis();
+                                            long minutes = 1200000L;
+
+                                            long result = getDateDiff(message.getTimestamp(), millis, TimeUnit.MILLISECONDS);
+                                            if(result < minutes){
+                                                if (message.getFrom().equals(mCurrentUserPhone)) {
+                                                    if(message.getType().equals("text")) {
+                                                        Toast.makeText(GroupChatActivity.this, R.string.edit_mode, Toast.LENGTH_SHORT).show();
+
+                                                        editModeIsOn = true;
+                                                        provideCorrectUI();
+                                                        clickedMessageId = message.getMessageId();
+                                                        clickedMessageTimeStamp = message.getTimestamp();
+                                                        mTextToSend.setText(message.getContent());
+                                                    }else{
+                                                        Toast.makeText(GroupChatActivity.this, "Cannot be edited", Toast.LENGTH_SHORT).show();
+                                                    }
+
+                                                }else{
+                                                    Toast.makeText(GroupChatActivity.this, R.string.c_sent_by_you, Toast.LENGTH_SHORT).show();
+                                                }
+
+//                                                mMessagesList.removeOnItemTouchListener(recyclerItemClickListener);
+                                            }else{
+                                                Toast.makeText(GroupChatActivity.this, R.string.edit_limit, Toast.LENGTH_SHORT).show();
+                                            }
+
+                                            break;
                                     }
 
                                 });
@@ -452,7 +513,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                 multi_select(position);
 
             }
-        }));
+        });
 
 
         mDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
@@ -506,6 +567,14 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         mSendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
 
         setUpEmojiPopup();
+        mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
+
+        mCloseEditMode.setOnClickListener(v ->{
+            editModeIsOn = false;
+            provideCorrectUI();
+            Toast.makeText(this, "Edit mode off", Toast.LENGTH_SHORT).show();
+        });
+
 
     }
 
@@ -562,13 +631,13 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
                        StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
                        Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
-
-
+                       mUploadLayout.setVisibility(View.VISIBLE);
                        filePath.putFile(voiceUri).addOnCompleteListener(task -> {
 
                            if (task.isSuccessful()) {
                                String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
                                        .toString();
+                               mFilePath.setText(push_id+".gp3");
 
                                mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                                Map<String, Object> messageMap = new HashMap<>();
@@ -579,6 +648,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                messageMap.put("visible", true);
                                messageMap.put("from", mCurrentUserPhone);
                                messageMap.put("seen", false);
+                               messageMap.put("edited", false);
                                messageMap.put("read_by", mRead);
 
                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
@@ -637,9 +707,21 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                    //TODO: add sent mark
 
                                });
+                               mUploadLayout.setVisibility(View.GONE);
                            }
 
-                       });
+                       })
+                               .addOnFailureListener(e ->{
+                                   Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                                   mUploadLayout.setVisibility(View.GONE);
+                               })
+                               .addOnProgressListener(taskSnapshot -> {
+                                   double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                   mProgress.setProgress((int)progress);
+                                   String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                   mFileSize.setText(progressText);
+                                   mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                               });
                }else{
                    Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                }
@@ -671,10 +753,12 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
                 StorageReference filePath = mImagesStorage.child("ads_messages_images")
                         .child(push_id + ".jpg");
+
+                mUploadLayout.setVisibility(View.VISIBLE);
                 filePath.putFile(mImagesData.get(i)).addOnCompleteListener(task -> {
 
                     if (task.isSuccessful()) {
-
+                       mFilePath.setText(push_id+".jpg");
                         String downloadUrl = Objects.requireNonNull(task.getResult()
                                 .getDownloadUrl()).toString();
 
@@ -687,6 +771,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         messageMap.put("visible", true);
                         messageMap.put("from", mCurrentUserPhone);
                         messageMap.put("seen", false);
+                        messageMap.put("edited", false);
                         messageMap.put("read_by", mRead);
 
                         if (replyLinearLayout.getVisibility() == View.VISIBLE) {
@@ -745,9 +830,21 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                             //TODO: add sent mark
 
                         });
+                        mUploadLayout.setVisibility(View.GONE);
                     }
 
-                });
+                })
+                        .addOnFailureListener(e ->{
+                            Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                            mUploadLayout.setVisibility(View.GONE);
+                        })
+                        .addOnProgressListener(taskSnapshot -> {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                            mProgress.setProgress((int)progress);
+                            String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                            mFileSize.setText(progressText);
+                            mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                        });
 
             }
         }
@@ -783,9 +880,11 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
                 StorageReference filePath = mDocumentsStorage.child("ads_messages_documents")
                         .child(push_id + ".docx");
+                 mUploadLayout.setVisibility(View.VISIBLE);
                 filePath.putFile(Uri.fromFile(new File(mDocPath.get(i)))).addOnCompleteListener(task -> {
 
                     if (task.isSuccessful()) {
+                        mFilePath.setText(push_id+".docx");
 
                         String downloadUrl = Objects.requireNonNull(task.getResult()
                                 .getDownloadUrl()).toString();
@@ -799,6 +898,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         messageMap.put("visible", true);
                         messageMap.put("from", mCurrentUserPhone);
                         messageMap.put("seen", false);
+                        messageMap.put("edited", false);
                         messageMap.put("read_by", mRead);
 
                         if (replyLinearLayout.getVisibility() == View.VISIBLE) {
@@ -857,10 +957,21 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                             //TODO: add sent mark
 
                         });
-
+                        mUploadLayout.setVisibility(View.GONE);
                     }
 
-                });
+                })
+                        .addOnFailureListener(e ->{
+                            Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                            mUploadLayout.setVisibility(View.GONE);
+                        })
+                        .addOnProgressListener(taskSnapshot -> {
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                            mProgress.setProgress((int)progress);
+                            String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                            mFileSize.setText(progressText);
+                            mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                        });
 
             }
 
@@ -877,10 +988,11 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
             DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName).child("messages").child(push_id);
 
             StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
+            mUploadLayout.setVisibility(View.VISIBLE);
             filePath.putFile(Objects.requireNonNull(songUri)).addOnCompleteListener(task -> {
 
                 if (task.isSuccessful()) {
-
+                    mFilePath.setText(push_id+".gp3");
                     String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl()).toString();
 
                     mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
@@ -892,6 +1004,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                     messageMap.put("type", "audio");
                     messageMap.put("from", mCurrentUserPhone);
                     messageMap.put("seen", false);
+                    messageMap.put("edited", false);
                     messageMap.put("read_by", mRead);
 
                     if (replyLinearLayout.getVisibility() == View.VISIBLE) {
@@ -949,10 +1062,21 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         //TODO: add sent mark
 
                     });
-
+                    mUploadLayout.setVisibility(View.GONE);
                 }
 
-            });
+            })
+                    .addOnFailureListener(e ->{
+                        Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                        mUploadLayout.setVisibility(View.GONE);
+                    })
+                    .addOnProgressListener(taskSnapshot -> {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        mProgress.setProgress((int)progress);
+                        String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                        mFileSize.setText(progressText);
+                        mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                    });
         }
     }
 
@@ -1083,97 +1207,133 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private void sendMessage(EmojiEditText mTextToSend) {
 
         String message = mTextToSend.getText().toString().trim();
-        try {
+
+        if(editModeIsOn){
             new CheckInternet_(internet -> {
-               if(internet){
-                       if (!TextUtils.isEmpty(message)) {
+                if(internet){
 
-                           final String message_reference = "ads_group_messages/";
+                    long millis = System.currentTimeMillis();
+                    long minutes = 1200000L;
 
-                           DatabaseReference msg_push = mRootReference.child("ads_group_messages").push();
+                    long result = getDateDiff(clickedMessageTimeStamp, millis, TimeUnit.MILLISECONDS);
+                    if(result < minutes){
+                        if(!message.isEmpty()){
+                            mMessagesReference.child(clickedMessageId)
+                                    .child("content").setValue(message);
+                            mMessagesReference.child(clickedMessageId).child("edited").setValue(true);
+                            mMessagesReference.child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                            messagesList.clear();
+                            loadMessages();
+                            mTextToSend.setText("");
+                            editModeIsOn = false;
+                            provideCorrectUI();
+                        }else{
+                            Toast.makeText(this, "Please enter a text", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        Toast.makeText(this, R.string.edit_limit, Toast.LENGTH_SHORT).show();
+                        editModeIsOn = false;
+                        provideCorrectUI();
+                    }
 
-                           String push_id = msg_push.getKey();
-
-                           if(mGroupName == null || mGroupName.length() < 1) {
-                               Log.i("groupName", "empty");
-                           }
-
-                           DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
-                                   .child("messages").child(push_id);
-
-                           mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                           Map<String, Object> messageMap = new HashMap<>();
-                           messageMap.put("content", message);
-                           messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                           messageMap.put("parent", "Default");
-                           messageMap.put("visible", true);
-                           messageMap.put("type", "text");
-                           messageMap.put("from", mCurrentUserPhone);
-                           messageMap.put("seen", false);
-                           messageMap.put("read_by", mRead);
-
-                           Map<String, Object> msgContentMap = new HashMap<>();
-                           msgContentMap.put(message_reference + push_id, messageMap);
-
-                           mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
-                                   .setValue(push_id);
-
-                           if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                               messageMap.put("parent", Messages.getClickedMessageId());
-                           }
-                           //Adding message
-                           mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                               //TODO: when completed, insert into table ads_chat. On error, remove from db
-                           });
-
-                           Map<String, Object> chatRefMap = new HashMap<>();
-                           chatRefMap.put("msgId", push_id);
-                           chatRefMap.put("seen", false);
-                           chatRefMap.put("visible", true);
-                           chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
-
-                           mTextToSend.setText("");
-
-                           usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
-
-                               HashMap<String, Object> notificationData = new HashMap<>();
-                               notificationData.put("from", mCurrentUserPhone);
-                               notificationData.put("message", message);
-
-                               mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
-                                       .addOnCompleteListener(task -> {
-
-                                           if (task.isSuccessful()) {
-                                               try {
-                                                   if (mp1.isPlaying()) {
-                                                       mp1.stop();
-                                                       mp1.release();
-
-                                                   }
-                                                   mp1.start();
-                                               } catch (Exception e) {
-                                                   e.printStackTrace();
-                                               }
-                                               //TODO: update message field seen
-
-                                               Toast.makeText(GroupChatActivity.this, "Notification Sent",
-                                                       Toast.LENGTH_SHORT).show();
-                                               mTextToSend.requestFocus();
-                                           }
-                                       });
-                               //mp1.start();
-                               //TODO: add sent mark
-
-                           });
-                       }
-
-
-               }else{
-                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-               }
+                }else{
+                    Toast.makeText(this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                }
             });
-        } catch (Exception e) {
-            e.printStackTrace();
+        }else {
+            try {
+                new CheckInternet_(internet -> {
+                    if (internet) {
+                        if (!TextUtils.isEmpty(message)) {
+
+                            final String message_reference = "ads_group_messages/";
+
+                            DatabaseReference msg_push = mRootReference.child("ads_group_messages").push();
+
+                            String push_id = msg_push.getKey();
+
+                            if (mGroupName == null || mGroupName.length() < 1) {
+                                Log.i("groupName", "empty");
+                            }
+
+                            DatabaseReference usersInGroup = mRootReference.child("ads_group").child(mGroupName)
+                                    .child("messages").child(push_id);
+
+                            mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            Map<String, Object> messageMap = new HashMap<>();
+                            messageMap.put("content", message);
+                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                            messageMap.put("parent", "Default");
+                            messageMap.put("visible", true);
+                            messageMap.put("type", "text");
+                            messageMap.put("from", mCurrentUserPhone);
+                            messageMap.put("seen", false);
+                            messageMap.put("edited", false);
+                            messageMap.put("read_by", mRead);
+
+                            Map<String, Object> msgContentMap = new HashMap<>();
+                            msgContentMap.put(message_reference + push_id, messageMap);
+
+                            mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
+                                    .setValue(push_id);
+
+                            if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                messageMap.put("parent", Messages.getClickedMessageId());
+                            }
+                            //Adding message
+                            mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                                //TODO: when completed, insert into table ads_chat. On error, remove from db
+                            });
+
+                            Map<String, Object> chatRefMap = new HashMap<>();
+                            chatRefMap.put("msgId", push_id);
+                            chatRefMap.put("seen", false);
+                            chatRefMap.put("visible", true);
+                            chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
+
+                            mTextToSend.setText("");
+
+                            usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+
+                                HashMap<String, Object> notificationData = new HashMap<>();
+                                notificationData.put("from", mCurrentUserPhone);
+                                notificationData.put("message", message);
+
+                                mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
+                                        .addOnCompleteListener(task -> {
+
+                                            if (task.isSuccessful()) {
+                                                try {
+                                                    if (mp1.isPlaying()) {
+                                                        mp1.stop();
+                                                        mp1.release();
+
+                                                    }
+                                                    mp1.start();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                //TODO: update message field seen
+
+                                                Toast.makeText(GroupChatActivity.this, "Notification Sent",
+                                                        Toast.LENGTH_SHORT).show();
+                                                mTextToSend.requestFocus();
+                                            }
+                                        });
+                                //mp1.start();
+                                //TODO: add sent mark
+
+                            });
+                        }
+
+
+                    } else {
+                        Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1741,12 +1901,12 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         }
     };
 
-    private String getHumanTimeText(long milliseconds) {
-        return String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
-                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
-    }
+//    private String getHumanTimeText(long milliseconds) {
+//        return String.format("%02d:%02d",
+//                TimeUnit.MILLISECONDS.toMinutes(milliseconds),
+//                TimeUnit.MILLISECONDS.toSeconds(milliseconds) -
+//                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(milliseconds)));
+//    }
 
     private String getDate(long time) {
         Calendar cal = Calendar.getInstance(Locale.ENGLISH);
@@ -1822,6 +1982,17 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
             super.onPostExecute(compressedFilePath);
             File imageFile = new File(compressedFilePath);
             float length = imageFile.length() / 1024f; // Size in KB
+
+            Bitmap bMap = null;
+            try{
+                bMap = ThumbnailUtils.createVideoThumbnail(compressedFilePath, MediaStore.Video.Thumbnails.MINI_KIND);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            Objects.requireNonNull(bMap).compress(Bitmap.CompressFormat.JPEG, 40, baos);
+            final byte[] thum_byte = baos.toByteArray();
+
             Uri uri = Uri.fromFile(imageFile);
 
             final String message_reference = "ads_group_messages/";
@@ -1835,86 +2006,104 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
             StorageReference filePath = mVideosStorage.child("messages_videos")
                     .child(push_id + ".mp4");
-
+            StorageReference videoThumb = mVideosStorage.child("messages_videos").child(push_id + ".jpg");
             UploadTask uploadTask = filePath.putFile(uri);
+            mUploadLayout.setVisibility(View.VISIBLE);
             uploadTask.addOnCompleteListener(task -> {
 
                 if (task.isSuccessful()) {
+                    mFilePath.setText(push_id+".mp4");
+                    UploadTask uploadTask1 = videoThumb.putBytes(thum_byte);
+                    uploadTask1.addOnCompleteListener(task1 -> {
+                                String thum_url = task1.getResult().getDownloadUrl().toString();
 
-                    String downloadUrl = Objects.requireNonNull(task.getResult()
-                            .getDownloadUrl()).toString();
+                                String downloadUrl = Objects.requireNonNull(task.getResult()
+                                        .getDownloadUrl()).toString();
 
-                    mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                    Map<String, Object> messageMap = new HashMap<>();
-                    messageMap.put("content", downloadUrl);
-                    messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                    messageMap.put("parent", "Default");
-                    messageMap.put("visible", true);
-                    messageMap.put("type", "video");
-                    messageMap.put("from", mCurrentUserPhone);
-                    messageMap.put("seen", false);
-                    messageMap.put("read_by", mRead);
+                                mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                                Map<String, Object> messageMap = new HashMap<>();
+                                messageMap.put("content", downloadUrl);
+                                messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                messageMap.put("parent", "Default");
+                                messageMap.put("visible", true);
+                                messageMap.put("type", "video");
+                                messageMap.put("from", mCurrentUserPhone);
+                                messageMap.put("seen", false);
+                                messageMap.put("edited", false);
+                                messageMap.put("read_by", mRead);
+                                messageMap.put("thumb", thum_url);
 
-                    Map<String, Object> msgContentMap = new HashMap<>();
-                    msgContentMap.put(message_reference + push_id, messageMap);
 
-                    if (replyLinearLayout.getVisibility() == View.VISIBLE) {
-                        messageMap.put("parent", Messages.getClickedMessageId());
-                        // Remove if crashed
-                        replyLinearLayout.setVisibility(View.GONE);
-                    }
+                        Map<String, Object> msgContentMap = new HashMap<>();
+                                msgContentMap.put(message_reference + push_id, messageMap);
 
-                    mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
-                            .setValue(push_id);
+                                if (replyLinearLayout.getVisibility() == View.VISIBLE) {
+                                    messageMap.put("parent", Messages.getClickedMessageId());
+                                    // Remove if crashed
+                                    replyLinearLayout.setVisibility(View.GONE);
+                                }
 
-                    //Adding message
-                    mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                        //TODO: when completed, insert into table ads_chat. On error, remove from db
-                    });
+                                mRootReference.child("ads_group").child(mGroupName).child("lastMessage")
+                                        .setValue(push_id);
 
-                    Map<String, Object> chatRefMap = new HashMap<>();
-                    chatRefMap.put("msgId", push_id);
-                    chatRefMap.put("seen", false);
-                    chatRefMap.put("visible", true);
-
-                    mTextToSend.setText("");
-
-                    usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
-
-                        HashMap<String, Object> notificationData = new HashMap<>();
-                        notificationData.put("from", mCurrentUserPhone);
-                        notificationData.put("message", downloadUrl);
-
-                        mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
-                                .addOnCompleteListener(task12 -> {
-
-                                    if (task12.isSuccessful()) {
-                                        try {
-                                            if (mp1.isPlaying()) {
-                                                mp1.stop();
-                                                mp1.release();
-
-                                            }
-                                            mp1.start();
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        //TODO: update message field seen
-
-                                        Toast.makeText(GroupChatActivity.this, "Notification Sent",
-                                                Toast.LENGTH_SHORT).show();
-
-                                    }
+                                //Adding message
+                                mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                                    //TODO: when completed, insert into table ads_chat. On error, remove from db
                                 });
-                        //mp1.start();
-                        //TODO: add sent mark
 
-                    });
+                                Map<String, Object> chatRefMap = new HashMap<>();
+                                chatRefMap.put("msgId", push_id);
+                                chatRefMap.put("seen", false);
+                                chatRefMap.put("visible", true);
 
+                                mTextToSend.setText("");
+
+                                usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+
+                                    HashMap<String, Object> notificationData = new HashMap<>();
+                                    notificationData.put("from", mCurrentUserPhone);
+                                    notificationData.put("message", downloadUrl);
+
+                                    mNotificationsDatabase.child(mGroupName).push().setValue(notificationData)
+                                            .addOnCompleteListener(task12 -> {
+
+                                                if (task12.isSuccessful()) {
+                                                    try {
+                                                        if (mp1.isPlaying()) {
+                                                            mp1.stop();
+                                                            mp1.release();
+
+                                                        }
+                                                        mp1.start();
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    //TODO: update message field seen
+
+                                                    Toast.makeText(GroupChatActivity.this, "Notification Sent",
+                                                            Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            });
+                                    //mp1.start();
+                                    //TODO: add sent mark
+
+                                });
+                            });
+                    mUploadLayout.setVisibility(View.GONE);
                 }
-
-
-            });
+            })
+                    .addOnFailureListener(e ->{
+                        Toast.makeText(GroupChatActivity.this, "Errata", Toast.LENGTH_SHORT).show();
+                        mUploadLayout.setVisibility(View.GONE);
+                    })
+                    .addOnProgressListener(taskSnapshot -> {
+                        double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                        mProgress.setProgress((int)progress);
+                        String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                        mFileSize.setText(progressText);
+                        mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                    });
         }
     }
 
@@ -1997,5 +2186,32 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         recorder.release();
         return available;
     }
+
+    public void provideCorrectUI(){
+        if(editModeIsOn){
+            recycler_layout.setAlpha(0.8f);
+            recycler_layout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            mMessagesList.removeOnItemTouchListener(recyclerItemClickListener);
+            mCloseEditMode.setVisibility(View.VISIBLE);
+            mSendAttachment.setVisibility(View.GONE);
+            mTextToSend.removeTextChangedListener(textWatcher);
+            mSendVoice.setImageResource(R.drawable.ic_send);
+            mMessagesList.setEnabled(false);
+            mSendVoice.setTag("sendMessage");
+        }else{
+            recycler_layout.setAlpha(1f);
+            recycler_layout.setBackgroundColor(Color.TRANSPARENT);
+            mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
+            mCloseEditMode.setVisibility(View.GONE);
+            mTextToSend.setText("");
+            mSendAttachment.setVisibility(View.VISIBLE);
+            mTextToSend.addTextChangedListener(textWatcher);
+            mSendVoice.setImageResource(R.drawable.mic);
+            mMessagesList.setEnabled(true);
+            mSendVoice.setTag("sendAudio");
+
+        }
+    }
+
 }
 

@@ -3,22 +3,29 @@ package marcelin.thierry.chatapp.activities;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
 import com.google.android.material.snackbar.Snackbar;
+
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -31,6 +38,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
+
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -46,8 +55,10 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bestsoft32.tt_fancy_gif_dialog_lib.TTFancyGifDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -65,8 +76,11 @@ import com.islamassem.voicemessager.VoiceMessagerFragment;
 import com.squareup.picasso.Picasso;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
+
 import net.alhazmy13.mediapicker.Image.ImagePicker;
 import net.alhazmy13.mediapicker.Video.VideoPicker;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -78,6 +92,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;
 import droidninja.filepicker.FilePickerConst;
@@ -93,7 +108,10 @@ import marcelin.thierry.chatapp.classes.ReplyNotification;
 import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.CheckInternet_;
+import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 import pl.droidsonroids.gif.GifImageView;
+
+import static marcelin.thierry.chatapp.activities.MainActivity.getDateDiff;
 
 public class ChannelAdminChatActivity extends AppCompatActivity implements VoiceMessagerFragment.OnControllerClick {
 
@@ -106,16 +124,16 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private ArrayList<String> mChannelAdmins;
 
 
-    private Map<String, Object> mRead= new HashMap<>();
-    private Map<String, Object> likesMap= new HashMap<>();
+    private Map<String, Object> mRead = new HashMap<>();
+    private Map<String, Object> likesMap = new HashMap<>();
     private Map<String, Object> commentsMap = new HashMap<>();
     private Map<String, Object> repliesMap = new HashMap<>();
 
     private String mCurrentUserPhone;
     private static String mFileName = null;
-  //  private static final String LOG_TAG = "AudioRecordTest";
+    //  private static final String LOG_TAG = "AudioRecordTest";
 
-  //  private int itemPosition = 0;
+    //  private int itemPosition = 0;
     private static final int GALLERY_PICK = 1;
     private static final int MAX_ATTACHMENT_COUNT = 1;
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
@@ -135,7 +153,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private CircleImageView mProfileImage;
     private RecyclerView mMessagesList;
 
-    // to change
+    // to changef
     private ChannelInteractionAdapter mChannelInteractionAdapter;
     private NotificationAdapter mNotificationAdapter;
 
@@ -173,7 +191,6 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_users");
 
-
     private NestedScrollView nested;
 
     private TextView title;
@@ -181,10 +198,10 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private ImageView backButton;
 
     private Fragment fragment;
-    private LinearLayout linearLayout;
+    private LinearLayout linearLayout, recycler_layout;
 
     // Newly Added for adding color to background
-    private ImageView selectColor;
+    private ImageView selectColor, mCloseEditMode;
     private HorizontalScrollView horizontalScrollView;
     private ImageView whiteBg, grayBg, greenBg, pinkBg, orangeBg, orangeRedBg, blackBg,
             purpleBg, redBg, tealBg, philBg, brownBg, pinkFadeBg, lightPurpleBg, lDarkBlueBg,
@@ -192,6 +209,13 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
     private int colorToUpdate = 0;
     private int tag = 0;
+
+    private RecyclerItemClickListener recyclerItemClickListener;
+
+    private LinearLayout mUploadLayout;
+    private TextView mFilePath, mFileSize, mFilePercentage;
+    private ProgressBar mProgress;
+
 
     private String[] colorList = new String[]{
             "#FFFFFF",
@@ -213,6 +237,10 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     };
 
     private boolean isShown = false;
+
+    private boolean editModeIsOn = false;
+    private String clickedMessageId = "";
+    private Long clickedMessageTimeStamp = 0L;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @SuppressLint("ClickableViewAccessibility")
@@ -282,6 +310,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         //actionBar.setTitle(mChannelId);
         title.setText(mChannelId);
         linearLayout = findViewById(R.id.linearLayout);
+        recycler_layout = findViewById(R.id.recycler_layout);
 
         mLinearLayoutManager = new LinearLayoutManager(this);
 
@@ -312,6 +341,12 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         notification_bell = findViewById(R.id.notification_bell);
         unseenReplies = findViewById(R.id.unseenReplies);
 
+        mUploadLayout = findViewById(R.id.uploadLayout);
+        mFilePath = findViewById(R.id.filePath);
+        mFileSize = findViewById(R.id.fileSize);
+        mFilePercentage = findViewById(R.id.filePercentage);
+        mProgress = findViewById(R.id.progress);
+
         loadMessages();
         getComments();
 //
@@ -337,9 +372,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         mSendAttachment.setOnClickListener(view1 -> {
             try {
                 new CheckInternet_(internet -> {
-                    if(internet){
+                    if (internet) {
                         showCustomDialog();
-                    }else{
+                    } else {
                         Toast.makeText(ChannelAdminChatActivity.this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -351,6 +386,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         backButton = findViewById(R.id.backButton);
 
         backButton.setOnClickListener(v -> finish());
+
+        mCloseEditMode = findViewById(R.id.closeEditMode);
 
 
         horizontalScrollView = findViewById(R.id.horizontalScrollView);
@@ -493,48 +530,185 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         // TODO: Notification
         notification_bell.setVisibility(View.VISIBLE);
 
-        notification_bell.setOnClickListener(v ->{
-            if(unseenReplies.getVisibility() == View.VISIBLE){
+        notification_bell.setOnClickListener(v -> {
+            if (unseenReplies.getVisibility() == View.VISIBLE) {
                 showNotifications();
-            }else{
+            } else {
                 Toast.makeText(this, R.string.no_notif, Toast.LENGTH_SHORT).show();
             }
         });
 
         mRootView.setBackgroundColor(Color.parseColor("#ececec"));
+
+        recyclerItemClickListener = new RecyclerItemClickListener(this, mMessagesList, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                final Messages message = messagesList.get(position);
+                if (message.isVisible() && message.getType().equals("text")) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle(R.string.choose_option)
+                            .setItems(R.array.admin_channel_options, (dialog, which) -> {
+                                switch (which) {
+                                    case 0:
+                                        Intent goToCommentActivity = new Intent(ChannelAdminChatActivity.this, CommentActivity.class);
+                                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                                        goToCommentActivity.putExtra("message_type", message.getType());
+                                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                                        goToCommentActivity.putExtra("message_content", message.getContent());
+                                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                                        goToCommentActivity.putExtra("message_color", message.getColor());
+                                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                                        goToCommentActivity.putExtra("message_edited", message.isEdited());
+                                        goToCommentActivity.putExtra("from", "Adapter");
+                                        goToCommentActivity.putExtra("isOn", false);
+                                        startActivity(goToCommentActivity);
+
+                                        break;
+
+                                    case 1:
+                                        switch (message.getType()) {
+                                            case "text": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "text";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                            case "channel_link": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "channel_link";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                            case "group_link": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "group_link";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                    case 2:
+                                        if (!message.getFrom().equals(Objects.requireNonNull
+                                                (mAuth.getCurrentUser()).getPhoneNumber())) {
+                                            // TODO: Verify
+                                            Toast.makeText(view.getContext(), R.string.not_admin, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("visible").setValue(false);
+
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("content").setValue("Message Deleted");
+
+                                            //((MessageViewHolder) holder).messageLinearLayout.setVisibility(View.GONE);
+
+                                            Toast.makeText(view.getContext(), "Message deleted",
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                        break;
+
+                                    case 3:
+
+                                        long millis = System.currentTimeMillis();
+                                        long minutes = 1200000L;
+
+                                        long result = getDateDiff(message.getTimestamp(), millis, TimeUnit.MILLISECONDS);
+                                        if (result < minutes) {
+                                            if (message.getFrom().equals(mCurrentUserPhone)) {
+                                                if (message.getType().equals("text")) {
+                                                    Toast.makeText(ChannelAdminChatActivity.this, R.string.edit_mode, Toast.LENGTH_SHORT).show();
+
+                                                    editModeIsOn = true;
+                                                    provideCorrectUI();
+                                                    clickedMessageId = message.getMessageId();
+                                                    clickedMessageTimeStamp = message.getTimestamp();
+                                                    mTextToSend.setText(message.getContent());
+                                                } else {
+                                                    Toast.makeText(ChannelAdminChatActivity.this, "Cannot be edited", Toast.LENGTH_SHORT).show();
+                                                }
+
+                                            } else {
+                                                Toast.makeText(ChannelAdminChatActivity.this, R.string.c_sent_by_you, Toast.LENGTH_SHORT).show();
+                                            }
+
+//                                                mMessagesList.removeOnItemTouchListener(recyclerItemClickListener);
+                                        } else {
+                                            Toast.makeText(ChannelAdminChatActivity.this, R.string.edit_limit, Toast.LENGTH_SHORT).show();
+                                        }
+                                    default:
+                                        return;
+                                }
+                            });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
+        mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
+        mCloseEditMode.setOnClickListener(v -> {
+            editModeIsOn = false;
+            provideCorrectUI();
+            Toast.makeText(this, "Edit mode off", Toast.LENGTH_SHORT).show();
+        });
     }
 
-    private void getComments(){
+    private void getComments() {
         mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.exists()){
+                if (dataSnapshot.exists()) {
                     ReplyNotification replyNotification = dataSnapshot.getValue(ReplyNotification.class);
-                    if(replyNotification == null){
+                    if (replyNotification == null) {
                         return;
                     }
-              //      if(!replyNotification.getRe().equals(mCurrentUserPhone)){
-                        if(!replyNotification.isSe()){
-                            unseenReplies.setVisibility(View.VISIBLE);
-                            mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Users u = dataSnapshot.getValue(Users.class);
-                                    if(u == null){
-                                        return;
-                                    }
+                    //      if(!replyNotification.getRe().equals(mCurrentUserPhone)){
+                    if (!replyNotification.isSe()) {
+                        unseenReplies.setVisibility(View.VISIBLE);
+                        mUsersReference.child(replyNotification.getRe()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Users u = dataSnapshot.getValue(Users.class);
+                                if (u == null) {
+                                    return;
+                                }
+                                // TODO :VERIFYYY
+                                if (!u.getPhone().equals(mCurrentUserPhone)) {
                                     replyNotification.setReplyImage(u.getThumbnail());
                                     replyNotification.setReplierName(u.getName());
                                     replyNotificationsList.add(replyNotification);
                                     mNotificationAdapter.notifyDataSetChanged();
                                 }
+                            }
 
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                                }
-                            });
-                        }
+                            }
+                        });
+                    }
 
                     //    }
                 }
@@ -576,11 +750,11 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             mUsersReference.child(mCurrentUserPhone).child("r").child(mChannelName).child(replyNotification.getR()).child("se").setValue(true);
             Intent goToCommentActivity = new Intent(ChannelAdminChatActivity.this, CommentActivity.class);
             goToCommentActivity.putExtra("channel_name", replyNotification.getCh());
-            goToCommentActivity.putExtra("channel_image",replyNotification.getChi());
+            goToCommentActivity.putExtra("channel_image", replyNotification.getChi());
             goToCommentActivity.putExtra("message_type", replyNotification.getTy());
-            goToCommentActivity.putExtra("message_id",replyNotification.getId());
-            goToCommentActivity.putExtra("message_color",replyNotification.getCol());
-            goToCommentActivity.putExtra("message_content",replyNotification.getCo());
+            goToCommentActivity.putExtra("message_id", replyNotification.getId());
+            goToCommentActivity.putExtra("message_color", replyNotification.getCol());
+            goToCommentActivity.putExtra("message_content", replyNotification.getCo());
             goToCommentActivity.putExtra("message_timestamp", replyNotification.getT2());
             goToCommentActivity.putExtra("message_like", replyNotification.getL());
             goToCommentActivity.putExtra("message_comment", replyNotification.getCc());
@@ -589,7 +763,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             goToCommentActivity.putExtra("from", "Activity");
             goToCommentActivity.putExtra("isOn", true);
             goToCommentActivity.putExtra("comment_id", replyNotification.getC());
-           // goToCommentActivity.putExtra("message_color", replyNotification.getCol());
+            // goToCommentActivity.putExtra("message_color", replyNotification.getCol());
             startActivity(goToCommentActivity);
 
         });
@@ -610,102 +784,116 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
         try {
             new CheckInternet_(internet -> {
-               if(internet){
-                       final String message_reference = "ads_channel_messages/";
+                if (internet) {
+                    final String message_reference = "ads_channel_messages/";
 
-                       DatabaseReference msg_push = mRootReference.child("ads_channel").child(mChannelName).push();
+                    DatabaseReference msg_push = mRootReference.child("ads_channel").child(mChannelName).push();
 
-                       String push_id = msg_push.getKey();
+                    String push_id = msg_push.getKey();
 
-                       DatabaseReference usersInGroup = mRootReference.child("ads_channel").child(mChannelName)
-                               .child("messages").child(push_id);
+                    DatabaseReference usersInGroup = mRootReference.child("ads_channel").child(mChannelName)
+                            .child("messages").child(push_id);
 
-                       StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
-                       Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
+                    StorageReference filePath = mAudioStorage.child("ads_messages_audio").child(push_id + ".gp3");
+                    Uri voiceUri = Uri.fromFile(new File(file.getAbsolutePath()));
+                    mUploadLayout.setVisibility(View.VISIBLE);
 
-                       filePath.putFile(voiceUri).addOnCompleteListener(task -> {
+                    filePath.putFile(voiceUri).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            mFilePath.setText(push_id + ".gp3");
+                            String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
+                                    .toString();
 
-                           if (task.isSuccessful()) {
-                               String downloadUrl = Objects.requireNonNull(task.getResult().getDownloadUrl())
-                                       .toString();
+                            mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
-                               mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                               likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
-                               repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
-                               commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            Map<String, Object> messageMap = new HashMap<>();
+                            messageMap.put("content", downloadUrl);
+                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                            messageMap.put("type", "audio");
+                            messageMap.put("parent", "Default");
+                            messageMap.put("visible", true);
+                            messageMap.put("from", mCurrentUserPhone);
+                            messageMap.put("seen", false);
+                            messageMap.put("edited", false);
+                            messageMap.put("read_by", mRead);
+                            messageMap.put("color", "#7016a8");
+                            messageMap.put("c", commentsMap);
+                            messageMap.put("l", likesMap);
+                            messageMap.put("r", repliesMap);
 
-                               Map<String, Object> messageMap = new HashMap<>();
-                               messageMap.put("content", downloadUrl);
-                               messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                               messageMap.put("type", "audio");
-                               messageMap.put("parent", "Default");
-                               messageMap.put("visible", true);
-                               messageMap.put("from", mCurrentUserPhone);
-                               messageMap.put("seen", false);
-                               messageMap.put("read_by", mRead);
-                               messageMap.put("color", "#7016a8");
-                               messageMap.put("c", commentsMap);
-                               messageMap.put("l", likesMap);
-                               messageMap.put("r", repliesMap);
+                            Map<String, Object> msgContentMap = new HashMap<>();
+                            msgContentMap.put(message_reference + push_id, messageMap);
 
-                               Map<String, Object> msgContentMap = new HashMap<>();
-                               msgContentMap.put(message_reference + push_id, messageMap);
+                            // Setting the lastMessage field in the ads_channel
 
-                               // Setting the lastMessage field in the ads_channel
+                            mRootReference.child("ads_channel").child(mChannelName).child("lastMessage")
+                                    .setValue(push_id);
 
-                               mRootReference.child("ads_channel").child(mChannelName).child("lastMessage")
-                                       .setValue(push_id);
+                            //Adding message
+                            mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
+                                //TODO: when completed, insert into table ads_chat. On error, remove from db
+                            });
 
-                               //Adding message
-                               mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference) -> {
-                                   //TODO: when completed, insert into table ads_chat. On error, remove from db
-                               });
+                            Map<String, Object> chatRefMap = new HashMap<>();
+                            chatRefMap.put("msgId", push_id);
+                            chatRefMap.put("seen", false);
+                            chatRefMap.put("visible", true);
 
-                               Map<String, Object> chatRefMap = new HashMap<>();
-                               chatRefMap.put("msgId", push_id);
-                               chatRefMap.put("seen", false);
-                               chatRefMap.put("visible", true);
+                            mTextToSend.setText("");
 
-                               mTextToSend.setText("");
+                            usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
 
-                               usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+                                HashMap<String, Object> notificationData = new HashMap<>();
+                                notificationData.put("from", mCurrentUserPhone);
+                                notificationData.put("message", downloadUrl);
 
-                                   HashMap<String, Object> notificationData = new HashMap<>();
-                                   notificationData.put("from", mCurrentUserPhone);
-                                   notificationData.put("message", downloadUrl);
+                                mNotificationsDatabase.child(mChannelName).push().setValue(notificationData)
+                                        .addOnCompleteListener(task1 -> {
 
-                                   mNotificationsDatabase.child(mChannelName).push().setValue(notificationData)
-                                           .addOnCompleteListener(task1 -> {
+                                            if (task1.isSuccessful()) {
+                                                try {
+                                                    if (mp1.isPlaying()) {
+                                                        mp1.stop();
+                                                        mp1.release();
 
-                                               if (task1.isSuccessful()) {
-                                                   try {
-                                                       if (mp1.isPlaying()) {
-                                                           mp1.stop();
-                                                           mp1.release();
+                                                    }
+                                                    mp1.start();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                //TODO: update message field seen
 
-                                                       }
-                                                       mp1.start();
-                                                   } catch (Exception e) {
-                                                       e.printStackTrace();
-                                                   }
-                                                   //TODO: update message field seen
+                                                Toast.makeText(ChannelAdminChatActivity.this,
+                                                        "Notification Sent",
+                                                        Toast.LENGTH_SHORT).show();
 
-                                                   Toast.makeText(ChannelAdminChatActivity.this,
-                                                           "Notification Sent",
-                                                           Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                //mp1.start();
+                                //TODO: add sent mark
 
-                                               }
-                                           });
-                                   //mp1.start();
-                                   //TODO: add sent mark
+                            });
+                            mUploadLayout.setVisibility(View.GONE);
+                        }
 
-                               });
-                           }
-
-                       });
-               }else{
-                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-               }
+                    })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                                mUploadLayout.setVisibility(View.GONE);
+                            })
+                            .addOnProgressListener(taskSnapshot -> {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                mProgress.setProgress((int) progress);
+                                String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                mFileSize.setText(progressText);
+                                mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                            });
+                } else {
+                    Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                }
             });
         } catch (Exception e) {
             e.printStackTrace();
@@ -766,7 +954,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         sendText = addDescriptionDialog.findViewById(R.id.send_text);
         rootView = addDescriptionDialog.findViewById(R.id.rootView);
 
-       // sendEmoji.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
+        // sendEmoji.setColorFilter(ContextCompat.getColor(this, R.color.emoji_icons), PorterDuff.Mode.SRC_IN);
         sendEmoji.setOnClickListener(ignore -> emojiPopup.toggle());
 
 
@@ -794,6 +982,8 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                 Picasso.get().load(new File(picture)).into(imageSelected);
                 sendDescription.setOnClickListener(v -> {
+                    mUploadLayout.setVisibility(View.VISIBLE);
+                    addDescriptionDialog.dismiss();
 
                     String pictureDescription = "%" + sendText.getText().toString().trim();
                     DatabaseReference usersInGroup = mRootReference.child("ads_channel")
@@ -801,16 +991,17 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                     StorageReference filePath = mImagesStorage.child("ads_messages_images")
                             .child(push_id + ".jpg");
+//                    mUploadLayout.setVisibility(View.VISIBLE);
                     filePath.putFile(uri).addOnCompleteListener(task -> {
 
                         if (task.isSuccessful()) {
-
+                            mFilePath.setText(push_id + ".jpg");
                             String downloadUrl = Objects.requireNonNull(task.getResult()
                                     .getDownloadUrl()).toString();
 
                             mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
                             likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
-                            repliesMap.put(mCurrentUserPhone,mCurrentUserPhone);
+                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
                             commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
                             Map<String, Object> messageMap = new HashMap<>();
@@ -821,6 +1012,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("visible", true);
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
+                            messageMap.put("edited", false);
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
@@ -865,7 +1057,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                                     }
                                                     mp1.start();
-                                                    addDescriptionDialog.dismiss();
+//                                                    addDescriptionDialog.dismiss();
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
@@ -881,9 +1073,21 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                 //TODO: add sent mark
 
                             });
+                            mUploadLayout.setVisibility(View.GONE);
                         }
 
-                    });
+                    })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                                mUploadLayout.setVisibility(View.GONE);
+                            })
+                            .addOnProgressListener(taskSnapshot -> {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                mProgress.setProgress((int) progress);
+                                String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                mFileSize.setText(progressText);
+                                mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                            });
 
                 });
                 break;
@@ -891,112 +1095,148 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             case 2:
                 Picasso.get().load(new File(picture)).into(imageSelected);
                 sendDescription.setOnClickListener(v -> {
+                    mUploadLayout.setVisibility(View.VISIBLE);
+                    addDescriptionDialog.dismiss();
+
                     String pictureDescription = "%" + sendText.getText().toString().trim();
                     DatabaseReference usersInGroup = mRootReference.child("ads_channel").child(mChannelName)
                             .child("messages").child(push_id);
 
                     StorageReference filePath = mVideosStorage.child("messages_videos")
                             .child(push_id + ".mp4");
+                    StorageReference videoThumb = mVideosStorage.child("messages_videos").child(push_id + ".jpg");
+
+
+                    Bitmap bMap = null;
+                    try {
+                        bMap = ThumbnailUtils.createVideoThumbnail(picture, MediaStore.Video.Thumbnails.MINI_KIND);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    Objects.requireNonNull(bMap).compress(Bitmap.CompressFormat.JPEG, 40, baos);
+                    final byte[] thum_byte = baos.toByteArray();
+
                     UploadTask uploadTask = filePath.putFile(uri);
                     uploadTask.addOnCompleteListener(task -> {
 
                         if (task.isSuccessful()) {
-
+                            mFilePath.setText(push_id + ".mp4");
                             String downloadUrl = Objects.requireNonNull(task.getResult()
                                     .getDownloadUrl()).toString();
 
-                            mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
-                            likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
-                            repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
-                            commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            UploadTask uploadTask1 = videoThumb.putBytes(thum_byte);
+                            uploadTask1.addOnCompleteListener(task1 -> {
+                                String thum_url = task1.getResult().getDownloadUrl().toString();
 
-                            Map<String, Object> messageMap = new HashMap<>();
-                            messageMap.put("content", downloadUrl);
-                            messageMap.put("timestamp", ServerValue.TIMESTAMP);
-                            messageMap.put("type", "video");
-                            messageMap.put("parent", "Default" + pictureDescription);
-                            messageMap.put("visible", true);
-                            messageMap.put("from", mCurrentUserPhone);
-                            messageMap.put("seen", false);
-                            messageMap.put("read_by", mRead);
-                            messageMap.put("c", commentsMap);
-                            messageMap.put("l", likesMap);
-                            messageMap.put("r", repliesMap);
-                            messageMap.put("color", "#7016a8");
+                                mRead.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                                likesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                                repliesMap.put(mCurrentUserPhone, mCurrentUserPhone);
+                                commentsMap.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
 
-                            Map<String, Object> msgContentMap = new HashMap<>();
-                            msgContentMap.put(message_reference + push_id, messageMap);
+                                Map<String, Object> messageMap = new HashMap<>();
+                                messageMap.put("content", downloadUrl);
+                                messageMap.put("timestamp", ServerValue.TIMESTAMP);
+                                messageMap.put("type", "video");
+                                messageMap.put("parent", "Default" + pictureDescription);
+                                messageMap.put("visible", true);
+                                messageMap.put("from", mCurrentUserPhone);
+                                messageMap.put("seen", false);
+                                messageMap.put("edited", false);
+                                messageMap.put("thumb", thum_url);
+                                messageMap.put("read_by", mRead);
+                                messageMap.put("c", commentsMap);
+                                messageMap.put("l", likesMap);
+                                messageMap.put("r", repliesMap);
+                                messageMap.put("color", "#7016a8");
 
-                            mRootReference.child("ads_channel").child(mChannelName).child("lastMessage")
-                                    .setValue(push_id);
+                                Map<String, Object> msgContentMap = new HashMap<>();
+                                msgContentMap.put(message_reference + push_id, messageMap);
 
-                            //Adding message
-                            mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference)
-                                    -> {
-                                //TODO: when completed, insert into table ads_chat. On error, remove from db
-                            });
+                                mRootReference.child("ads_channel").child(mChannelName).child("lastMessage")
+                                        .setValue(push_id);
 
-                            Map<String, Object> chatRefMap = new HashMap<>();
-                            chatRefMap.put("msgId", push_id);
-                            chatRefMap.put("seen", false);
-                            chatRefMap.put("visible", true);
+                                //Adding message
+                                mRootReference.updateChildren(msgContentMap, (databaseError, databaseReference)
+                                        -> {
+                                    //TODO: when completed, insert into table ads_chat. On error, remove from db
+                                });
 
-                            mTextToSend.setText("");
+                                Map<String, Object> chatRefMap = new HashMap<>();
+                                chatRefMap.put("msgId", push_id);
+                                chatRefMap.put("seen", false);
+                                chatRefMap.put("visible", true);
 
-                            usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
+                                mTextToSend.setText("");
 
-                                HashMap<String, Object> notificationData = new HashMap<>();
-                                notificationData.put("from", mCurrentUserPhone);
-                                notificationData.put("message", downloadUrl);
+                                usersInGroup.updateChildren(chatRefMap, (databaseError, databaseReference) -> {
 
-                                mNotificationsDatabase.child(mChannelName).push().setValue(notificationData)
-                                        .addOnCompleteListener(task12 -> {
+                                    HashMap<String, Object> notificationData = new HashMap<>();
+                                    notificationData.put("from", mCurrentUserPhone);
+                                    notificationData.put("message", downloadUrl);
 
-                                            if (task12.isSuccessful()) {
-                                                try {
-                                                    if (mp1.isPlaying()) {
-                                                        mp1.stop();
-                                                        mp1.release();
+                                    mNotificationsDatabase.child(mChannelName).push().setValue(notificationData)
+                                            .addOnCompleteListener(task12 -> {
 
+                                                if (task12.isSuccessful()) {
+                                                    try {
+                                                        if (mp1.isPlaying()) {
+                                                            mp1.stop();
+                                                            mp1.release();
+
+                                                        }
+                                                        mp1.start();
+                                                   //     addDescriptionDialog.dismiss();
+                                                    } catch (Exception e) {
+                                                        e.printStackTrace();
                                                     }
-                                                    mp1.start();
-                                                    addDescriptionDialog.dismiss();
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
+                                                    //TODO: update message field seen
+
+                                                    Toast.makeText(ChannelAdminChatActivity.this,
+                                                            "Notification Sent",
+                                                            Toast.LENGTH_SHORT).show();
+
                                                 }
-                                                //TODO: update message field seen
+                                            });
+                                    //mp1.start();
+                                    //TODO: add sent mark
 
-                                                Toast.makeText(ChannelAdminChatActivity.this,
-                                                        "Notification Sent",
-                                                        Toast.LENGTH_SHORT).show();
-
-                                            }
-                                        });
-                                //mp1.start();
-                                //TODO: add sent mark
-
+                                });
                             });
-
+                            mUploadLayout.setVisibility(View.GONE);
                         }
-
-
-                    });
+                    })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                                mUploadLayout.setVisibility(View.GONE);
+                            })
+                            .addOnProgressListener(taskSnapshot -> {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                mProgress.setProgress((int) progress);
+                                String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                mFileSize.setText(progressText);
+                                mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                            });
                 });
                 break;
 
             case 3:
                 imageSelected.setImageResource(R.drawable.documentgif);
                 sendDescription.setOnClickListener(v -> {
+                    addDescriptionDialog.dismiss();
+                    mUploadLayout.setVisibility(View.VISIBLE);
                     String pictureDescription = "%" + sendText.getText().toString().trim();
                     DatabaseReference usersInGroup = mRootReference.child("ads_channel")
                             .child(mChannelName).child("messages").child(push_id);
 
                     StorageReference filePath = mDocumentsStorage.child("ads_messages_documents")
                             .child(push_id + ".docx");
+                 //   mUploadLayout.setVisibility(View.VISIBLE);
                     filePath.putFile(uri)
                             .addOnCompleteListener(task -> {
 
                                 if (task.isSuccessful()) {
+                                    mFilePath.setText(push_id + ".docx");
 
                                     String downloadUrl = Objects.requireNonNull(task.getResult()
                                             .getDownloadUrl()).toString();
@@ -1014,6 +1254,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     messageMap.put("visible", true);
                                     messageMap.put("from", mCurrentUserPhone);
                                     messageMap.put("seen", false);
+                                    messageMap.put("edited", false);
                                     messageMap.put("read_by", mRead);
                                     messageMap.put("c", commentsMap);
                                     messageMap.put("l", likesMap);
@@ -1058,7 +1299,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                                             }
                                                             mp1.start();
-                                                            addDescriptionDialog.dismiss();
+                                                      //      addDescriptionDialog.dismiss();
                                                         } catch (Exception e) {
                                                             e.printStackTrace();
                                                         }
@@ -1074,27 +1315,42 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                         //TODO: add sent mark
 
                                     });
-
+                                    mUploadLayout.setVisibility(View.GONE);
                                 }
 
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                                mUploadLayout.setVisibility(View.GONE);
+                            })
+                            .addOnProgressListener(taskSnapshot -> {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                mProgress.setProgress((int) progress);
+                                String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                mFileSize.setText(progressText);
+                                mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
                             });
-
-
                 });
                 break;
 
             case 4:
                 imageSelected.setImageResource(R.drawable.audio);
                 sendDescription.setOnClickListener(v -> {
+                    mUploadLayout.setVisibility(View.VISIBLE);
+                    addDescriptionDialog.dismiss();
+
+
                     String pictureDescription = "%" + sendText.getText().toString().trim();
                     DatabaseReference usersInGroup = mRootReference.child("ads_channel")
                             .child(mChannelName).child("messages").child(push_id);
 
                     StorageReference filePath = mAudioStorage.child("ads_messages_audio")
                             .child(push_id + ".gp3");
+                  //  mUploadLayout.setVisibility(View.VISIBLE);
                     filePath.putFile(Objects.requireNonNull(uri)).addOnCompleteListener(task -> {
 
                         if (task.isSuccessful()) {
+                            mFilePath.setText(push_id + ".gp3");
 
                             String downloadUrl = Objects.requireNonNull(task.getResult()
                                     .getDownloadUrl()).toString();
@@ -1112,6 +1368,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("visible", true);
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
+                            messageMap.put("edited", false);
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
@@ -1154,7 +1411,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                                     }
                                                     mp1.start();
-                                                    addDescriptionDialog.dismiss();
+                                                 //   addDescriptionDialog.dismiss();
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
@@ -1170,10 +1427,20 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                 //TODO: add sent mark
 
                             });
-
+                            mUploadLayout.setVisibility(View.GONE);
                         }
 
-                    });
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, "Errata", Toast.LENGTH_SHORT).show();
+                        mUploadLayout.setVisibility(View.GONE);
+                    })
+                            .addOnProgressListener(taskSnapshot -> {
+                                double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                                mProgress.setProgress((int) progress);
+                                String progressText = taskSnapshot.getBytesTransferred() / 1024 + "KB/" + taskSnapshot.getTotalByteCount() / 1024 + "KB";
+                                mFileSize.setText(progressText);
+                                mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
+                            });
                 });
                 break;
         }
@@ -1303,9 +1570,42 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private void sendMessage(EmojiEditText mTextToSend) {
 
         String message = mTextToSend.getText().toString().trim();
-        try {
+        if (editModeIsOn) {
             new CheckInternet_(internet -> {
                 if (internet) {
+
+                    long millis = System.currentTimeMillis();
+                    long minutes = 1200000L;
+
+                    long result = getDateDiff(clickedMessageTimeStamp, millis, TimeUnit.MILLISECONDS);
+                    if (result < minutes) {
+                        if (!message.isEmpty()) {
+                            mMessageReference.child(clickedMessageId)
+                                    .child("content").setValue(message);
+                            mMessageReference.child(clickedMessageId).child("edited").setValue(true);
+                            mMessageReference.child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
+                            messagesList.clear();
+                            loadMessages();
+                            mTextToSend.setText("");
+                            editModeIsOn = false;
+                            provideCorrectUI();
+                        } else {
+                            Toast.makeText(this, "Please enter a text", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, R.string.edit_limit, Toast.LENGTH_SHORT).show();
+                        editModeIsOn = false;
+                        provideCorrectUI();
+                    }
+
+                } else {
+                    Toast.makeText(this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            try {
+                new CheckInternet_(internet -> {
+                    if (internet) {
 
 
                         if (!TextUtils.isEmpty(message)) {
@@ -1336,6 +1636,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             messageMap.put("visible", true);
                             messageMap.put("from", mCurrentUserPhone);
                             messageMap.put("seen", false);
+                            messageMap.put("edited", false);
                             messageMap.put("read_by", mRead);
                             messageMap.put("c", commentsMap);
                             messageMap.put("l", likesMap);
@@ -1412,12 +1713,13 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             });
                         }
                         colorToUpdate = 0;
-                } else {
-                    Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-                }
-            });
-        }catch (Exception e) {
-            e.printStackTrace();
+                    } else {
+                        Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -1571,10 +1873,10 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Channel c = dataSnapshot.getValue(Channel.class);
-                        if(c == null){
+                        if (c == null) {
                             return;
                         }
-                        if(c.getPassword().length() == 0){
+                        if (c.getPassword().length() == 0) {
                             Toast.makeText(ChannelAdminChatActivity.this, R.string.no_password, Toast.LENGTH_SHORT).show();
 
                             new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
@@ -1591,7 +1893,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                                     })
                                     .build();
-                        }else{
+                        } else {
                             new TTFancyGifDialog.Builder(ChannelAdminChatActivity.this)
                                     .setTitle(getString(R.string.lo___))
                                     .setMessage(getString(R.string.chan_lool__))
@@ -1624,7 +1926,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             case R.id.passwordChange:
 
                 questionDialog.setContentView(R.layout.change_password);
-               // questionDialog.show();
+                // questionDialog.show();
 
 
                 EditText oldPassword = questionDialog.findViewById(R.id.oldPassword);
@@ -1638,9 +1940,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             return;
                         }
 
-                        if(c.getPassword().length() == 0){
+                        if (c.getPassword().length() == 0) {
                             Toast.makeText(ChannelAdminChatActivity.this, R.string.no_password, Toast.LENGTH_SHORT).show();
-                        }else{
+                        } else {
                             questionDialog.show();
                             // Ask for old password and save new password
                             btnNext.setOnClickListener(view1 -> {
@@ -1710,13 +2012,12 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 });
 
 
-
                 break;
 
             case R.id.info:
 
                 questionDialog.setContentView(R.layout.info_layout);
-               // questionDialog.show();
+                // questionDialog.show();
                 questionDialog.setCanceledOnTouchOutside(true);
 
                 EditText passwordEntered = questionDialog.findViewById(R.id.passwordEntered);
@@ -1745,7 +2046,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                         description.setText(MessageFormat.format("{0}:{1}", getString(R.string.description), c.getDescription()));
                         subscribers.setText(MessageFormat.format("{0}:{1}", getString(R.string.subscribers), c.getSubscribers().size()));
 
-                        if(c.getPassword().length() == 0){
+                        if (c.getPassword().length() == 0) {
 
                             linearLayout.setVisibility(View.GONE);
                             chanProfile.setVisibility(View.VISIBLE);
@@ -1753,7 +2054,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             description.setVisibility(View.VISIBLE);
                             subscribers.setVisibility(View.VISIBLE);
 
-                        }else{
+                        } else {
                             questionDialog.show();
                             linearLayout.setVisibility(View.VISIBLE);
                             getInfo.setOnClickListener(view -> {
@@ -1799,7 +2100,6 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
                     }
                 });
-
 
 
                 break;
@@ -2060,5 +2360,32 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         recorder.release();
         return available;
     }
+
+    public void provideCorrectUI() {
+        if (editModeIsOn) {
+            recycler_layout.setAlpha(0.8f);
+            recycler_layout.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary));
+            mMessagesList.removeOnItemTouchListener(recyclerItemClickListener);
+            mCloseEditMode.setVisibility(View.VISIBLE);
+            mSendAttachment.setVisibility(View.GONE);
+            mTextToSend.removeTextChangedListener(textWatcher);
+            mSendVoice.setImageResource(R.drawable.ic_send);
+            mMessagesList.setEnabled(false);
+            mSendVoice.setTag("sendMessage");
+        } else {
+            recycler_layout.setAlpha(1f);
+            recycler_layout.setBackgroundColor(Color.TRANSPARENT);
+            mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
+            mCloseEditMode.setVisibility(View.GONE);
+            mTextToSend.setText("");
+            mSendAttachment.setVisibility(View.VISIBLE);
+            mTextToSend.addTextChangedListener(textWatcher);
+            mSendVoice.setImageResource(R.drawable.mic);
+            mMessagesList.setEnabled(true);
+            mSendVoice.setTag("sendAudio");
+
+        }
+    }
+
 }
 

@@ -410,7 +410,25 @@
     <string name="comment">❤👍Laissez vos commentaires ci-dessous🎉😎</string>
     <string name="description">Description</string>
     <string name="no_prior_password_lock">Ajouter un mot de passe à votre chaîne? Il vous sera demandé d\'entrer un mot de passe et de sélectionner une méthode de récupération</string>
-    <string name="replying_to">Replying to @</string>
-    <string name="close_replies">Close Replies</string>
+    <string name="replying_to">Répondre à @</string>
+    <string name="close_replies">Fermer les réponses</string>
+
+    <string name="replied">a répondu à votre commentaire</string>
+    <string name="message_sent">Réponse envoyée</string>
+    <string name="no_notif">Vous n\'avez aucune nouvelle notification pour le moment</string>
+    <string name="audio_warning">La note vocale ne peut durer que 30 secondes, si plus longtemps ne sera pas envoyée</string>
+    <string name="audio_not_sent">Note vocale trop longue, ne peut durer que 30 secondes ou moins</string>
+    <string name="audio">Audio</string>
+    <string name="sel_pic">Choisir Photo</string>
+    <string name="chat_background">Fond de conversation</string>
+    <string name="accept">Accepter</string>
+    <string name="decline">Décliner</string>
+    <string name="ads_messenger_reaction">😍😛ADS Messenger Réaction😎😉</string>
+    <string name="waiting_rq">En attente de %s pour accepter ou refuser votre demande</string>
+    <string name="reqst_react">%s demande votre réaction</string>
+    <string name="left">%s a quitté</string>
+    <string name="refresh">Réctualiser</string>
+    <string name="refreshed">Réctualisé</string>
+    <string name="edit">Éditer</string>
 
 </resources>

@@ -882,6 +882,8 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 5:
 
                 ((VideoViewHolder) holder).messageTime.setText(dateMessageSend);
+                Picasso.get().load(message.getThumb()).placeholder(R.drawable.border_1).into(((VideoViewHolder)holder).messageVideo);
+
                 ((VideoViewHolder) holder).playButton.setOnClickListener(view -> {
                     Intent i = new Intent(view.getContext(), VideoPlayerActivity.class);
                     File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");

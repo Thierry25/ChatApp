@@ -49,7 +49,6 @@ public class SharedChannelAdapter extends FragmentPagerAdapter {
         switch (position) {
             case 0:
                 return mContext.getResources().getString(R.string.im);
-
             case 1:
                 return mContext.getResources().getString(R.string.au);
             case 2:

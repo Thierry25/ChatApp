@@ -4,6 +4,7 @@ package marcelin.thierry.chatapp.activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Build;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +17,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,12 +30,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 
 import marcelin.thierry.chatapp.adapters.ForwardMessageAdapter;
@@ -51,6 +57,9 @@ public class ForwardMessageActivity extends AppCompatActivity implements SearchV
     private String typeReceived;
 
     private String messageReceived;
+    private TextView title;
+    private CircleImageView profileImage;
+    private ImageView backButton;
 
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -66,7 +75,14 @@ public class ForwardMessageActivity extends AppCompatActivity implements SearchV
         mContactsBar = findViewById(R.id.contacts_bar_layout);
         setSupportActionBar(mContactsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.contacts);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        profileImage = findViewById(R.id.profileImage);
+
+        title = findViewById(R.id.title);
+        title.setTextSize(26);
+        title.setTypeface(null, Typeface.NORMAL);
+        title.setText(R.string.contacts);
+        profileImage.setVisibility(View.GONE);
+
 
         typeReceived = getIntent().getStringExtra("type");
         messageReceived = getIntent().getStringExtra("message");
@@ -79,6 +95,11 @@ public class ForwardMessageActivity extends AppCompatActivity implements SearchV
 
         Toast.makeText(ForwardMessageActivity.this, getString(R.string.click_to_send),
                 Toast.LENGTH_SHORT).show();
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
 
     }
 
@@ -122,6 +143,13 @@ public class ForwardMessageActivity extends AppCompatActivity implements SearchV
                     u.setMessage(messageReceived);
                     u.setType(typeReceived);
                     mContactsFromFirebase.add(u);
+
+                    Collections.sort(mContactsFromFirebase, (Users a1, Users a2) ->
+                            a1.getNameStoredInPhone().compareTo(a2.getNameStoredInPhone()));
+                    if(u.getPhoneNumber().equals(phone)){
+                        mContactsFromFirebase.remove(u);
+                    }
+
 
                     if(u.getPhoneNumber().equals(phone)){
                         mContactsFromFirebase.remove(u);

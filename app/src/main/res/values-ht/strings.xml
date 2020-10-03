@@ -407,12 +407,29 @@
     <string name="a_week_ago">1sem</string>
     <string name="weeks_ago">sem</string>
 
-    <string name="comment">❤👍Kite kòmatè ou yo anba🎉😎</string>
+    <string name="comment">❤👍Kite kòmantè ou yo anba🎉😎</string>
     <string name="description">Deskripsyon</string>
     <string name="no_prior_password_lock">Wap ajoute on modpas sou chanèl ou? Nap mandew antre on modpas epi chwazi on fason pouw k rekiperel siw bliye modpas la.</string>
-    <string name="replying_to">Replying to @</string>
-    <string name="close_replies">Close Replies</string>
+    <string name="replying_to">Replonn a @</string>
+    <string name="close_replies">Fèmen repons yo</string>
 
+    <string name="replied">reponn kòmantè ou a</string>
+    <string name="message_sent">Repons ou an ale</string>
+    <string name="no_notif">Ou pa gen okenn notifikasyon pou kounya</string>
+    <string name="audio_warning">Mesaj vokal la paka pi long ke 30 segond, sil pi long ou pap ka voyel</string>
+    <string name="audio_not_sent">Mesaj vokal la trò long, fòk li 30 segond ou pi kout</string>
+    <string name="audio">Odyo</string>
+    <string name="sel_pic">Chwazi foto</string>
+    <string name="chat_background">Ekran Chat</string>
+    <string name="accept">Aksepte</string>
+    <string name="decline">Refize</string>
+    <string name="ads_messenger_reaction">😍😛ADS Messenger Reyaksyon😎😉</string>
+    <string name="waiting_rq">Tann %s akspete oubyen refize demand ou an</string>
+    <string name="reqst_react">%s ap mande reaksyon</string>
+    <string name="left">%s kite</string>
+    <string name="refresh">Reaktyalize</string>
+    <string name="refreshed">Reaktyalize</string>
+    <string name="edit">Modifye</string>
 
 
 </resources>

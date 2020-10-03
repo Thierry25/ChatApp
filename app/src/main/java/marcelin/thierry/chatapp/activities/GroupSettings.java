@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
@@ -24,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -54,6 +57,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import id.zelory.compressor.Compressor;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.UsersInCurrentGroupAdapter;
@@ -91,6 +95,10 @@ public class GroupSettings extends AppCompatActivity {
     private static final DatabaseReference mRootReference = FirebaseDatabase.getInstance()
             .getReference();
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,7 +123,15 @@ public class GroupSettings extends AppCompatActivity {
         setSupportActionBar(mSettingsToolbar);
 
         Objects.requireNonNull(getSupportActionBar()).setTitle(mChatId);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+     //   getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        profileImage = findViewById(R.id.profileImage);
+        title = findViewById(R.id.title);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(mChatId);
+        profileImage.setVisibility(View.GONE);
 
         mSettingsToolbar.setOnClickListener(view -> {
             AlertDialog.Builder dialog = new AlertDialog.Builder(GroupSettings.this);
@@ -313,36 +329,34 @@ public class GroupSettings extends AppCompatActivity {
             }
         });
 
-        mUpdateImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mUpdateImage.setOnClickListener(view -> mGroupReference.child(mGroupName).child("admins").addListenerForSingleValueEvent
+                (new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
 
-                mGroupReference.child(mGroupName).child("admins").addListenerForSingleValueEvent
-                        (new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild(mCurrentPhoneNumber)) {
+                            CropImage.activity()
+                                    .setGuidelines(CropImageView.Guidelines.ON)
+                                    .setAspectRatio(1, 1)
+                                    .start(GroupSettings.this);
+                        } else {
+                            Toast.makeText(GroupSettings.this
+                                    , R.string.not_admin
+                                    , Toast.LENGTH_SHORT).show();
+                        }
 
-                                if (dataSnapshot.hasChild(mCurrentPhoneNumber)) {
-                                    CropImage.activity()
-                                            .setGuidelines(CropImageView.Guidelines.ON)
-                                            .setAspectRatio(1, 1)
-                                            .start(GroupSettings.this);
-                                } else {
-                                    Toast.makeText(GroupSettings.this
-                                            , R.string.not_admin
-                                            , Toast.LENGTH_SHORT).show();
-                                }
+                    }
 
-                            }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+                    }
+                }));
 
-                            }
-                        });
+        backButton = findViewById(R.id.backButton);
 
-
-            }
+        backButton.setOnClickListener(v -> {
+            finish();
         });
 
     }

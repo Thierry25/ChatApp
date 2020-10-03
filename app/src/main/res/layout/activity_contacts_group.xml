@@ -9,7 +9,7 @@
 
     <include
         android:id="@+id/contacts_bar_layout"
-        layout="@layout/app_bar_layout"
+        layout="@layout/custom_chat_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +84,7 @@
         android:layout_marginEnd="29dp"
         android:layout_marginTop="-25dp"
         android:src="@android:drawable/ic_menu_send"
+        app:backgroundTint="@color/light_blue"
         android:layout_alignParentRight="true"
         android:layout_marginRight="29dp" />
 

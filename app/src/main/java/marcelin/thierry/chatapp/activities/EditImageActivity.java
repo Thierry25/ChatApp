@@ -198,10 +198,10 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
         Log.d(TAG, "onAddViewListener() called with: viewType = [" + viewType + "], numberOfAddedViews = [" + numberOfAddedViews + "]");
     }
 
-    @Override
-    public void onRemoveViewListener(int numberOfAddedViews) {
-        Log.d(TAG, "onRemoveViewListener() called with: numberOfAddedViews = [" + numberOfAddedViews + "]");
-    }
+//    @Override
+//    public void onRemoveViewListener(int numberOfAddedViews) {
+//        Log.d(TAG, "onRemoveViewListener() called with: numberOfAddedViews = [" + numberOfAddedViews + "]");
+//    }
 
     @Override
     public void onRemoveViewListener(ViewType viewType, int numberOfAddedViews) {
@@ -330,6 +330,7 @@ public class EditImageActivity extends BaseActivity implements OnPhotoEditorList
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CAMERA_REQUEST:

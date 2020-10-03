@@ -31,16 +31,21 @@
         android:textSize="18sp"
         android:visibility="gone" />
 
+
     <LinearLayout
+        android:id="@+id/recycler_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
         android:layout_weight="1">
 
-
-        <!--   android:layout_above="@+id/mainVLayout"
-            android:layout_below="@+id/chat_bar_main"
-        -->
+        <ImageView
+            android:id="@+id/closeEditMode"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_close"
+            android:visibility="gone" />
         <androidx.core.widget.NestedScrollView
             android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
@@ -55,6 +60,71 @@
 
             </androidx.recyclerview.widget.RecyclerView>
         </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/uploadLayout"
+            android:background="@drawable/border"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:layout_gravity="bottom"
+            android:gravity="end"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/filesUploading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/upload_files"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/filePath"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/dummy_filename"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:textSize="12sp"/>
+
+            <ProgressBar
+                android:id="@+id/progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:progress="0"
+                android:layout_marginBottom="15dp"/>
+
+            <LinearLayout
+                android:id="@+id/sizeLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fileSize"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/dummy_uploading_size"/>
+
+                <TextView
+                    android:id="@+id/filePercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:text="@string/dummy_percentage"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
 
     </LinearLayout>
 

@@ -6,10 +6,17 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +39,8 @@ public class ChannelActivity extends AppCompatActivity {
 
     private Toolbar mChannelToolbar;
     private CircleImageView mChannelImage;
+    private CircleImageView profileImage;
+    private TextView title;
     private EditText mChannelName;
     private EditText mChannelDescription;
     private FloatingActionButton mCreateChannel;
@@ -49,6 +58,9 @@ public class ChannelActivity extends AppCompatActivity {
     private String prefix = "https://";
     private String link_key = "";
 
+    private ImageView backButton;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +70,7 @@ public class ChannelActivity extends AppCompatActivity {
         mChannelToolbar = findViewById(R.id.channel_bar);
         setSupportActionBar(mChannelToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.channel);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mChannelImage = findViewById(R.id.channel_image);
         mChannelImage.setOnClickListener(view -> Toast.makeText(ChannelActivity.this,
@@ -69,6 +81,14 @@ public class ChannelActivity extends AppCompatActivity {
         mChannelDescription = findViewById(R.id.channel_description);
 
         mCreateChannel = findViewById(R.id.create_channel);
+
+        profileImage = findViewById(R.id.profileImage);
+        title = findViewById(R.id.title);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(R.string.channel);
+        profileImage.setVisibility(View.GONE);
 
         mCreateChannel.setOnClickListener(view -> {
             if(TextUtils.isEmpty(mChannelName.getText().toString().trim()) || TextUtils.isEmpty
@@ -117,6 +137,12 @@ public class ChannelActivity extends AppCompatActivity {
 
         mUser.put(mCurrentPhoneNumber, ServerValue.TIMESTAMP);
         mAdmin.put(mCurrentPhoneNumber, ServerValue.TIMESTAMP);
+
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
 
     }
 

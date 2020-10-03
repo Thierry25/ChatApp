@@ -4,10 +4,12 @@ package marcelin.thierry.chatapp.activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
@@ -16,6 +18,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,12 +31,14 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.ForwardLinkAdapter;
 import marcelin.thierry.chatapp.classes.Users;
@@ -52,6 +59,11 @@ public class ForwardActivity extends AppCompatActivity implements SearchView.OnQ
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
+
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +75,7 @@ public class ForwardActivity extends AppCompatActivity implements SearchView.OnQ
         mContactsBar = findViewById(R.id.contacts_bar_layout);
         setSupportActionBar(mContactsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.contacts);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         linkReceived = getIntent().getStringExtra("link_to_send");
 
@@ -75,6 +87,21 @@ public class ForwardActivity extends AppCompatActivity implements SearchView.OnQ
 
         Toast.makeText(ForwardActivity.this, R.string.click_to_send,
                 Toast.LENGTH_SHORT).show();
+
+        title = findViewById(R.id.title);
+        profileImage = findViewById(R.id.profileImage);
+
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(R.string.contacts);
+        profileImage.setVisibility(View.GONE);
+
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
 
     }
 
@@ -117,8 +144,14 @@ public class ForwardActivity extends AppCompatActivity implements SearchView.OnQ
                     u.setPhoneNumber(phoneNumber);
                     u.setMessage(linkReceived);
                     //u.setType(typeReceived);
-                    mContactsFromFirebase.add(u);
+                //    mContactsFromFirebase.add(u);
 
+                    if(!u.getPhoneNumber().equals(phone)){
+                        mContactsFromFirebase.add(u);
+                    }
+
+                    Collections.sort(mContactsFromFirebase, (Users a1, Users a2) ->
+                            a1.getNameStoredInPhone().compareTo(a2.getNameStoredInPhone()));
                     if(u.getPhoneNumber().equals(phone)){
                         mContactsFromFirebase.remove(u);
                     }

@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
@@ -20,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -50,8 +50,9 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
     private Toolbar mContactsBar;
     private TextView title;
     private ImageView backButton;
-    private static RecyclerView mContactsList;
     private CircleImageView profileImage;
+
+    private static RecyclerView mContactsList;
 
     private List<Users> mContactsFromFirebase = new ArrayList<>();
     private ContactAdapter mContactAdapter;
@@ -75,8 +76,9 @@ public class ContactsActivity extends AppCompatActivity implements SearchView.On
 
         mContactAdapter = new ContactAdapter(mContactsFromFirebase);
         title = findViewById(R.id.title);
-        title.setTextSize(26);
-        title.setTypeface(null, Typeface.NORMAL);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
         title.setText(R.string.contacts);
         profileImage.setVisibility(View.GONE);
         mContactsList = findViewById(R.id.contacts_list);

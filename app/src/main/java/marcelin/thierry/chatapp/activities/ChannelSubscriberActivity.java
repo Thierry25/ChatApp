@@ -1,6 +1,7 @@
 package marcelin.thierry.chatapp.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +52,7 @@ import marcelin.thierry.chatapp.classes.NotificationDropDownMenu;
 import marcelin.thierry.chatapp.classes.ReplyNotification;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.Constant;
+import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 
 public class ChannelSubscriberActivity extends AppCompatActivity {
 
@@ -98,6 +101,8 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
 
     private List<ReplyNotification> replyNotificationsList = new ArrayList<>();
     private NotificationAdapter mNotificationAdapter;
+
+    private RecyclerItemClickListener recyclerItemClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +189,85 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         });
         mRootView.setBackgroundColor(Color.parseColor("#ececec"));
 
+        recyclerItemClickListener = new RecyclerItemClickListener(this, mMessagesList, new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                final Messages message = messagesList.get(position);
+                if(message.isVisible()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                    builder.setTitle(R.string.choose_option)
+                            .setItems(R.array.subscriber_channel_options, ((dialog, which) -> {
+                                switch (which){
+                                    case 0:
+                                        Intent goToCommentActivity = new Intent(ChannelSubscriberActivity.this, CommentActivity.class);
+                                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                                        goToCommentActivity.putExtra("message_type", message.getType());
+                                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                                        goToCommentActivity.putExtra("message_content", message.getContent());
+                                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                                        goToCommentActivity.putExtra("message_color", message.getColor());
+                                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                                        goToCommentActivity.putExtra("message_edited", message.isEdited());
+                                        goToCommentActivity.putExtra("from", "Adapter");
+                                        goToCommentActivity.putExtra("isOn", false);
+                                        startActivity(goToCommentActivity);
+
+                                        break;
+
+                                    case 1:
+                                        switch (message.getType()) {
+                                            case "text": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "text";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                            case "channel_link": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "channel_link";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                            case "group_link": {
+
+                                                Intent i = new Intent(view.getContext(),
+                                                        ForwardMessageActivity.class);
+                                                String s = "group_link";
+                                                i.putExtra("type", s);
+                                                i.putExtra("message", message.getContent());
+                                                view.getContext().startActivity(i);
+
+                                                break;
+                                            }
+                                        }
+                                        break;
+                                }
+                            }));
+
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                }
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
+        mMessagesList.addOnItemTouchListener(recyclerItemClickListener);
     }
 
     @Override

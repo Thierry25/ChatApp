@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/rLayout"
         android:layout_width="0dp"
-        android:layout_height="210dp"
+        android:layout_height="209dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
@@ -85,54 +85,61 @@
 
         </LinearLayout>
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/infoLayout"
+            android:layout_margin="1dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginBottom="5dp"
+            app:cardCornerRadius="8dp">
+
         <ImageView
             android:id="@+id/messageVideo"
             android:layout_width="match_parent"
-            android:layout_height="210dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/border_1"
+            android:layout_height="match_parent"
             android:layout_below="@id/infoLayout"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:layout_marginStart="2dp"
-            android:layout_marginLeft="2dp"
-            android:layout_marginTop="1dp"
-            android:layout_marginRight="2dp"
-            android:layout_marginBottom="1dp" />
+            android:contentDescription="@string/type_message"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/messageTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="12dp"
-            android:textSize="12sp"
+            android:layout_marginEnd="22dp"
+            android:gravity="end|bottom"
+            android:layout_gravity="end|bottom"
             android:text="@string/_00_00"
-            android:layout_marginRight="8dp"
+            android:layout_marginBottom="4dp"
             android:textColor="@android:color/black"
-            android:layout_marginEnd="4dp" />
+            android:textSize="10sp" />
+<!--            android:layout_marginBottom="12dp"-->
+
 
         <ImageView
             android:id="@+id/check"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_toRightOf="@id/messageTime"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
+            android:layout_gravity="bottom|end"
             android:src="@drawable/ic_dark_check"
             android:layout_toEndOf="@id/messageTime" />
 
-        <ImageView
-            android:id="@+id/play_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            app:srcCompat="@drawable/ic_play_icon" />
+            <ImageView
+                android:id="@+id/play_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/ic_play_icon" />
+        </androidx.cardview.widget.CardView>
 
     </RelativeLayout>
 

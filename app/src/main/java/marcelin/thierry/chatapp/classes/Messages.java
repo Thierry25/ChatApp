@@ -18,7 +18,7 @@ public class Messages implements Serializable, Comparable<Messages>{
 
     private String content, type, from, parent;
     private Long timestamp;
-    private boolean seen, visible;
+    private boolean seen, visible, edited;
     private String name, profilePic;
 
     private boolean isSelected = false;
@@ -37,6 +37,7 @@ public class Messages implements Serializable, Comparable<Messages>{
 
     private String channelName, channelImage;
     private Map<String, Object> c, l, r;
+    private String thumb;
 
     @Exclude
     private String initialCommentId;
@@ -124,6 +125,14 @@ public class Messages implements Serializable, Comparable<Messages>{
 
     public void setParent(String parent) {
         this.parent = parent;
+    }
+
+    public boolean isEdited() {
+        return edited;
+    }
+
+    public void setEdited(boolean edited) {
+        this.edited = edited;
     }
 
     @Exclude
@@ -338,4 +347,13 @@ public class Messages implements Serializable, Comparable<Messages>{
         Date d = new Date(getTimestamp());
         return d.compareTo(new Date(m.getTimestamp()));
     }
+
+    public String getThumb() {
+        return thumb;
+    }
+
+    public void setThumb(String thumb){
+        this.thumb = thumb;
+    }
+
 }

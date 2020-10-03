@@ -3,12 +3,13 @@ package marcelin.thierry.chatapp.classes;
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @IgnoreExtraProperties
-public class Conversation implements Comparable<Conversation> {
+public class Conversation implements Comparable<Conversation>, Serializable {
 
     private String id, type, phone_number, from;
     private long timestamp, messageTimestamp;

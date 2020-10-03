@@ -34,7 +34,7 @@
 
     <include
         android:id="@+id/comment_video"
-        layout="@layout/channel_video"
+        layout="@layout/video_comment"
         android:layout_width="match_parent"
         android:layout_margin="8dp"
         android:visibility="gone"

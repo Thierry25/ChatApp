@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
@@ -93,6 +95,9 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     private String mCurrentPhoneNumber;
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
 
    // private int useris;
 
@@ -133,11 +138,20 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
         mChannelList.setLayoutManager(new LinearLayoutManager(this));
         mChannelList.setAdapter(mUsersInCurrentChannel);
 
+
+        profileImage = findViewById(R.id.profileImage);
+        title = findViewById(R.id.title);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(mChannelId);
+        profileImage.setVisibility(View.GONE);
+
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
         setSupportActionBar(mSettingsToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(mChannelId);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSettingsToolbar.setOnClickListener(view -> {
             AlertDialog.Builder dial = new AlertDialog.Builder(SettingsChannelActivity.this);
@@ -285,6 +299,7 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
                                                 u.setChatId(mChannelName);
                                                // u.setTitle(mChannelName);
 
+
                                                 mUsersInChannel.add(u);
                                                 Log.i("ListUsers", mUsersInChannel.toString());
                                                 mUsersInCurrentChannel.notifyDataSetChanged();
@@ -335,20 +350,18 @@ public class SettingsChannelActivity extends AppCompatActivity implements Search
             }
         });
 
-        mUpdateImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mUpdateImage.setOnClickListener(view -> CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .start(SettingsChannelActivity.this));
 
-                CropImage.activity()
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(1, 1)
-                        .start(SettingsChannelActivity.this);
+        backButton = findViewById(R.id.backButton);
 
-
-            }
+        backButton.setOnClickListener(v -> {
+            finish();
         });
-
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)

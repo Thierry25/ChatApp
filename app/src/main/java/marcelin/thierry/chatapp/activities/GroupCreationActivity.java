@@ -5,18 +5,23 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.RequiresApi;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,6 +68,12 @@ public class GroupCreationActivity extends AppCompatActivity{
     private String mCurrentPhoneNumber = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
     private String groupId = "";
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
+
+
+
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
@@ -75,7 +86,15 @@ public class GroupCreationActivity extends AppCompatActivity{
         mContactsBar = findViewById(R.id.contacts_bar_layout);
         setSupportActionBar(mContactsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.group);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        profileImage = findViewById(R.id.profileImage);
+        title = findViewById(R.id.title);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(R.string.group);
+        profileImage.setVisibility(View.GONE);
 
         mGroupId = findViewById(R.id.group_id);
         mGroupPicture = findViewById(R.id.group_image);
@@ -137,6 +156,11 @@ public class GroupCreationActivity extends AppCompatActivity{
         for(Users u : mUsersInGroup){
             mPhoneFromSelectedUsers.put(u.getPhoneNumber(),createRandomColor());
         }
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });       
 
     }
 

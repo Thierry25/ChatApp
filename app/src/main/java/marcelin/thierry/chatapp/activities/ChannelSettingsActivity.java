@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -20,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 
 public class ChannelSettingsActivity extends AppCompatActivity {
@@ -47,6 +52,9 @@ public class ChannelSettingsActivity extends AppCompatActivity {
     private static final DatabaseReference mChannelReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_channel");
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +65,17 @@ public class ChannelSettingsActivity extends AppCompatActivity {
         mChannelSettingsBar = findViewById(R.id.channel_settings_bar);
         setSupportActionBar(mChannelSettingsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.chan_settings);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);'
+
+        title = findViewById(R.id.title);
+        profileImage = findViewById(R.id.profileImage);
+
+
+        title.setTextSize(26);
+        title.setTypeface(null, Typeface.NORMAL);
+        title.setText(R.string.chan_settings);
+        profileImage.setVisibility(View.GONE);
+
 
         mChannelId = getIntent().getStringExtra("Channel_id");
         mChannelLink = getIntent().getStringExtra("Link");
@@ -92,6 +110,12 @@ public class ChannelSettingsActivity extends AppCompatActivity {
                     , UserSelectionActivity.class);
             goToUserSelection.putExtra("Channel_id", mChannelId);
             startActivity(goToUserSelection);
+            finish();
+        });
+
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
             finish();
         });
     }

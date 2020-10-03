@@ -145,6 +145,7 @@ public class CommentAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         commentContentMap.put("from", myPhone);
         commentContentMap.put("r", repliesMap);
         commentContentMap.put("timestamp", ServerValue.TIMESTAMP);
+        commentContentMap.put("edited", false);
 
         switch (holder.getItemViewType()) {
             case 0:

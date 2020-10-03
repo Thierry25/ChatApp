@@ -412,7 +412,24 @@
     <string name="description">Descripción</string>
 
     <string name="no_prior_password_lock">¿Agregar una contraseña a tu canal? Se le pedirá que ingrese una contraseña y seleccione un método de recuperación</string>
-    <string name="replying_to">Replying to @</string>
-    <string name="close_replies">Close Replies</string>
+    <string name="replying_to">Respondiendo a@</string>
+    <string name="close_replies">Cerrar Respuestas</string>
+    <string name="replied">respondió a tu comentario</string>
+    <string name="message_sent">Respuesta enviada</string>
+    <string name="no_notif">No tienes notificaciones nuevas en este momento</string>
+    <string name="audio_warning">Voice can only be 30 seconds long, if longer will not be sent</string>
+    <string name="audio_not_sent">La voz solo puede durar 30 segundos, si no se enviará más tiempo</string>
+    <string name="audio">Audio</string>
+    <string name="sel_pic">Seleccionar imagen</string>
+    <string name="chat_background">Fondo de chat</string>
+    <string name="accept">Aceptar</string>
+    <string name="decline">Disminución</string>
+    <string name="ads_messenger_reaction">😍😛Reacción de ADS Messenger😎😉</string>
+    <string name="waiting_rq">Esperando %s para aceptar o rechazar su solicitud</string>
+    <string name="reqst_react">%s está solicitando tu reacción</string>
+    <string name="left">%s se ha ido</string>
+    <string name="refresh">Actualizar</string>
+    <string name="refreshed">Refrescado</string>
+    <string name="edit">Editar</string>
 
 </resources>

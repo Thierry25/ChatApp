@@ -98,6 +98,13 @@
         <item>@string/reply</item>
     </string-array>
 
+    <string-array name="options_msg">
+        <item>@string/forward</item>
+        <item>@string/delete</item>
+        <item>@string/reply</item>
+        <item>@string/edit</item>
+    </string-array>
+
     <string-array name="options_">
         <item>@string/save_contact</item>
         <item>@string/send_message</item>
@@ -127,6 +134,20 @@
         <item>@string/forward</item>
         <item>@string/delete</item>
     </string-array>
+
+    <string-array name="admin_channel_options">
+        <item>@string/m_comment</item>
+        <item>@string/forward</item>
+        <item>@string/delete</item>
+        <item>@string/edit</item>
+    </string-array>
+
+    <string-array name="subscriber_channel_options">
+        <item>@string/m_comment</item>
+        <item>@string/forward</item>
+    </string-array>
+
+
 
     <string-array name="channel_options">
         <item>@string/forward</item>
@@ -526,5 +547,19 @@
     <string name="left">%s has left</string>
     <string name="refresh">Refresh</string>
     <string name="refreshed">Refreshed</string>
+    <string name="edit">Edit</string>
+    <string name="m_comment">Comment</string>
+    <string name="edit_mode">Edit mode is on</string>
+    <string name="edit_limit">Cannot edit message after 20 mns</string>
+    <string name="c_sent_by_you">Cannot edit not sent by you</string>
+    <string name="edited">Edited</string>
+
+    <string name="upload_files">Your Files are uploading..</string>
+    <string name="dummy_percentage">0%</string>
+    <string name="dummy_uploading_size">0mb</string>
+    <string name="dummy_filename">Filename.jpg</string>
+    <string name="pause_upload">Pause Upload</string>
+    <string name="cancel_upload">Cancel Upload</string>
+
 
 </resources>

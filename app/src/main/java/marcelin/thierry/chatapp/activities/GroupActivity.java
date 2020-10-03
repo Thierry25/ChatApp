@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
+
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -90,8 +92,9 @@ public class GroupActivity extends AppCompatActivity implements SearchView.OnQue
         mUsersList.setAdapter(mUserSelectionAdapter);
 
         title.setText(R.string.group);
-        title.setTextSize(26);
-        title.setTypeface(null, Typeface.NORMAL);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
         title.setPadding(8,0,0,0);
         backButton.setOnClickListener(v -> finish());
 

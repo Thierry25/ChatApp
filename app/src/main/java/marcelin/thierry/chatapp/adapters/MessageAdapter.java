@@ -20,10 +20,12 @@ import android.provider.Contacts;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +77,7 @@ import marcelin.thierry.chatapp.classes.RunTimePermissionWrapper;
 import marcelin.thierry.chatapp.classes.Status;
 import marcelin.thierry.chatapp.classes.TouchImageView;
 import marcelin.thierry.chatapp.classes.Users;
+import marcelin.thierry.chatapp.dto.Message;
 
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -90,6 +93,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private Handler handler;
     private static List<MediaPlayer> mediaPlayers = new ArrayList<>();
     private final String[] WALK_THROUGH = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+
 
     private final static DatabaseReference mChannelReference = FirebaseDatabase.getInstance().
             getReference().child("ads_channel");
@@ -147,15 +151,24 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mDialog = new Dialog(mContext, R.style.CustomDialogTheme);
 
         switch (holder.getItemViewType()) {
-
             case 1:
             case 0:
-
+                Typeface typeface = ResourcesCompat.getFont(mContext, R.font.capriola);
                 String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
+                if(message.isEdited()){
+                    ((MessageViewHolder) holder).textEdited.setVisibility(View.VISIBLE);
+                    ((MessageViewHolder) holder).messageText.setTypeface(typeface);
+                    ((MessageViewHolder) holder).messageText.setTextSize(14);
+                }else{
+                    ((MessageViewHolder) holder).textEdited.setVisibility(View.GONE);
+                }
+
                 if (!message.isVisible()) {
+                    ((MessageViewHolder) holder).messageText.setTypeface(typeface);
+                 //   ((MessageViewHolder) holder).messageText.setTextSize(14);
+
                     if (!message.getFrom().equals(phone)) {
-                        ((MessageViewHolder) holder).messageText.setTypeface(null, Typeface.ITALIC);
                         ((MessageViewHolder) holder).messageText.setTextColor(Color.parseColor(("#A9A9A9")));
                         ((MessageViewHolder) holder).messageText.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_message_deleted,
                                 0, 0, 0);
@@ -945,104 +958,104 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 // Add the other thinking
 
                 ((ImageViewHolder) holder).fanDeTchous.setOnClickListener(view -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.options_audio_video_image, (dialog, which) -> {
-                                switch (which) {
-                                    case 0:
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.options_audio_video_image, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
 
-                                        Intent i = new Intent(view.getContext(),
-                                                ForwardMessageActivity.class);
-                                        String s = "image";
-                                        i.putExtra("type", s);
-                                        i.putExtra("message", message.getContent());
-                                        view.getContext().startActivity(i);
+                                            Intent i = new Intent(view.getContext(),
+                                                    ForwardMessageActivity.class);
+                                            String s = "image";
+                                            i.putExtra("type", s);
+                                            i.putExtra("message", message.getContent());
+                                            view.getContext().startActivity(i);
 
-                                        break;
+                                            break;
 
-                                    case 1:
+                                        case 1:
 
-                                        if (!message.getFrom().equals(Objects.requireNonNull
-                                                (mAuth.getCurrentUser()).getPhoneNumber())) {
-                                            Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
-                                                    mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
-                                        } else {
+                                            if (!message.getFrom().equals(Objects.requireNonNull
+                                                    (mAuth.getCurrentUser()).getPhoneNumber())) {
+                                                Toast.makeText(view.getContext(), mContext.getString(R.string.cannot) +
+                                                        mContext.getString(R.string.coming), Toast.LENGTH_SHORT).show();
+                                            } else {
 
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("visible").setValue(false);
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("type").setValue("text");
+                                                mMessageReference.child(message.getMessageId())
+                                                        .child("visible").setValue(false);
+                                                mMessageReference.child(message.getMessageId())
+                                                        .child("type").setValue("text");
 
-                                            mMessageReference.child(message.getMessageId())
-                                                    .child("content").setValue("Message Deleted");
+                                                mMessageReference.child(message.getMessageId())
+                                                        .child("content").setValue("Message Deleted");
 
-                                            ((ImageViewHolder) holder).rLayout.setEnabled(false);
+                                                ((ImageViewHolder) holder).rLayout.setEnabled(false);
 
-                                            Toast.makeText(view.getContext(), "Message deleted",
-                                                    Toast.LENGTH_SHORT).show();
-                                        }
-                                        break;
+                                                Toast.makeText(view.getContext(), "Message deleted",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                            break;
 
-                                    case 2:
+                                        case 2:
 
-                                        TextView sender = mMainVLayout.findViewById(R.id.senderOfMessage);
-                                        TextView messageV = mMainVLayout.findViewById(R.id.messageReceived);
-                                        ImageView closeReply = mMainVLayout.findViewById(R.id.close_reply);
-                                        ImageView imageSent = mMainVLayout.findViewById(R.id.imageSent);
-                                        TextView audioSent = mMainVLayout.findViewById(R.id.audioSent);
-                                        TextView videoSent = mMainVLayout.findViewById(R.id.videoSent);
-                                        TextView documentSent = mMainVLayout.findViewById(R.id.documentSent);
+                                            TextView sender = mMainVLayout.findViewById(R.id.senderOfMessage);
+                                            TextView messageV = mMainVLayout.findViewById(R.id.messageReceived);
+                                            ImageView closeReply = mMainVLayout.findViewById(R.id.close_reply);
+                                            ImageView imageSent = mMainVLayout.findViewById(R.id.imageSent);
+                                            TextView audioSent = mMainVLayout.findViewById(R.id.audioSent);
+                                            TextView videoSent = mMainVLayout.findViewById(R.id.videoSent);
+                                            TextView documentSent = mMainVLayout.findViewById(R.id.documentSent);
 
-                                        String nameStored = Users.getLocalContactList().get(message.getFrom());
+                                            String nameStored = Users.getLocalContactList().get(message.getFrom());
 
-                                        sender.setText(message.getFrom().equals(
-                                                Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber()) ?
-                                                mContext.getResources().getString(R.string.you) :
-                                                nameStored != null && nameStored.length() > 0 ? nameStored : message.getFrom());
+                                            sender.setText(message.getFrom().equals(
+                                                    Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber()) ?
+                                                    mContext.getResources().getString(R.string.you) :
+                                                    nameStored != null && nameStored.length() > 0 ? nameStored : message.getFrom());
 
-                                        messageV.setVisibility(View.GONE);
-                                        audioSent.setVisibility(View.GONE);
-                                        videoSent.setVisibility(View.GONE);
-                                        documentSent.setVisibility(View.GONE);
-                                        imageSent.setVisibility(View.VISIBLE);
+                                            messageV.setVisibility(View.GONE);
+                                            audioSent.setVisibility(View.GONE);
+                                            videoSent.setVisibility(View.GONE);
+                                            documentSent.setVisibility(View.GONE);
+                                            imageSent.setVisibility(View.VISIBLE);
 
-                                        Picasso.get().load(message.getContent()).placeholder(R.drawable.ic_avatar)
-                                                .into(imageSent);
+                                            Picasso.get().load(message.getContent()).placeholder(R.drawable.ic_avatar)
+                                                    .into(imageSent);
 
-                                        LinearLayout messageLinLayout = mMainVLayout.findViewById(R.id.messageLinLayout);
-                                        messageLinLayout.setBackgroundResource(R.drawable.new_border);
+                                            LinearLayout messageLinLayout = mMainVLayout.findViewById(R.id.messageLinLayout);
+                                            messageLinLayout.setBackgroundResource(R.drawable.new_border);
 
-                                        LinearLayout replyLayout = mMainVLayout.findViewById(R.id.replyLinearLayout);
-                                        replyLayout.setVisibility(View.VISIBLE);
+                                            LinearLayout replyLayout = mMainVLayout.findViewById(R.id.replyLinearLayout);
+                                            replyLayout.setVisibility(View.VISIBLE);
 
-                                        if (sender.getText().toString().trim().equals(mContext.getResources().getString(R.string.you))) {
-                                            sender.setTextColor(Color.parseColor("#FFFFFF"));
-                                        } else {
-                                            sender.setTextColor(Color.parseColor("#FFFFFF"));
-                                        }
+                                            if (sender.getText().toString().trim().equals(mContext.getResources().getString(R.string.you))) {
+                                                sender.setTextColor(Color.parseColor("#FFFFFF"));
+                                            } else {
+                                                sender.setTextColor(Color.parseColor("#FFFFFF"));
+                                            }
 
-                                        Messages.setClickedMessageId(message.getMessageId());
+                                            Messages.setClickedMessageId(message.getMessageId());
 
-                                        closeReply.setOnClickListener(view12 -> {
-                                            messageLinLayout.setBackgroundResource(R.drawable.border);
-                                            replyLayout.setVisibility(View.GONE);
-                                        });
-                                        break;
+                                            closeReply.setOnClickListener(view12 -> {
+                                                messageLinLayout.setBackgroundResource(R.drawable.border);
+                                                replyLayout.setVisibility(View.GONE);
+                                            });
+                                            break;
 
-                                    case 3:
-                                        File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
-                                        File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()) {
-                                            askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
-                                            askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
-                                        }
-                                        break;
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                                        case 3:
+                                            File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
+                                            File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                            if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()) {
+                                                askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
+                                                askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
+                                            }
+                                            break;
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
 
 
                 });
@@ -1054,6 +1067,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             case 5:
 
                 ((VideoViewHolder) holder).messageTime.setText(dateMessageSend);
+                Picasso.get().load(message.getThumb()).placeholder(R.drawable.border_1).into(((VideoViewHolder)holder).messageVideo);
                 ((VideoViewHolder) holder).playButton.setOnClickListener(view -> {
                     Intent i = new Intent(view.getContext(), VideoPlayerActivity.class);
 
@@ -2798,6 +2812,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView audioSent;
         TextView documentSent;
         TextView videoSent;
+        TextView textEdited;
 
         RelativeLayout messageLinearLayout;
 
@@ -2819,6 +2834,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             messageCheck = itemView.findViewById(R.id.messageCheck);
             replyLayout = itemView.findViewById(R.id.replyLayout);
             cLayout = itemView.findViewById(R.id.cLayout);
+            textEdited = itemView.findViewById(R.id.text_edited);
 
             audioSent = itemView.findViewById(R.id.audioSent);
             documentSent = itemView.findViewById(R.id.documentSent);
