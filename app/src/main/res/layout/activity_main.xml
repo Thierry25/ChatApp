@@ -20,7 +20,6 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/colorPrimary"
-        android:layout_marginLeft="18dp"
         android:layout_marginStart="18dp"
         android:layout_marginBottom="8dp"
         android:fontFamily="@font/roboto_medium"
@@ -40,9 +39,7 @@
         android:layout_height="wrap_content"
         android:text="@string/s"
         android:layout_below="@id/appName"
-        android:layout_marginLeft="18dp"
         android:layout_marginStart="18dp"
-        android:layout_marginRight="8dp"
         android:textStyle="bold"
         android:textSize="16sp"
         android:layout_marginEnd="8dp" />
@@ -72,7 +69,6 @@
             android:id="@+id/myStatusLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="18dp"
             android:layout_marginStart="18dp"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp">
@@ -100,14 +96,12 @@
             android:layout_width="1dp"
             android:layout_height="100dp"
             android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
             android:background="@color/light_gray"
             android:layout_marginStart="8dp" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/statusList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="18dp"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:layout_marginStart="18dp" />
@@ -127,7 +121,6 @@
         android:layout_height="wrap_content"
         android:text="@string/message"
         android:textStyle="bold"
-        android:layout_marginLeft="18dp"
         android:layout_below="@id/view"
         android:layout_marginStart="18dp"
         android:layout_marginTop="8dp"
@@ -139,7 +132,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_marginStart="8dp" />
 
@@ -153,8 +145,7 @@
         android:alpha=".9"
         android:visibility="gone"
         android:background="@color/colorPrimary"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginEnd="8dp" />
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -302,7 +293,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
                 android:textSize="16sp"
                 android:textColor="@android:color/background_light"
                 android:text="@string/settings"
@@ -313,7 +303,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="4dp"
-                android:layout_marginRight="4dp"
                 android:layout_marginBottom="24dp"
                 android:src="@drawable/ic_settings"
                 app:backgroundTint="#0FDDAF" />
@@ -325,7 +314,6 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/lin"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
             android:layout_marginBottom="16dp"
@@ -336,19 +324,117 @@
         <!-- app:srcCompat="@drawable/ic_party_"-->
     </RelativeLayout>
 
+    <LinearLayout
+        android:id="@+id/crop_add_text"
+        android:background="@color/black"
+        android:weightSum="2"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight=".15">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:text="@string/app_name"
+            android:textSize="22sp"
+            android:layout_weight="1.3"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_margin="8dp"
+            android:fontFamily="@font/capriola"/>
+
+            <ImageView
+                android:id="@+id/crop_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_cam_crop_rotate"
+                android:layout_gravity="center"
+                android:layout_marginEnd="4dp"/>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/pic"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1.4"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_avatar"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".15"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <ImageButton
+                android:id="@+id/send_emoji"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:background="?android:attr/selectableItemBackground"
+                android:contentDescription="@string/open_emoji_keyboard"
+                android:src="@drawable/ic_favorite" />
+
+            <com.vanniktech.emoji.EmojiEditText
+                android:id="@+id/send_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:hint="@string/type_message"
+                android:paddingEnd="4dp"
+                android:theme="@style/MyEditTextTheme"
+                android:inputType="textCapSentences|textMultiLine" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight=".24">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/done_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="24dp"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/ic_check"
+        app:backgroundTint="@color/light_blue"
+        android:visibility="gone"/>
+
     <RelativeLayout
         android:id="@+id/backgroundLayoutForStatus"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="0dp"
         android:alpha=".85"
         android:visibility="gone"
         android:background="@color/colorPrimary"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp">
+        android:layout_marginEnd="8dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -364,11 +450,9 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginRight="8dp"
             android:layout_marginTop="24dp"
             android:background="@drawable/ic_message_deleted"
-            android:layout_alignParentRight="true"
-            android:layout_marginEnd="4dp" />
+            android:layout_marginEnd="8dp" />
 
     </RelativeLayout>
 
@@ -386,7 +470,6 @@
             xmlns:cardview="http://schemas.android.com/apk/res-auto"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:layout_marginLeft="12dp"
             android:background="@drawable/border"
             android:clickable="true"
             android:focusable="true"
@@ -413,8 +496,7 @@
                     android:gravity="center"
                     android:text="@string/label_text"
                     android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    android:layout_marginLeft="4dp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -428,7 +510,6 @@
             android:id="@+id/imageCardView"
             android:layout_width="0dp"
             android:layout_height="150dp"
-            android:layout_marginLeft="8dp"
             android:layout_weight="1"
             cardview:cardCornerRadius="8dp"
             android:layout_marginStart="8dp">
@@ -453,8 +534,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:text="@string/images"
-                    android:layout_marginStart="4dp"
-                    android:layout_marginLeft="4dp" />
+                    android:layout_marginStart="4dp" />
 
             </LinearLayout>
 
@@ -491,8 +571,7 @@
                     android:gravity="center"
                     android:text="@string/videos"
                     android:textColor="@android:color/black"
-                    android:textSize="20sp"
-                    android:layout_marginLeft="4dp" />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -513,35 +592,3 @@
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
-
-
-<!-- Old Stuff -->
-    <!--    <com.google.android.material.appbar.AppBarLayout-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:id="@+id/AppBar">-->
-
-    <!--        <include-->
-    <!--            android:id="@+id/main_toolbar_layout"-->
-    <!--            layout="@layout/app_bar_layout"-->
-    <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--            app:layout_constraintEnd_toEndOf="parent"-->
-    <!--            app:layout_constraintStart_toStartOf="parent"-->
-    <!--            app:layout_constraintTop_toTopOf="parent"></include>-->
-
-    <!--        <com.google.android.material.tabs.TabLayout-->
-    <!--            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"-->
-    <!--            android:id="@+id/main_tabLayout"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="wrap_content">-->
-
-    <!--        </com.google.android.material.tabs.TabLayout>-->
-
-    <!--    </com.google.android.material.appbar.AppBarLayout>-->
-
-    <!--    <androidx.viewpager.widget.ViewPager-->
-    <!--        android:id="@+id/tabPager"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@+id/AppBar"-->
-    <!--        ></androidx.viewpager.widget.ViewPager>-->

@@ -127,7 +127,7 @@
                     android:autoLink="all"
                     android:clickable="true"
                     android:focusable="true"
-                    android:fontFamily="sans-serif-light"
+                    android:fontFamily="@font/capriola"
                     android:linksClickable="true"
                     android:maxWidth="250dp"
                     android:paddingLeft="8dp"

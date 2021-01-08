@@ -1,21 +1,21 @@
 package marcelin.thierry.chatapp.activities;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
+
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bestsoft32.tt_fancy_gif_dialog_lib.TTFancyGifDialog;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -39,18 +39,14 @@ import marcelin.thierry.chatapp.utils.CheckInternet_;
 
 public class OneToOneChatSettings extends AppCompatActivity {
 
-   // private Toolbar mOneToOneBar;
-
     private CircleImageView mProfileImage;
 
     private String mUserPhone;
     private String mUserName;
-    private String mUserPicture;
     private String mChatId;
     private ProgressBar mImageProgress;
+    private TextView mBlockedText;
 
-    private Dialog mDialog;
-    private ImageView mBackArrow, mMoreInfo;
     private static final DatabaseReference mUsersReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_users");
 
@@ -59,8 +55,6 @@ public class OneToOneChatSettings extends AppCompatActivity {
 
     private static final DatabaseReference mMessagesReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_messages");
-
-    int x;
 
     private String mCurrentPhone;
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -73,9 +67,14 @@ public class OneToOneChatSettings extends AppCompatActivity {
 
         mUserPhone = getIntent().getStringExtra("user_phone");
         mUserName = getIntent().getStringExtra("user_name");
-        mUserPicture = getIntent().getStringExtra("user_picture");
+       // String mUserPicture = getIntent().getStringExtra("user_picture");
         mChatId = getIntent().getStringExtra("chat_id");
         mCurrentPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+
+        MaterialCardView mSharedItems = findViewById(R.id.sharedItems);
+        MaterialCardView mBlocked = findViewById(R.id.blocked);
+        MaterialCardView mDeleteConversation = findViewById(R.id.deleteConversation);
+        mBlockedText = findViewById(R.id.blockText);
 
         TextView name = findViewById(R.id.name);
         name.setText(mUserName);
@@ -85,9 +84,6 @@ public class OneToOneChatSettings extends AppCompatActivity {
         mImageProgress = findViewById(R.id.imageProgress);
 
         mProfileImage = findViewById(R.id.user_profile_image);
-
-        mBackArrow = findViewById(R.id.backArrow);
-        mMoreInfo = findViewById(R.id.moreInfo);
 
         mUsersReference.keepSynced(true);
 
@@ -124,49 +120,18 @@ public class OneToOneChatSettings extends AppCompatActivity {
             startActivity(goToFullScreen);
         }));
 
-        mDialog = new Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        mMoreInfo.setOnClickListener(v -> {
-            new CheckInternet_(internet -> {
-               if(internet){
-                   showCustomDialog();
-               }else{
-                   Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
-               }
-            });
-        });
-
-        mBackArrow.setOnClickListener(v ->{
-            finish();
-        });
-    }
-
-    private void showCustomDialog() {
-
-        TextView phoneNumber;
-        TextView media;
-        TextView delete;
-        TextView block;
-
-        mDialog.setContentView(R.layout.chat_settings_layout);
-        mDialog.show();
-
-        phoneNumber = mDialog.findViewById(R.id.phone_number);
-        media = mDialog.findViewById(R.id.media);
-        delete = mDialog.findViewById(R.id.delete);
-        block = mDialog.findViewById(R.id.block);
-
         mUsersReference.child(mCurrentPhone).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChild("blocked")){
+                if (dataSnapshot.hasChild("blocked")) {
                     mUsersReference.child(mCurrentPhone).child("blocked").addListenerForSingleValueEvent
                             (new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    if(dataSnapshot.hasChild(mUserPhone)){
-                                        block.setText(R.string.unblock);
-                                    }else{
-                                        block.setText(R.string.block);
+                                    if (dataSnapshot.hasChild(mUserPhone)) {
+                                        mBlockedText.setText(R.string.unblock);
+                                    } else {
+                                        mBlockedText.setText(R.string.block);
                                     }
                                 }
 
@@ -184,149 +149,151 @@ public class OneToOneChatSettings extends AppCompatActivity {
             }
         });
 
+        mSharedItems.setOnClickListener(v -> new CheckInternet_(internet -> {
+            if (internet) {
+                getSharedItems();
+            } else {
+                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+            }
+        }));
 
-        phoneNumber.setText(mUserPhone);
+        mDeleteConversation.setOnClickListener(v -> new CheckInternet_(internet -> {
+            if (internet) {
+                deleteConversation();
+            } else {
+                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+            }
+        }));
 
-        media.setOnClickListener(view -> {
+        mBlocked.setOnClickListener(v -> new CheckInternet_(internet -> {
+            if (internet) {
+                blockOrUnblock();
+            } else {
+                Toast.makeText(this, R.string.no_internet_error, Toast.LENGTH_SHORT).show();
+            }
+        }));
+    }
 
-            AlertDialog.Builder build = new AlertDialog.Builder(OneToOneChatSettings.this,
-                    R.style.AppCompatAlertDialogStyle);
-            build.setPositiveButton(R.string.ok, (dialog, id) -> {
-
-//                    Toast.makeText(OneToOneChatSettings.this, "In development", Toast.LENGTH_SHORT)
-//                            .show();
-
-                Intent i = new Intent(OneToOneChatSettings.this, SharedActivity.class);
-                i.putExtra("chat_name", mUserPhone);
-                i.putExtra("chat_id", mChatId);
-                startActivity(i);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-
-            });
-
-            build.setNegativeButton(R.string.cancel, (dialog, id) ->{
-
-                Toast.makeText(OneToOneChatSettings.this, "load cancelled",
-                        Toast.LENGTH_SHORT).show();
-
-            });
-
-            AlertDialog al = build.create();
-            al.setIcon(R.drawable.ic_warning);
-            al.setTitle(R.string.media_loading);
-            al.setMessage(getString(R.string.sure_load));
-            al.show();
-
-
+    private void getSharedItems() {
+        AlertDialog.Builder build = new AlertDialog.Builder(OneToOneChatSettings.this,
+                R.style.AppCompatAlertDialogStyle);
+        build.setPositiveButton(R.string.ok, (dialog, id) -> {
+            Intent i = new Intent(OneToOneChatSettings.this, SharedActivity.class);
+            i.putExtra("chat_name", mUserPhone);
+            i.putExtra("chat_id", mChatId);
+            startActivity(i);
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         });
 
+        build.setNegativeButton(R.string.cancel, (dialog, id) -> Toast.makeText(OneToOneChatSettings.this, "load cancelled",
+                Toast.LENGTH_SHORT).show());
 
-        delete.setOnClickListener(view -> {
+        AlertDialog al = build.create();
+        al.setIcon(R.drawable.ic_warning);
+        al.setTitle(R.string.media_loading);
+        al.setMessage(getString(R.string.sure_load));
+        al.show();
+    }
 
-          new TTFancyGifDialog.Builder(this)
-                  .setTitle(getString(R.string.delete))
-                  .setMessage(getString(R.string.delete_conversation))
-                  .setGifResource(R.drawable.gif30)
-                  .OnPositiveClicked(()->{
+    private void deleteConversation() {
+        new TTFancyGifDialog.Builder(this)
+                .setTitle(getString(R.string.delete))
+                .setMessage(getString(R.string.delete_conversation))
+                .setGifResource(R.drawable.gif30)
+                .OnPositiveClicked(() -> {
+                    mUsersReference.child(Objects.requireNonNull(mCurrentPhone))
+                            .child("conversation").child(mChatId).removeValue();
+                    mUsersReference.child(mUserPhone).child("conversation").child(mChatId).removeValue();
 
-              mUsersReference.child(Objects.requireNonNull(mCurrentPhone))
-                      .child("conversation").child(mChatId).removeValue();
-              mUsersReference.child(mUserPhone).child("conversation").child(mChatId).removeValue();
+                    mChatReference.child(mChatId).child("messages").addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            mMessagesReference.child(dataSnapshot.getKey()).removeValue().addOnCompleteListener(task -> {
 
-              mChatReference.child(mChatId).child("messages").addChildEventListener(new ChildEventListener() {
-                  @Override
-                  public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                      mMessagesReference.child(dataSnapshot.getKey()).removeValue().addOnCompleteListener(task -> {
+                            });
+                        }
 
-                      });
-                  }
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                  @Override
-                  public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        }
 
-                  }
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-                  @Override
-                  public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        }
 
-                  }
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-                  @Override
-                  public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                        }
 
-                  }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                  @Override
-                  public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
 
-                  }
-              });
-
-              mChatReference.child(mChatId).removeValue().addOnCompleteListener(task -> {
-                  Toast.makeText(this, "Conversation Deleted", Toast.LENGTH_SHORT).show();
-                  finish();
-                  recreate();
-              });
-          })
-          .OnNegativeClicked(() ->{
-
-          })
-          .build();
-
-        });
-
-        block.setOnClickListener(view -> {
-
-            if(block.getText().equals(getString(R.string.block))){
-
-                new TTFancyGifDialog.Builder(this)
-                        .setTitle(getString(R.string.block))
-                        .setMessage(getString(R.string.block_msg))
-                        .setGifResource(R.drawable.gif30)
-                        .OnPositiveClicked(()->{
-
-                    Map<String, Object> m = new HashMap<>();
-                    m.put(mUserPhone, true);
-                    mUsersReference.child(mCurrentPhone).child("blocked").updateChildren(m);
-
-                    Map<String, Object> m1 = new HashMap<>();
-                    m1.put(mCurrentPhone, true);
-                    mUsersReference.child(mUserPhone).child("blocked_by").updateChildren(m1);
-                    mDialog.dismiss();
-                    Toast.makeText(this,R.string.user_blocked_msg, Toast.LENGTH_SHORT)
-                            .show();
-
+                    mChatReference.child(mChatId).removeValue().addOnCompleteListener(task -> {
+                        Toast.makeText(this, "Conversation Deleted", Toast.LENGTH_SHORT).show();
+                        finish();
+                        recreate();
+                    });
                 })
-                .OnNegativeClicked(() ->{
+                .OnNegativeClicked(() -> {
 
                 })
                 .build();
-            }else{
-
-               new TTFancyGifDialog.Builder(this)
-                       .setTitle(getString(R.string.unblock))
-                       .setMessage(getString(R.string.unb_text))
-                       .setGifResource(R.drawable.gif30)
-                       .OnPositiveClicked(() -> {
-
-                    mUsersReference.child(mCurrentPhone).child("blocked").child(mUserPhone).removeValue();
-                    mUsersReference.child(mUserPhone).child("blocked_by").child(mCurrentPhone).removeValue();
-                    mDialog.dismiss();
-                    Toast.makeText(this, R.string.u_unblock, Toast.LENGTH_SHORT).show();
-
-                })
-               .OnNegativeClicked(() ->{
-
-               })
-               .build();
-
-            }
-
-        });
     }
 
 
-    public void getImage(MyCallback myCallback){
+    private void blockOrUnblock() {
+        if (mBlockedText.getText().equals(getString(R.string.block))) {
+
+            new TTFancyGifDialog.Builder(this)
+                    .setTitle(getString(R.string.block))
+                    .setMessage(getString(R.string.block_msg))
+                    .setGifResource(R.drawable.gif30)
+                    .OnPositiveClicked(() -> {
+
+                        Map<String, Object> m = new HashMap<>();
+                        m.put(mUserPhone, true);
+                        mUsersReference.child(mCurrentPhone).child("blocked").updateChildren(m);
+
+                        Map<String, Object> m1 = new HashMap<>();
+                        m1.put(mCurrentPhone, true);
+                        mUsersReference.child(mUserPhone).child("blocked_by").updateChildren(m1);
+                        Toast.makeText(this, R.string.user_blocked_msg, Toast.LENGTH_SHORT)
+                                .show();
+                        finish();
+
+                    })
+                    .OnNegativeClicked(() -> {
+
+                    })
+                    .build();
+        } else {
+
+            new TTFancyGifDialog.Builder(this)
+                    .setTitle(getString(R.string.unblock))
+                    .setMessage(getString(R.string.unb_text))
+                    .setGifResource(R.drawable.gif30)
+                    .OnPositiveClicked(() -> {
+
+                        mUsersReference.child(mCurrentPhone).child("blocked").child(mUserPhone).removeValue();
+                        mUsersReference.child(mUserPhone).child("blocked_by").child(mCurrentPhone).removeValue();
+                        Toast.makeText(this, R.string.u_unblock, Toast.LENGTH_SHORT).show();
+                         finish();
+                    })
+                    .OnNegativeClicked(() -> {
+
+                    })
+                    .build();
+
+        }
+    }
+
+    public void getImage(MyCallback myCallback) {
         mUsersReference.child(mUserPhone).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -358,74 +325,7 @@ public class OneToOneChatSettings extends AppCompatActivity {
         void onCallback(String image);
     }
 
-//    public void getMessage(MyCallback_ myCallback){
-//
-//        mChatReference.child(mChatId).child("messages").addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                mMessagesReference.child(dataSnapshot.getKey()).addListenerForSingleValueEvent
-//                        (new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                Messages m = dataSnapshot.getValue(Messages.class);
-//                                if(m == null){
-//                                    return;
-//                                }
-//                                myCallback.onCallback(m);
-////                                switch (m.getType()) {
-////                                    case "image":
-////                                        imagesList.add(m.getContent());
-////                                        break;
-////                                    case "audio":
-////                                        audioList.add(m.getContent());
-////                                        break;
-////                                    case "video":
-////                                        videoList.add(m.getContent());
-////                                        break;
-////                                    case "document":
-////                                        documentList.add(m.getContent());
-////                                        break;
-////                                    default:
-////                                        return;
-////                                }
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }});
-//
-//    }
-
-//    public interface MyCallback_ {
-//        void onCallback(Messages m);
-//    }
-
-    private void setLocale(String lang){
+    private void setLocale(String lang) {
         Locale locale = new Locale(lang);
         Locale.setDefault(locale);
         Configuration configuration = new Configuration();
@@ -438,7 +338,7 @@ public class OneToOneChatSettings extends AppCompatActivity {
     }
 
     // Load Language saved in shared preferences
-    public void loadLocale(){
+    public void loadLocale() {
         SharedPreferences preferences = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
         String language = preferences.getString("My_Lang", "");
         setLocale(language);

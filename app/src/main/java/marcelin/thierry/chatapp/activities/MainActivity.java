@@ -3,46 +3,56 @@ package marcelin.thierry.chatapp.activities;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.provider.ContactsContract;
-
-import androidx.annotation.NonNull;
-
-import com.deep.videotrimmer.utils.FileUtils;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.annotation.RequiresApi;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.exifinterface.media.ExifInterface;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.deep.videotrimmer.utils.FileUtils;
+import com.fxn.pix.Options;
+import com.fxn.pix.Pix;
+import com.fxn.pixeditor.EditOptions;
+import com.fxn.pixeditor.PixEditorJave;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -55,13 +65,19 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.vanniktech.emoji.EmojiEditText;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -72,11 +88,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import droidninja.filepicker.FilePickerBuilder;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.activities.videotrimming.VideoPicker;
 import marcelin.thierry.chatapp.activities.videotrimming.VideoTrimmerActivity;
 import marcelin.thierry.chatapp.adapters.ChatAdapter;
+import marcelin.thierry.chatapp.adapters.CropAndWriteTextAdapter;
 import marcelin.thierry.chatapp.adapters.StatusAdapter;
 import marcelin.thierry.chatapp.classes.Channel;
 import marcelin.thierry.chatapp.classes.Chat;
@@ -88,7 +104,7 @@ import marcelin.thierry.chatapp.classes.Status;
 import marcelin.thierry.chatapp.classes.UserStatus;
 import marcelin.thierry.chatapp.classes.Users;
 import marcelin.thierry.chatapp.utils.CheckInternet_;
-import marcelin.thierry.chatapp.utils.Constant;
+import marcelin.thierry.chatapp.utils.RecyclerItemClickListener;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseSequence;
 import uk.co.deanwild.materialshowcaseview.MaterialShowcaseView;
 import uk.co.deanwild.materialshowcaseview.ShowcaseConfig;
@@ -114,17 +130,37 @@ public class MainActivity extends AppCompatActivity {
             .getReference().child("ads_group");
     private static final DatabaseReference mChannelReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_channel");
+
+
     private static final StorageReference mVideosStorage = FirebaseStorage.getInstance().getReference();
+    private static final StorageReference mImagesStorage = FirebaseStorage.getInstance().getReference();
+
     private static final DatabaseReference mStatusReference = FirebaseDatabase.getInstance().getReference()
             .child("ads_status");
-    private static final DatabaseReference mExceptReference = FirebaseDatabase.getInstance().getReference()
-            .child("ads_except");
+
     private static final DatabaseReference mRootReference = FirebaseDatabase.getInstance().getReference();
+    private final int REQUEST_CODE = 102;
     private final String[] WALK_THROUGH = new String[]{
             Manifest.permission.READ_CONTACTS,
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    private static final String[] PROJECTION = new String[]{
+            ContactsContract.CommonDataKinds.Phone.CONTACT_ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Phone.NUMBER
+          //  ContactsContract.RawContacts.ACCOUNT_TYPE + " <> 'google' ",
+//             ContactsContract.RawContacts.ACCOUNT_TYPE + " = 'com.google' "
+    };
+
+    private RecyclerItemClickListener recyclerItemClickListener;
+    private Uri resultUri;
+  //  private String picturePath;
+    private Uri picturePath;
+    private ArrayList<String> returnValue;
+
+            EditOptions editoptions;
     // Remove following if crashes
     //public static final int PERMISSION_STORAGE = 100;
     private final int REQUEST_VIDEO_TRIMMER_RESULT = 342;
@@ -141,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     // Getting my phoneNumber
     private Dialog mDialog;
     private CardView mTextCardView, mImageCardView, mVideoCardView;
-    private FloatingActionButton mPlusButton, mChannelButton, mGroupButton, mMoodButton, mContactButton, mSettingsButton;
+    private FloatingActionButton mPlusButton, mChannelButton, mGroupButton, mMoodButton, mContactButton, mSettingsButton, mDoneBtn;
     private List<Conversation> mConvoList = new ArrayList<>();
     private Animation mFabOpen, mFabClose, mFabClockWise, mFabAntiClockWise;
     private RelativeLayout mBackgroundLayout, myStatusLayout, backgroundLayoutForStatus;
@@ -156,10 +192,19 @@ public class MainActivity extends AppCompatActivity {
     private TextView mStatusPrivacy;
     private  ExecutorService es1, es2;
 
-    //Listeners handles
-    private ChildEventListener conversationAddedListener;
-    private List<ValueEventListener> conversationChangedListeners = new ArrayList<>();
-//    private File thumbFile;
+    private LinearLayout crop_add_text;
+    private ImageView crop_btn, pic;
+    private ImageButton send_emoji;
+    private EmojiEditText send_text;
+    private RecyclerView recycler_view;
+    private List<Uri> images = new ArrayList<>();
+
+    private CropAndWriteTextAdapter mCropAndWriteTextAdapter;
+    boolean doubleBackToExitPressedOnce = false;
+
+
+    private ProgressDialog mProgressDialog;
+
 
     public static long getDateDiff(long date1, long date2, TimeUnit timeUnit) {
         long diffInMillies = (date2 - date1);
@@ -207,6 +252,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+
+        editoptions = EditOptions.init();
+        editoptions.setRequestCode(124);
 
         long startTime = System.nanoTime();
         askPermission();
@@ -483,282 +531,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mStatusPrivacy.setOnClickListener(v-> startActivity(new Intent(this, PrivacyActivity.class)));
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.st_updt_));
+        mProgressDialog.setMessage(getString(R.string.stt_upload_msg));
+
+        // Cropping
+        crop_add_text = findViewById(R.id.crop_add_text);
+        crop_btn = findViewById(R.id.crop_btn);
+        pic = findViewById(R.id.pic);
+        send_emoji = findViewById(R.id.send_emoji);
+        send_text = findViewById(R.id.send_text);
+        recycler_view = findViewById(R.id.recycler_view);
+        mDoneBtn = findViewById(R.id.done_btn);
+        recycler_view.setHasFixedSize(true);
+    //    recycler_view.setItemAnimator(new DefaultItemAnimator());
+        LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager
+                (this, LinearLayoutManager.HORIZONTAL, false);
+        recycler_view.setLayoutManager(horizontalLayoutManager);
     }
 
-    private void fetchConversation() {
-        Log.i("CONVERSATION", "FUNCTION CALLED");
-        mConvoList.clear();
-        mUsersReference.child(mCurrentUserPhone).child(Constant.CONV_NODE)
-                //.addChildEventListener(new ChildEventListener() {
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public  void onDataChange(DataSnapshot dataSnapshot) {
-                    //public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        if (!dataSnapshot.exists()) {
-                            Toast.makeText(getApplicationContext(), "You have no conversation at this time, " +
-                                    "please start a new conversation", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        Conversation c = dataSnapshot.getValue(Conversation.class);
-                        if (c == null) {
-                            return;
-                        }
-                        Log.i("CONVERSATION_USR_RAW", dataSnapshot.getValue().toString());
-                        String key = "";
-                        switch (c.getType()) {
-                            case "chat":
-                                key = "U-" + c.getPhone_number();
-                                break;
-                            case "channel":
-                                key = "C-" + c.getId();
-                                break;
-                            case "group":
-                                key = "G-" + c.getId();
-                                break;
-                        }
-                        Log.i("CONVERSATION_TYPE", key);
-                        Query exceptQ = mUsersReference.child(mCurrentUserPhone)
-                                .child(Constant.USR_MOOD_EXCEPT_NODE).child(key);
-                        exceptQ.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                Long timestampOfMood = -1L;
-                                if (dataSnapshot.exists()) {
-                                    timestampOfMood = dataSnapshot.getValue(Long.class);
-                                    Log.i("CONVERSATION_IN_EXCLUDE", Long.toString(timestampOfMood));
-                                }
-
-                                Query cQuery;
-                                switch (c.getType()) {
-                                    case "channel":
-                                        cQuery = (timestampOfMood > 0L) ? mChannelReference.child(c.getId()).child("messages")
-                                                .orderByChild("timestamp").endAt(timestampOfMood).limitToLast(1) :
-                                                mChannelReference.child(c.getId()).child("messages").orderByChild("timestamp")
-                                                        .limitToLast(1);
-                                        break;
-                                    case "group":
-                                        cQuery = (timestampOfMood > 0L) ? mGroupReference.child(c.getId()).child("messages")
-                                                .orderByChild("timestamp").endAt(timestampOfMood).limitToLast(1) :
-                                                mGroupReference.child(c.getId()).child("messages").orderByChild("timestamp")
-                                                        .limitToLast(1);
-                                        break;
-                                    case "chat":
-                                    default:
-                                        cQuery = (timestampOfMood > 0L) ? mChatReference.child(c.getId()).child("messages")
-                                                .orderByChild("timestamp").endAt(timestampOfMood).limitToLast(1) :
-                                                mChatReference.child(c.getId()).child("messages").orderByChild("timestamp")
-                                                        .limitToLast(1);
-                                        break;
-                                }
-                                Log.i("CONVERSATION_FETCH_MSG", "QUERYING");
-                                //TODO: add listener variable
-                                cQuery.addValueEventListener(new ValueEventListener() {
-                                //cQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Long chatStart = System.nanoTime();
-                                        GenericTypeIndicator<Map<String, Chat>> m =
-                                                new GenericTypeIndicator<Map<String, Chat>>() {};
-
-                                        Map<String, Chat> map = dataSnapshot.getValue(m);
-                                        String lastMessageId;
-                                        if (map == null) {
-                                            Log.i("CONVERSATION_MSG_NULL", "NULL");
-                                            lastMessageId = "";
-                                        } else {
-                                            List<Chat> msg = new ArrayList<>(map.values());
-                                            lastMessageId =  msg.get(0).getMsgId();
-                                        }
-                                        Long chatEnd = System.nanoTime();
-                                        Log.i("STOPWATCH_CHAT_FETCH", Long.toString((chatEnd - chatStart) / 1000000));
-                                        //Test if message is empty
-                                        Log.i("CONVERSATION_LAST_MSG", lastMessageId);
-
-                                        //TODO: Test if messageId is empty
-                                        if (lastMessageId.equals("")) {
-                                            Log.i("CONVERSATION_LAST_EMPTY", "empty");
-                                            c.setLastMessage(getString(R.string.no_msg_yet));
-                                            c.setSeen(false);
-                                            c.setFrom("+50900000000");
-                                            c.setMessageTimestamp(c.getTimestamp());
-
-                                            Query messageKindQuery = c.getType().equals("group") ? mGroupReference.child(c.getId()) :
-                                                    c.getType().equals("channel") ? mChannelReference.child(c.getId()) :
-                                                            mChatReference.child(c.getId());
-
-                                            messageKindQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                    if (dataSnapshot.getValue() == null) { return; }
-                                                    Log.i("CONVERSATION_XTRA_CONF", dataSnapshot.getValue().toString());
-                                                    if (c.getType().equals("group")) {
-                                                        Group g = dataSnapshot.getValue(Group.class);
-                                                        c.setProfile_image(g.getThumbnail());
-                                                        c.setName(g.getNewName().equals("") ? g.getName() : g.getNewName());
-                                                    } else if (c.getType().equals("channel")) {
-                                                        Channel ch = dataSnapshot.getValue(Channel.class);
-                                                        c.setProfile_image(ch.getThumbnail());
-                                                        c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
-                                                    }
-
-                                                    mConvoList.remove(c);
-                                                    mConvoList.add(c);
-                                                    mChatAdapter.notifyDataSetChanged();
-                                                    //mChatAdapter.submitList(mConvoList);
-                                                }
-
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                }
-                                            });
-                                        } else {
-                                            Query messageQuery = c.getType().equals("group") ? mGroupMessageReference
-                                                    .child(lastMessageId) : c.getType().equals("channel") ? mChannelMessageReference
-                                                    .child(lastMessageId) : mMessageReference.child(lastMessageId);
-
-                                            messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                //messageQuery.addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                    //Log.i("CONVERSATION_COMP_MSG",  dataSnapshot.getValue().toString());
-                                                    Long msgStart = System.nanoTime();
-                                                    Messages m = dataSnapshot.getValue(Messages.class);
-                                                    if (m != null) {
-                                                        Long msgEnd = System.nanoTime();
-                                                        Log.i("STOPWATCH_MSG_FETCH", Long.toString((msgEnd - msgStart) / 1000000));
-                                                        Log.i("CONVERSATION_DECORATION", "CALLING DECORATION");
-                                                        String content = getMessageDecoration(m);
-                                                        Log.i("CONVERSATION_DECOR_MSG", content);
-
-                                                        c.setMessageTimestamp(m.getTimestamp());
-                                                        c.setLastMessage(content);
-                                                        c.setSeen(m.isSeen());
-                                                        c.setFrom(m.getFrom());
-
-                                                        if (!m.getFrom().equals(mCurrentUserPhone)) {
-                                                            //TODO: adding logic for unseen messages
-                                                            int count = 0;
-                                                            if (mConvoList.contains(c) ) {
-                                                                count = mConvoList.get(mConvoList.indexOf(c)).getUnreadMessages();
-                                                            }
-                                                            if (!m.isSeen()) { count++; }
-                                                            c.setUnreadMessages(count);
-                                                        }
-                                                    }
-
-                                                    if (c.getType().equals("chat")) {
-                                                        Query userQuery = mUsersReference.child(c.getPhone_number());
-                                                        userQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            //userQuery.addValueEventListener(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                Log.i("CONVERSATION_PROFILE", "FETCHING PROFILE PIC OF THE OTHER PERSON");
-                                                                String image = Objects.requireNonNull
-                                                                        (dataSnapshot.child("image").getValue()).toString();
-                                                                c.setProfile_image(image);
-
-                                                                String nameStored = Users.getLocalContactList().get(c.getPhone_number());
-                                                                nameStored = nameStored != null && nameStored.length() > 0 ?
-                                                                        nameStored : dataSnapshot.getKey();
-                                                                c.setName(nameStored);
-
-                                                                Long addToListStart = System.nanoTime();
-                                                                mConvoList.remove(c);
-
-                                                                addToList(c, mConvoList);
-                                                                mChatAdapter.notifyDataSetChanged();
-                                                                //mChatAdapter.submitList(mConvoList);
-                                                                Long addToListEnd = System.nanoTime();
-                                                                Log.i("STOPWATCH_ADD_LIST_U", Long.toString((addToListEnd - addToListStart) / 1000000));
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(DatabaseError databaseError) {
-                                                            }
-                                                        });
-                                                    } else {
-                                                        Query messageKindQuery = c.getType().equals("group") ? mGroupReference.child(c.getId()) :
-                                                                c.getType().equals("channel") ? mChannelReference.child(c.getId()) :
-                                                                        mChatReference.child(c.getId());
-
-                                                        messageKindQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                            //messageKindQuery.addValueEventListener(new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                if (dataSnapshot.getValue() == null) { return; }
-                                                                Log.i("CONVERSATION_XTRA_CONF", dataSnapshot.getValue().toString());
-                                                                if (c.getType().equals("group")) {
-                                                                    Group g = dataSnapshot.getValue(Group.class);
-                                                                    c.setProfile_image(g.getThumbnail());
-                                                                    c.setName(g.getNewName().equals("") ? g.getName() : g.getNewName());
-                                                                } else if (c.getType().equals("channel")) {
-                                                                    Channel ch = dataSnapshot.getValue(Channel.class);
-                                                                    c.setProfile_image(ch.getThumbnail());
-                                                                    c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
-                                                                }
-                                                                Long addToListStart = System.nanoTime();
-                                                                mConvoList.remove(c);
-
-                                                                addToList(c, mConvoList);
-                                                                mChatAdapter.notifyDataSetChanged();
-                                                                //mChatAdapter.submitList(mConvoList);
-                                                                Long addToListEnd = System.nanoTime();
-                                                                Log.i("STOPWATCH_ADD_LIST_CG", Long.toString((addToListEnd - addToListStart) / 1000000));
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(DatabaseError databaseError) {
-
-                                                            }
-                                                        });
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-                                                }
-                                            });
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                                //cQuery.addListenerForSingleValueEvent(listener);
-
-                            }
-
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-
-                    /*
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-                    }
-                    */
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-    }
 
     /*
      * Fetches all conversation (including chats, group chats and channels)
@@ -911,8 +702,8 @@ public class MainActivity extends AppCompatActivity {
                                                 .child(lastMessageId) : c.getType().equals("channel") ? mChannelMessageReference
                                                 .child(lastMessageId) : mMessageReference.child(lastMessageId);
 
-                                        messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            //messageQuery.addValueEventListener(new ValueEventListener() {
+                                        //messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+                                            messageQuery.addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                 //Log.i("CONVERSATION_COMP_MSG",  dataSnapshot.getValue().toString());
@@ -923,12 +714,13 @@ public class MainActivity extends AppCompatActivity {
                                                     Log.i("STOPWATCH_MSG_FETCH", Long.toString((msgEnd - msgStart) / 1000000));
                                                     Log.i("CONVERSATION_DECORATION", "CALLING DECORATION");
                                                     String content = getMessageDecoration(m);
-                                                    Log.i("CONVERSATION_DECOR_MSG", content);
+                                                   // Log.i("CONVERSATION_DECOR_MSG", content);
 
                                                     c.setMessageTimestamp(m.getTimestamp());
                                                     c.setLastMessage(content);
                                                     c.setSeen(m.isSeen());
                                                     c.setFrom(m.getFrom());
+                                                    mChatAdapter.notifyDataSetChanged();
 
                                                     if (!m.getFrom().equals(mCurrentUserPhone)) {
                                                         //TODO: adding logic for unseen messages
@@ -989,10 +781,12 @@ public class MainActivity extends AppCompatActivity {
                                                                 Group g = dataSnapshot.getValue(Group.class);
                                                                 c.setProfile_image(g.getThumbnail());
                                                                 c.setName(g.getNewName().equals("") ? g.getName() : g.getNewName());
+                                                         //       c.setLastMessage(g.getLastMessage());
                                                             } else if (c.getType().equals("channel")) {
                                                                 Channel ch = dataSnapshot.getValue(Channel.class);
                                                                 c.setProfile_image(ch.getThumbnail());
                                                                 c.setName(ch.getNewName().equals("") ? ch.getName() : ch.getNewName());
+                                                               // c.setLastMessage(c.getLastMessage());
                                                                 List<String> l = new ArrayList<>(ch.getAdmins().keySet());
                                                                 c.setAdmins(l);
                                                             }
@@ -1000,8 +794,8 @@ public class MainActivity extends AppCompatActivity {
                                                             mConvoList.remove(c);
 
                                                             addToList(c, mConvoList);
-                                                            mChatAdapter.notifyDataSetChanged();
-                                                            //mChatAdapter.submitList(mConvoList);
+                                                       //     mChatAdapter.notifyDataSetChanged();
+                                                           // mChatAdapter.submitList(mConvoList);
                                                             Long addToListEnd = System.nanoTime();
                                                             Log.i("STOPWATCH_ADD_LIST_CG", Long.toString((addToListEnd - addToListStart) / 1000000));
                                                         }
@@ -1189,9 +983,47 @@ public class MainActivity extends AppCompatActivity {
         snackbar.show();
     }
 
-    private void getContacts() {
+//    private void getContacts() {
+//
+//        Log.i("MainGetContact", "method called. id: " + Thread.currentThread().getId());
+//
+//        if (Users.isReady()) {
+//            return;
+//        }
+//
+//        Users.getLocalContactList().clear();
+//
+//        ContentResolver cr = getContentResolver();
+//        // Read Contacts
+//        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                new String[] {ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME,
+//                        ContactsContract.CommonDataKinds.Phone.NUMBER,
+//                        ContactsContract.RawContacts.ACCOUNT_TYPE},
+////                ContactsContract.RawContacts.ACCOUNT_TYPE + " <> 'google' ",
+//                ContactsContract.RawContacts.ACCOUNT_TYPE + " = 'com.google' ",
+//                null, null);
+//        if (cursor.getCount() > 0) {
+//            while (cursor.moveToNext()) {
+//                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+//                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+//                Users.getLocalContactList().put(phoneNumber.replace("-", "")
+//                        .replace("(", "")
+//                        .replace(")", "")
+//                        .replace(".", "")
+//                        .replace("#", "")
+//                        .replace("$", "")
+//                        .replace("[", "")
+//                        .replace("]", "")
+//                        .replaceAll("\\s+", ""), name);
+//            }
+//        }
+//
+//        assert cursor != null;
+//        cursor.close();
+//        Users.setIsReady(true);
+//    }
 
-        Log.i("MainGetContact", "method called. id: " + Thread.currentThread().getId());
+    private void getContacts(){
 
         if (Users.isReady()) {
             return;
@@ -1200,33 +1032,42 @@ public class MainActivity extends AppCompatActivity {
         Users.getLocalContactList().clear();
 
         ContentResolver cr = getContentResolver();
-        // Read Contacts
-        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[] {ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME,
-                        ContactsContract.CommonDataKinds.Phone.NUMBER,
-                        ContactsContract.RawContacts.ACCOUNT_TYPE},
-//                ContactsContract.RawContacts.ACCOUNT_TYPE + " <> 'google' ",
-                ContactsContract.RawContacts.ACCOUNT_TYPE + " = 'com.google' ",
-                null, null);
-        if (cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-                String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                Users.getLocalContactList().put(phoneNumber.replace("-", "")
-                        .replace("(", "")
+
+        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null,
+                ContactsContract.RawContacts.ACCOUNT_TYPE + " = 'com.google' ");
+        if (cursor != null) {
+            HashSet<String> mobileNoSet = new HashSet<String>();
+            try {
+                final int nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+                final int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+
+                String name, number;
+                while (cursor.moveToNext()) {
+                    name = cursor.getString(nameIndex);
+                    number = cursor.getString(numberIndex);
+                    number = number.replace(" ", "")
+                            .replace("-", "")
+                            .replace("(", "")
                         .replace(")", "")
                         .replace(".", "")
                         .replace("#", "")
                         .replace("$", "")
                         .replace("[", "")
                         .replace("]", "")
-                        .replaceAll("\\s+", ""), name);
+                        .replaceAll("\\s+", "");
+                    if (!mobileNoSet.contains(number)) {
+                        Users.getLocalContactList().put(number,name);
+                        mobileNoSet.add(number);
+                        Log.d("hvy", "onCreaterrView  Phone Number: name = " + name
+                                + " No = " + number);
+                    }
+                }
+            } finally {
+                cursor.close();
+                Users.setIsReady(true);
             }
         }
 
-        assert cursor != null;
-        cursor.close();
-        Users.setIsReady(true);
     }
 
     @Override
@@ -1303,10 +1144,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void choseMedia() {
-        FilePickerBuilder.getInstance().setMaxCount(1)
-                .setActivityTheme(R.style.LibAppTheme)
-                .pickPhoto(this);
-        startActivity(new Intent(this, EditImageActivity.class));
+        Pix.start(MainActivity.this, Options.init()
+        .setRequestCode(REQUEST_CODE)
+        .setCount(10));
+        Toast.makeText(this, R.string.pic_restr, Toast.LENGTH_SHORT).show();
+//        FilePickerBuilder.getInstance().setMaxCount(1)
+//                .setActivityTheme(R.style.LibAppTheme)
+//                .pickPhoto(this);
+//        startActivity(new Intent(this, EditImageActivity.class));
     }
 
     private void selectVideoDialog() {
@@ -1399,7 +1244,118 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
-    }
+        if(resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
+            final ArrayList<String> returnValue = Objects.requireNonNull(data).getStringArrayListExtra(Pix.IMAGE_RESULTS);
+            ArrayList<String> compressedImages = new ArrayList<>();
+            for (String s : Objects.requireNonNull(returnValue)) {
+                compressedImages.add(compressImage(s));
+            }
+            editoptions.setSelectedlist(compressedImages);
+            PixEditorJave.start(MainActivity.this, editoptions);
+        } if (resultCode == Activity.RESULT_OK && requestCode == 124) {
+            backgroundLayoutForStatus.setVisibility(View.GONE);
+            mAddStatusLayout.setVisibility(View.GONE);
+            mStatusPrivacy.setVisibility(View.GONE);
+
+            // Passing the images to the adapter
+            returnValue = data.getStringArrayListExtra(PixEditorJave.IMAGE_RESULTS);
+
+            for (String s : Objects.requireNonNull(returnValue)) {
+                images.add(Uri.fromFile(new File(s)));
+            }
+            mCropAndWriteTextAdapter = new CropAndWriteTextAdapter(images);
+            recycler_view.setAdapter(mCropAndWriteTextAdapter);
+            mCropAndWriteTextAdapter.notifyDataSetChanged();
+            crop_add_text.setVisibility(View.VISIBLE);
+            Toast.makeText(MainActivity.this, R.string.btm_pic, Toast.LENGTH_SHORT).show();
+            pic.setOnClickListener(v-> Toast.makeText(this, R.string.btm_pic, Toast.LENGTH_SHORT).show());
+            mDoneBtn.setVisibility(View.VISIBLE);
+            List<Integer> indexes = new ArrayList<>();
+            Map<Integer, Object> textes = new HashMap<>();
+
+
+            recyclerItemClickListener = new RecyclerItemClickListener(this, recycler_view, new RecyclerItemClickListener.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    picturePath = images.get(position);
+                    indexes.add(position);
+                    if(indexes.size() > 1){
+                        textes.put(indexes.get(indexes.size() -2),send_text.getText().toString());
+                    }
+                    send_text.setText("");
+                        for(Integer key : textes.keySet()){
+                            if(position == key){
+                                send_text.setText((String)textes.get(position));
+                            }
+                        }
+
+                    Picasso.get().load(picturePath).into(pic);
+//                    Toast.makeText(MainActivity.this, String.valueOf(indexes), Toast.LENGTH_SHORT).show();
+//                    pic.setContentDescription(send_text.getText().toString());
+
+                    crop_btn.setOnClickListener(v-> CropImage.activity(picturePath).start(MainActivity.this));
+
+                    mDoneBtn.setOnClickListener(v->{
+                        crop_add_text.setVisibility(View.GONE);
+                        mDoneBtn.setVisibility(View.GONE);
+                        mChatAdapter.isClickable = true;
+                        textes.put(position, send_text.getText().toString());
+                        mProgressDialog.show();
+                        for(int i = 0; i < images.size(); i++){
+                            Map<String, Object> seenBy = new HashMap<>();
+                            seenBy.put(mCurrentUserPhone, ServerValue.TIMESTAMP);
+                            DatabaseReference statusPush = mStatusReference.push();
+                            String pushId = statusPush.getKey();
+
+                            StorageReference filePath = mImagesStorage.child("ads_status_images")
+                                    .child(pushId + ".jpg");
+                            int finalI = i;
+                            filePath.putFile(images.get(i)).addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    String downloadUrl = Objects.requireNonNull(task.getResult())
+                                            .getDownloadUrl().toString();
+
+                                    Map<String, Object> statusMap = new HashMap<>();
+                                    statusMap.put("seenBy", seenBy);
+                                    statusMap.put("content", downloadUrl);
+                                    statusMap.put("timestamp", ServerValue.TIMESTAMP);
+                                    statusMap.put("phoneNumber", mCurrentUserPhone);
+                                    statusMap.put("id", pushId);
+                                    statusMap.put("from", "image");
+                                    statusMap.put("textEntered",textes.get(finalI));
+
+                                    mStatusReference.child(mCurrentUserPhone).child("s").child(pushId).updateChildren(statusMap).addOnCompleteListener(task1 -> {
+                                        if (task.isSuccessful()) {
+                                            mProgressDialog.dismiss();
+                                            //  finish();
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        images.clear();
+                        returnValue.clear();
+                    });
+                }
+                @Override
+                public void onItemLongClick(View view, int position) {}
+
+            });
+            recycler_view.addOnItemTouchListener(recyclerItemClickListener);
+
+        }
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if(resultCode == RESULT_OK){
+                int pos = images.indexOf(picturePath);
+                resultUri = result.getUri();
+                images.set(pos, resultUri);
+                Picasso.get().load(resultUri).into(pic);
+                mCropAndWriteTextAdapter.notifyDataSetChanged();
+            }
+        }
+        }
+
 
     private void updateSeen(Status s) {
 
@@ -1585,214 +1541,6 @@ public class MainActivity extends AppCompatActivity {
         return System.currentTimeMillis() - 86400000L;
     }
 
-//    private void getStatus() {
-//
-//        // List to add the statuses added by other users
-//        mStatusList.clear();
-//
-//        // Getting my phoneNumber
-//        String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
-//
-//        //Users.getLocalContactsList has the contacts from user's phone
-//        if (Users.getLocalContactList() == null || Users.getLocalContactList().isEmpty()) {
-//            //TODO: try to see if thread successfully loaded the users
-//            Log.i("ContactList", "user list is empty");
-//            return;
-//        }
-//
-//        Set<Map.Entry<String, String>> myList = Users.getLocalContactList().entrySet();
-//        for (Map.Entry<String, String> val : myList) {
-//
-//            //Looping trough the list and search them in DB
-//
-//            String phoneNumber = val.getKey();
-//            final String[] localContactName = {val.getValue()};
-//            Log.i("STATUS_PHONE", phoneNumber);
-//
-//            // Searching for the statuses of that phone number. mStatusReference is the reference to the statuses in the DB
-//            mStatusReference.child(phoneNumber).addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(DataSnapshot dataSnapshot) {
-//                    // Node 'e' has the privacy settings set up (If an user wants other users to see his status)
-//                    if (dataSnapshot.hasChild("e")) {
-//                        mStatusReference.child(phoneNumber).child("e").addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                Map<String, Object> m = (Map<String, Object>) dataSnapshot.getValue();
-//                                if (m == null) {
-//                                    return;
-//                                }
-//
-//                                if (m.containsKey(phone)) {
-//                                    //   mStatusList.clear();
-//                                } else {
-//                                    Log.i("STATUS_E_BEFORE_EVENT ", "CALLED");
-//                                    mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
-//                                        @Override
-//                                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                                            GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
-//                                            };
-//                                            Map<String, Status> map = dataSnapshot.getValue(gti);
-//                                            if (map == null) {
-//                                                return;
-//                                            }
-//
-//                                            /* list holds all the values (phone number) that exists in the DB as users that have statuses.
-//                                                l is an empty list that will hold the statuses that haven't expired yet (24hours)
-//                                             */
-//                                            List<Status> list = new ArrayList<>(map.values());
-//                                            List<Status> l = new ArrayList<>();
-//
-//                                            // UserStatus is the class that represents the user and
-//                                            UserStatus userStatus = new UserStatus(phoneNumber);
-//
-//                                            Log.i("STATUS_E_NAME ", localContactName[0]);
-//                                            if (localContactName[0].length() > 12) {
-//                                                localContactName[0] = localContactName[0]
-//                                                        .substring(0, 8) + "...";
-//                                            }
-//
-//                                            Log.i("STATUS_E_LIST_SIZE_ALL ", Integer.toString(list.size()));
-//                                            // Setter setNameStoredIPhone is there to set the name of the user that put a new status
-//                                            userStatus.setNameStoredInPhone(localContactName[0]);
-//
-//                                            /* Code for 24 hours statuses, variable milis converts the current time in milliseconds,
-//                                            hours converts 24 hours into milliseconds, and the comparison take place, if the
-//                                            status time is less than 24 hours, it's added in list l
-//                                             */
-//                                            long millis = System.currentTimeMillis();
-//                                            long hours = 86400000L;
-//                                            for (Status s : list) {
-//                                                long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
-//                                                if (result > hours) {
-//                                                    // None
-//                                                    //l.clear();
-//
-//                                                } else {
-//                                                    l.add(s);
-//                                                }
-//                                            }
-//
-//                                            Log.i("STATUS_E_LIST_SIZE_LESS", Integer.toString(l.size()));
-//                                            if (!l.isEmpty()) {
-//                                                // Expose the last status uploaded for other users to see
-//                                                Status tmp = l.get(l.size() - 1);
-//                                                userStatus.setContent(tmp.getContent());
-//                                                userStatus.setTimestamp(tmp.getTimestamp());
-//                                                userStatus.setStatusList(l);
-//                                                if (userStatus.getPhoneNumber().equals(phone)) {
-//                                                    userStatus.setNameStoredInPhone(getString(R.string.me_));
-//                                                }
-//                                                // Adding the userStatus to the arrayList
-//                                                mStatusList.add(userStatus);
-//                                            }
-//                                            Log.i("STATUS_E_LIST_RECYCLER", Integer.toString(mStatusList.size()));
-//                                            Collections.reverse(mStatusList);
-//                                            Log.i("STATUS_E_DATASET", "CALLED");
-//                                            //fab509: clear the recycler view
-//                                            mStatusRecyclerView.removeAllViews();
-//                                            mStatusAdapter.notifyDataSetChanged();
-//
-//                                        }
-//
-//                                        @Override
-//                                        public void onCancelled(DatabaseError databaseError) {
-//
-//                                        }
-//                                    });
-//                                }
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    } else {
-//                        Log.i("STATUS_S_BEFORE_EVENT ", "CALLED");
-//                        // Node 's' stands for statuses in the DB and the following is the code that runs if the user doesn't have any value under his 'e' node
-//                        mStatusReference.child(phoneNumber).child("s").addValueEventListener(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                GenericTypeIndicator<Map<String, Status>> gti = new GenericTypeIndicator<Map<String, Status>>() {
-//                                };
-//                                Map<String, Status> map = dataSnapshot.getValue(gti);
-//                                if (map == null) {
-//                                    return;
-//                                }
-//
-//                                List<Status> list = new ArrayList<>(map.values());
-//                                List<Status> l = new ArrayList<>();
-//
-//                                /**Collections.sort(list, (Status  a1, Status a2) ->
-//                                 Long.compare(a1.getTimestamp(), a2.getTimestamp()));**/
-//
-//                                UserStatus userStatus = new UserStatus(phoneNumber);
-//                                // userStatus.setStatusList(list);
-//                                Log.i("STATUS_S_NAME ", localContactName[0]);
-//                                if (localContactName[0].length() > 12) {
-//                                    localContactName[0] = localContactName[0]
-//                                            .substring(0, 8) + "...";
-//                                }
-//
-//                                Log.i("STATUS_S_LIST_SIZE_ALL ", Integer.toString(list.size()));
-//                                userStatus.setNameStoredInPhone(localContactName[0]);
-//
-////                                Status tmp = list.get(list.size() - 1);
-////                                userStatus.setContent(tmp.getContent());
-////                                userStatus.setTimestamp(tmp.getTimestamp());
-//                                long millis = System.currentTimeMillis();
-//                                long hours = 86400000L;
-//                                for (Status s : list) {//userStatus.getStatusList()){
-//                                    long result = getDateDiff(s.getTimestamp(), millis, TimeUnit.MILLISECONDS);
-//                                    if (result > hours) {
-//                                        //
-//                                    } else {
-//                                        //l.clear();
-//                                        l.add(s);
-//                                    }
-//                                }
-//
-//                                Log.i("STATUS_S_LIST_SIZE_LESS", Integer.toString(l.size()));
-//                                if (!l.isEmpty()) {
-//                                    Status tmp = l.get(l.size() - 1);
-//                                    userStatus.setContent(tmp.getContent());
-//                                    userStatus.setTimestamp(tmp.getTimestamp());
-//                                    userStatus.setStatusList(l);
-//                                    if (userStatus.getPhoneNumber().equals(phone)) {
-//                                        userStatus.setNameStoredInPhone(getString(R.string.me_));
-//                                    }
-//                                    mStatusList.add(userStatus);
-//                                }
-//                                Log.i("STATUS_S_LIST_RECYCLER", Integer.toString(mStatusList.size()));
-//
-//                                Collections.reverse(mStatusList);
-//                                Log.i("STATUS_S_DATASET", "CALLED");
-//                                mStatusRecyclerView.removeAllViews();
-//                                mStatusAdapter.notifyDataSetChanged();
-//
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    }
-//                }
-//
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {
-//
-//                }
-//            });
-//
-//
-//        }
-//    }
-
-
     private void presentShowcaseSequence() {
 
         ShowcaseConfig config = new ShowcaseConfig();
@@ -1858,6 +1606,183 @@ public class MainActivity extends AppCompatActivity {
         );
 
         sequence.start();
+    }
 
+    public String compressImage(String imageUri) {
+
+        String filePath = getRealPathFromURI(imageUri);
+        Bitmap scaledBitmap = null;
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
+//      by setting this field as true, the actual bitmap pixels are not loaded in the memory. Just the bounds are loaded. If
+//      you try the use the bitmap here, you will get null.
+        options.inJustDecodeBounds = true;
+        Bitmap bmp = BitmapFactory.decodeFile(filePath, options);
+
+        int actualHeight = options.outHeight;
+        int actualWidth = options.outWidth;
+
+//      max Height and width values of the compressed image is taken as 816x612
+
+        float maxHeight = 816.0f;
+        float maxWidth = 612.0f;
+        float imgRatio = actualWidth / actualHeight;
+        float maxRatio = maxWidth / maxHeight;
+
+//      width and height values are set maintaining the aspect ratio of the image
+
+        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+            if (imgRatio < maxRatio) {
+                imgRatio = maxHeight / actualHeight;
+                actualWidth = (int) (imgRatio * actualWidth);
+                actualHeight = (int) maxHeight;
+            } else if (imgRatio > maxRatio) {
+                imgRatio = maxWidth / actualWidth;
+                actualHeight = (int) (imgRatio * actualHeight);
+                actualWidth = (int) maxWidth;
+            } else {
+                actualHeight = (int) maxHeight;
+                actualWidth = (int) maxWidth;
+
+            }
+        }
+
+//      setting inSampleSize value allows to load a scaled down version of the original image
+
+        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
+
+//      inJustDecodeBounds set to false to load the actual bitmap
+        options.inJustDecodeBounds = false;
+
+//      this options allow android to claim the bitmap memory if it runs low on memory
+        options.inPurgeable = true;
+        options.inInputShareable = true;
+        options.inTempStorage = new byte[16 * 1024];
+
+        try {
+//          load the bitmap from its path
+            bmp = BitmapFactory.decodeFile(filePath, options);
+        } catch (OutOfMemoryError exception) {
+            exception.printStackTrace();
+
+        }
+        try {
+            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888);
+        } catch (OutOfMemoryError exception) {
+            exception.printStackTrace();
+        }
+
+        float ratioX = actualWidth / (float) options.outWidth;
+        float ratioY = actualHeight / (float) options.outHeight;
+        float middleX = actualWidth / 2.0f;
+        float middleY = actualHeight / 2.0f;
+
+        Matrix scaleMatrix = new Matrix();
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
+
+        Canvas canvas = new Canvas(scaledBitmap);
+        canvas.setMatrix(scaleMatrix);
+        canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
+
+//      check the rotation of the image and display it properly
+        ExifInterface exif;
+        try {
+            exif = new ExifInterface(filePath);
+
+            int orientation = exif.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION, 0);
+            Log.d("EXIF", "Exif: " + orientation);
+            Matrix matrix = new Matrix();
+            if (orientation == 6) {
+                matrix.postRotate(90);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 3) {
+                matrix.postRotate(180);
+                Log.d("EXIF", "Exif: " + orientation);
+            } else if (orientation == 8) {
+                matrix.postRotate(270);
+                Log.d("EXIF", "Exif: " + orientation);
+            }
+            scaledBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0,
+                    scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix,
+                    true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FileOutputStream out = null;
+        String filename = getFilename();
+        try {
+            out = new FileOutputStream(filename);
+
+//          write the compressed bitmap at the destination specified by filename.
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return filename;
+
+    }
+
+    private String getRealPathFromURI(String contentURI) {
+        Uri contentUri = Uri.parse(contentURI);
+        Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+        if (cursor == null) {
+            return contentUri.getPath();
+        } else {
+            cursor.moveToFirst();
+            int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+            return cursor.getString(index);
+        }
+    }
+
+    public String getFilename() {
+        File file = new File(Environment.getExternalStorageDirectory().getPath(), "MyFolder/Images");
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        String uriSting = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
+        return uriSting;
+
+    }
+
+    public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+            inSampleSize = Math.min(heightRatio, widthRatio);
+        }
+        final float totalPixels = width * height;
+        final float totalReqPixelsCap = reqWidth * reqHeight * 2;
+        while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+            inSampleSize++;
+        }
+
+        return inSampleSize;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        crop_add_text.setVisibility(View.GONE);
+        mDoneBtn.setVisibility(View.GONE);
+        images.clear();
+        returnValue.clear();
+        mChatAdapter.isClickable = true;
+        Toast.makeText(this, R.string.back, Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 }

@@ -77,6 +77,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+//import app.frantic.kplcompressor.KplCompressor;
 import app.frantic.kplcompressor.KplCompressor;
 import de.hdodenhof.circleimageview.CircleImageView;
 import droidninja.filepicker.FilePickerBuilder;

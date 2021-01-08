@@ -133,6 +133,11 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             case 1:
             case 0:
                 String phone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
+                if(message.isEdited()){
+                    ((MessageViewHolder) holder).textEdited.setVisibility(View.VISIBLE);
+                }else{
+                    ((MessageViewHolder) holder).textEdited.setVisibility(View.GONE);
+                }
                 if (!message.isVisible()) {
                     if (!message.getFrom().equals(phone)) {
                         ((MessageViewHolder) holder).messageText.setTypeface(null, Typeface.ITALIC);
@@ -860,10 +865,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                     case 3:
                                         File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
-                                        File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()){
+                                     //   File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                        if (rootFiles.mkdirs() || rootFiles.isDirectory()){//&& adsFiles.mkdirs() || adsFiles.isDirectory()){
                                             askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
-                                            askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
+                                     //       askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
                                         }
                                         break;
                                     default:
@@ -1187,10 +1192,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                                     case 3:
 
                                         File rootFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
-                                        File adsFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFil.mkdirs() || rootFil.isDirectory() && adsFil.mkdirs() || adsFil.isDirectory()){
+                                      //  File adsFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                        if (rootFil.mkdirs() || rootFil.isDirectory()){//&& adsFil.mkdirs() || adsFil.isDirectory()){
                                             askPermission(mContext, message, ".mp4", rootFil.getAbsolutePath());
-                                            askPermission(mContext, message, ".mp4", adsFil.getAbsolutePath());
+                                          //  askPermission(mContext, message, ".mp4", adsFil.getAbsolutePath());
                                         }
                                         break;
 
@@ -1594,10 +1599,10 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                                     case 3:
                                         File rootFolder= new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
-                                        File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()){
+                                  //      File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                        if (rootFolder.mkdirs() || rootFolder.isDirectory()){//&& adsFolder.mkdirs() || adsFolder.isDirectory()){
                                             askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
-                                            askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
+                                           // askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
                                         }
                                         break;
 
@@ -2113,6 +2118,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         TextView documentSent;
         TextView videoSent;
         TextView seen_by;
+        TextView textEdited;
 
         RelativeLayout messageLinearLayout;
 
@@ -2133,6 +2139,7 @@ public class GroupMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             messageTime = itemView.findViewById(R.id.message_time_layout);
             messageLinearLayout = itemView.findViewById(R.id.messageLinearLayout);
             messageCheck = itemView.findViewById(R.id.messageCheck);
+            textEdited = itemView.findViewById(R.id.text_edited);
 
             sender = itemView.findViewById(R.id.groupSenderMessage);
             replyLayout = itemView.findViewById(R.id.replyLayout);

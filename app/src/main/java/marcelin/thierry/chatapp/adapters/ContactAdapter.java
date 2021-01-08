@@ -1,13 +1,13 @@
 package marcelin.thierry.chatapp.adapters;
 
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
@@ -18,7 +18,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.activities.ChatActivity;
 import marcelin.thierry.chatapp.activities.ProfilePictureActivity;
-
 import marcelin.thierry.chatapp.classes.Users;
 
 
@@ -29,7 +28,6 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Userview
     //@author fmarcelin
     public ContactAdapter(List<Users> usersStored) {
         this.usersStored = usersStored;
-
     }
 
     @NonNull

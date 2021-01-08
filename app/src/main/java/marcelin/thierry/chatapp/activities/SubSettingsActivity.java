@@ -4,11 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+
 import android.text.format.DateFormat;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +61,10 @@ public class SubSettingsActivity extends AppCompatActivity {
         loadLocale();
         setContentView(R.layout.activity_sub_settings);
 
+        TextView title = findViewById(R.id.title);
+        ImageView backButton = findViewById(R.id.backButton);
+        CircleImageView profileImage = findViewById(R.id.profileImage);
+
         mChannelName = getIntent().getStringExtra("chat_id");
 
         mPicId = findViewById(R.id.picId);
@@ -69,7 +78,7 @@ public class SubSettingsActivity extends AppCompatActivity {
         mSubSettingsBar = findViewById(R.id.sub_settings_bar);
         setSupportActionBar(mSubSettingsBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(mChannelName);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      //  getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mCurrentPhoneNumber = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
@@ -79,6 +88,16 @@ public class SubSettingsActivity extends AppCompatActivity {
         mUnsubscribe.setOnClickListener(view -> unsubscribeToChannel());
 
         mMedia.setOnClickListener(view -> goToChannelMediaShared());
+
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(mChannelName);
+        profileImage.setVisibility(View.GONE);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
 
     }
 

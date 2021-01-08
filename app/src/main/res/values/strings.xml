@@ -96,6 +96,8 @@
         <item>@string/forward</item>
         <item>@string/delete</item>
         <item>@string/reply</item>
+        <item>@string/favorites</item>
+
     </string-array>
 
     <string-array name="options_msg">
@@ -103,6 +105,7 @@
         <item>@string/delete</item>
         <item>@string/reply</item>
         <item>@string/edit</item>
+        <item>@string/favorites</item>
     </string-array>
 
     <string-array name="options_">
@@ -126,7 +129,7 @@
         <item>@string/delete</item>
         <item>@string/reply</item>
         <item>@string/save_to_gallery</item>
-
+        <item>@string/favorites</item>
     </string-array>
 
 
@@ -560,6 +563,11 @@
     <string name="dummy_filename">Filename.jpg</string>
     <string name="pause_upload">Pause Upload</string>
     <string name="cancel_upload">Cancel Upload</string>
+    <string name="live">Live</string>
+    <string name="btm_pic">Please click on the bottom pictures</string>
+    <string name="pic_restr">Long press to select up to ten pictures</string>
+    <string name="back">Please click BACK again to exit</string>
+    <string name="favorites">Add to important</string>
 
 
 </resources>

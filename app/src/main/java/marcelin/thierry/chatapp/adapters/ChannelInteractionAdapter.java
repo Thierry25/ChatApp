@@ -81,7 +81,6 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
     private Activity mActivity;
 
 
-    private static List<MediaPlayer> mediaPlayers = new ArrayList<>();
     private final String[] WALK_THROUGH = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     private final static DatabaseReference mChannelReference = FirebaseDatabase.getInstance().
@@ -113,7 +112,6 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         this.mContext = mContext;
         this.mActivity = mActivity;
 
-        mediaPlayers.clear();
         setHasStableIds(true);
     }
 
@@ -143,10 +141,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
             case 0:
                 Typeface typeface = ResourcesCompat.getFont(mContext, R.font.capriola);
 
-                if(message.isEdited()){
+                if (message.isEdited()) {
                     ((MessageViewHolder) holder).textEdited.setVisibility(View.VISIBLE);
                     ((MessageViewHolder) holder).textEdited.setTypeface(typeface);
-                }else{
+                } else {
                     ((MessageViewHolder) holder).textEdited.setVisibility(View.GONE);
                 }
                 if (!message.isVisible()) {
@@ -516,10 +514,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                                         case 2:
                                             File rootFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/images");
-                                            File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                            if (rootFiles.mkdirs() || rootFiles.isDirectory() && adsFiles.mkdirs() || adsFiles.isDirectory()) {
+                                         //   File adsFiles = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                            if (rootFiles.mkdirs() || rootFiles.isDirectory()){// && adsFiles.mkdirs() || adsFiles.isDirectory()) {
                                                 askPermission(mContext, message, ".jpg", rootFiles.getAbsolutePath());
-                                                askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
+                                                //askPermission(mContext, message, ".jpg", adsFiles.getAbsolutePath());
                                             }
                                             break;
 
@@ -538,23 +536,23 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((ImageViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
                 ((ImageViewHolder) holder).numberOfComments.setOnClickListener(v -> {
-                    if(message.isVisible()){
-                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
-                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
-                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
-                    goToCommentActivity.putExtra("message_type", message.getType());
-                    goToCommentActivity.putExtra("message_id", message.getMessageId());
-                    goToCommentActivity.putExtra("message_content", message.getContent());
-                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
-                    goToCommentActivity.putExtra("message_color", message.getColor());
-                    goToCommentActivity.putExtra("message_like", message.getL().size());
-                    goToCommentActivity.putExtra("message_comment", message.getC().size());
-                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    if (message.isVisible()) {
+                        Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                        goToCommentActivity.putExtra("message_type", message.getType());
+                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                        goToCommentActivity.putExtra("message_content", message.getContent());
+                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                        goToCommentActivity.putExtra("message_color", message.getColor());
+                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
                         goToCommentActivity.putExtra("message_edited", message.isEdited());
-                    goToCommentActivity.putExtra("from", "Adapter");
-                    goToCommentActivity.putExtra("isOn", false);
-                    v.getContext().startActivity(goToCommentActivity);
-                }
+                        goToCommentActivity.putExtra("from", "Adapter");
+                        goToCommentActivity.putExtra("isOn", false);
+                        v.getContext().startActivity(goToCommentActivity);
+                    }
                 });
 
                 if (message.getAdmins().contains(phone)) {
@@ -593,7 +591,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((VideoViewHolder) holder).timestamp.setText(dateMessageSend);
                 ((VideoViewHolder) holder).setProfilePic(message.getChannelImage());
                 ((VideoViewHolder) holder).channelName.setText(message.getChannelName());
-                Picasso.get().load(message.getThumb()).placeholder(R.drawable.border_1).into(((VideoViewHolder)holder).messageLayout);
+                Picasso.get().load(message.getThumb()).placeholder(R.drawable.border_1).into(((VideoViewHolder) holder).messageLayout);
                 ((VideoViewHolder) holder).messageLayout.setOnClickListener(view -> {
                     //Change code here
 //                    Intent i = new Intent(view.getContext(), VideoPlayerActivity.class);
@@ -610,6 +608,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                     i.putExtra("message_edited", message.isEdited());
                     i.putExtra("from", "Adapter");
                     i.putExtra("isOn", false);
+
                     File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
                     if (f.mkdirs() || f.isDirectory()) {
                         String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".mp4";
@@ -617,14 +616,14 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                         String[] videoList = f.list();
                         List<String> list = new ArrayList<>(Arrays.asList(videoList));
                         if (list.contains(vid)) {
-                           // i.putExtra("video", alreadyThere);
+                            // i.putExtra("video", alreadyThere);
                             i.putExtra("message_content", alreadyThere);
 
                         } else {
 //                            String fileName = downloadFile(mContext, message.getMessageId(),
 //                                    ".mp4", f.getAbsolutePath(), message.getContent());
 //                            i.putExtra("video", f.getAbsolutePath() + "/" + fileName);
-                    //        i.putExtra("video", message.getContent());
+                            //        i.putExtra("video", message.getContent());
                             i.putExtra("message_content", message.getContent());
 
                         }
@@ -635,55 +634,55 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
 
                 showTextEntered(message, ((VideoViewHolder) holder).textEntered);
                 ((VideoViewHolder) holder).moreSettings.setOnClickListener(view -> {
-                    if(message.isVisible()){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.channel_options, (dialog, which) -> {
-                                switch (which) {
-                                    case 0:
+                    if (message.isVisible()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.channel_options, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
 
-                                        Intent i = new Intent(view.getContext(),
-                                                ForwardMessageActivity.class);
-                                        String s = "video";
-                                        i.putExtra("type", s);
-                                        i.putExtra("message", message.getContent());
-                                        view.getContext().startActivity(i);
+                                            Intent i = new Intent(view.getContext(),
+                                                    ForwardMessageActivity.class);
+                                            String s = "video";
+                                            i.putExtra("type", s);
+                                            i.putExtra("message", message.getContent());
+                                            view.getContext().startActivity(i);
 
-                                        break;
+                                            break;
 
-                                    case 1:
+                                        case 1:
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("visible").setValue(false);
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("type").setValue("text");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("visible").setValue(false);
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("type").setValue("text");
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("content").setValue("Message Deleted");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("content").setValue("Message Deleted");
 
-                                        //      ((VideoViewHolder) holder).rLayout.setEnabled(false);
+                                            //      ((VideoViewHolder) holder).rLayout.setEnabled(false);
 
-                                        Toast.makeText(view.getContext(), "Message deleted",
-                                                Toast.LENGTH_SHORT).show();
-                                        break;
+                                            Toast.makeText(view.getContext(), "Message deleted",
+                                                    Toast.LENGTH_SHORT).show();
+                                            break;
 
-                                    case 2:
-                                        File rootFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
-                                        File adsFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFil.mkdirs() || rootFil.isDirectory() && adsFil.mkdirs() || adsFil.isDirectory()) {
-                                            askPermission(mContext, message, ".mp4", rootFil.getAbsolutePath());
-                                            askPermission(mContext, message, ".mp4", adsFil.getAbsolutePath());
-                                        }
+                                        case 2:
+                                            File rootFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/videos");
+                                           // File adsFil = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                            if (rootFil.mkdirs() || rootFil.isDirectory()){// && adsFil.mkdirs() || adsFil.isDirectory()) {
+                                                askPermission(mContext, message, ".mp4", rootFil.getAbsolutePath());
+                                              //  askPermission(mContext, message, ".mp4", adsFil.getAbsolutePath());
+                                            }
 
-                                        break;
+                                            break;
 
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 });
 
                 ((VideoViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
@@ -691,23 +690,23 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((VideoViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
                 ((VideoViewHolder) holder).numberOfComments.setOnClickListener(v -> {
-                    if(message.isVisible()){
-                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
-                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
-                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
-                    goToCommentActivity.putExtra("message_type", message.getType());
-                    goToCommentActivity.putExtra("message_id", message.getMessageId());
-                    goToCommentActivity.putExtra("message_content", message.getContent());
-                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
-                    goToCommentActivity.putExtra("message_color", message.getColor());
-                    goToCommentActivity.putExtra("message_like", message.getL().size());
-                    goToCommentActivity.putExtra("message_comment", message.getC().size());
-                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
-                    goToCommentActivity.putExtra("message_edited", message.isEdited());
-                    goToCommentActivity.putExtra("from", "Adapter");
-                    goToCommentActivity.putExtra("isOn", false);
-                    v.getContext().startActivity(goToCommentActivity);
-                }
+                    if (message.isVisible()) {
+                        Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                        goToCommentActivity.putExtra("message_type", message.getType());
+                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                        goToCommentActivity.putExtra("message_content", message.getContent());
+                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                        goToCommentActivity.putExtra("message_color", message.getColor());
+                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                        goToCommentActivity.putExtra("message_edited", message.isEdited());
+                        goToCommentActivity.putExtra("from", "Adapter");
+                        goToCommentActivity.putExtra("isOn", false);
+                        v.getContext().startActivity(goToCommentActivity);
+                    }
                 });
 
                 if (message.getAdmins().contains(phone)) {
@@ -749,187 +748,100 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((AudioViewHolder) holder).numberOfLikes.setVisibility(View.VISIBLE);
                 ((AudioViewHolder) holder).numberOfComments.setVisibility(View.VISIBLE);
                 //TODO: Investigate dead thread on first media
-                MediaPlayer mediaPlayer = new MediaPlayer();
-                final boolean[] isReady = {false};
-                final int[] duration = {0};
-                mediaPlayers.add(mediaPlayer);
+//
 
                 showTextEntered(message, ((AudioViewHolder) holder).textEntered);
-
-                try {
-                    Log.i("((MediaPlayer))", "MediaPlayer called");
-                    mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                    File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
-                    if (f.mkdirs() || f.isDirectory()) {
-                        String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".gp3";
-                        String mess = message.getMessageId() + ".gp3";
-                        String[] listAudio = f.list();
-                        List<String> list = new ArrayList<>(Arrays.asList(listAudio));
-                        if (list.contains(mess)) {
-                            mediaPlayer.setDataSource(alreadyThere);
-                        } else {
-//                            String fileName = downloadFile(mContext, message.getMessageId(),
-//                                    ".gp3", f.getAbsolutePath(), message.getContent());
-//
-//                            mediaPlayer.setDataSource(f.getAbsolutePath() + "/" + fileName);
-                            mediaPlayer.setDataSource(message.getContent());
-                        }
+                String audioSource = "";
+                Log.i("((MediaPlayer))", "MediaPlayer called");
+                File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
+                if (f.mkdirs() || f.isDirectory()) {
+                    String alreadyThere = f.getAbsolutePath() + "/" + message.getMessageId() + ".gp3";
+                    String mess = message.getMessageId() + ".gp3";
+                    String[] listAudio = f.list();
+                    List<String> list = new ArrayList<>(Arrays.asList(listAudio));
+                    if (list.contains(mess)) {
+                        audioSource = alreadyThere;
+                    } else {
+                        audioSource = message.getContent();
                     }
-                    mediaPlayer.setOnPreparedListener(mediaPlayer12 -> {
-                        isReady[0] = true;
-                        duration[0] = mediaPlayer12.getDuration();
-                        Log.i("((MediaPlayer))", "Duration of message: " + duration[0]);
-
-                        String time = String.format("%02d:%02d",
-                                TimeUnit.MILLISECONDS.toMinutes(duration[0]),
-                                TimeUnit.MILLISECONDS.toSeconds(duration[0]) -
-                                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration[0]))
-                        );
-
-                        ((AudioViewHolder) holder).audioTime.setText(time);
-
-                        ((AudioViewHolder) holder).audioSeekbar.setMax(duration[0]);
-
-                        ScheduledExecutorService service = Executors.newScheduledThreadPool(1);
-                        service.scheduleWithFixedDelay(() ->
-                                ((AudioViewHolder) holder).audioSeekbar.setProgress(mediaPlayer12.getCurrentPosition()), 1, 1, TimeUnit.MICROSECONDS);
-
-                        // ((AudioViewHolder) holder).seekBarAudio.setProgress(mediaPlayer12.getCurrentPosition());
-                    });
-
-                    mediaPlayer.setOnCompletionListener(mediaPlayer1 -> {
-                        mediaPlayer1.pause();
-                        //((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_play_copy);
-                        ((AudioViewHolder) holder).pauseAudio.setVisibility(View.GONE);
-                        ((AudioViewHolder) holder).btfBackground.setVisibility(View.GONE);
-                        ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_play);
-                        ((AudioViewHolder) holder).playAudio.setVisibility(View.VISIBLE);
-
-                    });
-
-                    mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                        mp.reset();
-                        try {
-                            mp.setDataSource(message.getContent());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        return true;
-                    });
-
-                    ((AudioViewHolder) holder).pauseAudio.setOnClickListener(v -> {
-                        if (isReady[0]) {
-                            if (mediaPlayer.isPlaying()) {
-                                ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_play);
-                                ((AudioViewHolder) holder).pauseAudio.setVisibility(View.GONE);
-                                ((AudioViewHolder) holder).btfBackground.setVisibility(View.GONE);
-                                ((AudioViewHolder) holder).audioTime.setVisibility(View.GONE);
-                                ((AudioViewHolder) holder).audioSeekbar.setVisibility(View.GONE);
-                                mediaPlayer.pause();
-                            }
-                        }
-                    });
-
-                    ((AudioViewHolder) holder).playAudio.setOnClickListener((View view) -> {
-                        Log.i("((MediaPlayer))", "Play Button clicked");
-                        if (isReady[0]) {
-                            if (!mediaPlayer.isPlaying()) {
-                                ((AudioViewHolder) holder).playAudio.setImageResource(R.drawable.ic_channel_pause);
-                                ((AudioViewHolder) holder).pauseAudio.setVisibility(View.VISIBLE);
-                                ((AudioViewHolder) holder).btfBackground.setVisibility(View.VISIBLE);
-                                ((AudioViewHolder) holder).audioTime.setVisibility(View.GONE);
-                                ((AudioViewHolder) holder).audioSeekbar.setVisibility(View.GONE);
-                                for (MediaPlayer m : mediaPlayers) {
-                                    if (m == null || !m.isPlaying()) {
-                                        continue;
-                                    }
-                                    m.stop();
-                                }
-                                mediaPlayer.start();
-                            }
-                        }
-
-                    });
-
-                    ((AudioViewHolder) holder).audioSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar seekBar, int progress, boolean input) {
-
-                            if (input) {
-                                mediaPlayer.seekTo(progress);
-                            }
-
-                        }
-
-                        @Override
-                        public void onStartTrackingTouch(SeekBar seekBar) {
-
-                        }
-
-                        @Override
-                        public void onStopTrackingTouch(SeekBar seekBar) {
-                        }
-                    });
-
-                    mediaPlayer.prepareAsync();
-
-                } catch (Exception e) {
-                    Log.e("MediaPlayerException", e.getMessage());
-                    e.printStackTrace();
                 }
+
+
+                String finalAudioSource = audioSource;
+                ((AudioViewHolder) holder).playAudio.setOnClickListener((View view) -> {
+                    Log.i("((MediaPlayer))", "Play Button clicked");
+                    Intent goToCommentActivity = new Intent(view.getContext(), CommentActivity.class);
+                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                    goToCommentActivity.putExtra("message_type", message.getType());
+                    goToCommentActivity.putExtra("message_id", message.getMessageId());
+                    goToCommentActivity.putExtra("message_content", finalAudioSource);
+                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                    goToCommentActivity.putExtra("message_color", message.getColor());
+                    goToCommentActivity.putExtra("message_like", message.getL().size());
+                    goToCommentActivity.putExtra("message_comment", message.getC().size());
+                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    goToCommentActivity.putExtra("message_edited", message.isEdited());
+                    goToCommentActivity.putExtra("from", "Adapter");
+                    goToCommentActivity.putExtra("isOn", false);
+                    view.getContext().startActivity(goToCommentActivity);
+
+                });
+
+
                 ((AudioViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
 
                 ((AudioViewHolder) holder).moreSettings.setOnClickListener(view -> {
-                    if(message.isVisible()){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.channel_options, (dialog, which) -> {
-                                switch (which) {
-                                    case 0:
+                    if (message.isVisible()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.channel_options, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
 
-                                        Intent i = new Intent(view.getContext(),
-                                                ForwardMessageActivity.class);
-                                        String s = "audio";
-                                        i.putExtra("type", s);
-                                        i.putExtra("message", message.getContent());
-                                        view.getContext().startActivity(i);
+                                            Intent i = new Intent(view.getContext(),
+                                                    ForwardMessageActivity.class);
+                                            String s = "audio";
+                                            i.putExtra("type", s);
+                                            i.putExtra("message", message.getContent());
+                                            view.getContext().startActivity(i);
 
 
-                                        break;
+                                            break;
 
-                                    case 1:
+                                        case 1:
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("visible").setValue(false);
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("visible").setValue(false);
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("content").setValue("Message Deleted");
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("type").setValue("text");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("content").setValue("Message Deleted");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("type").setValue("text");
 
-                                        //         ((AudioViewHolder) holder).rLayout.setEnabled(false);
+                                            //         ((AudioViewHolder) holder).rLayout.setEnabled(false);
 
-                                        Toast.makeText(view.getContext(), "Message deleted",
-                                                Toast.LENGTH_SHORT).show();
-                                        break;
+                                            Toast.makeText(view.getContext(), "Message deleted",
+                                                    Toast.LENGTH_SHORT).show();
+                                            break;
 
-                                    case 2:
+                                        case 2:
 
-                                        File rootFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
-                                        File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
-                                        if (rootFolder.mkdirs() || rootFolder.isDirectory() && adsFolder.mkdirs() || adsFolder.isDirectory()) {
-                                            askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
-                                            askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
-                                        }
-                                        break;
+                                            File rootFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + mContext.getPackageName() + "/media/audios");
+                                          //  File adsFolder = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ADS Files");
+                                            if (rootFolder.mkdirs() || rootFolder.isDirectory()){// && adsFolder.mkdirs() || adsFolder.isDirectory(){
+                                                askPermission(mContext, message, ".gp3", rootFolder.getAbsolutePath());
+                                          //      askPermission(mContext, message, ".gp3", adsFolder.getAbsolutePath());
+                                            }
+                                            break;
 
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
 
                 });
 
@@ -938,23 +850,23 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((AudioViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
                 ((AudioViewHolder) holder).numberOfComments.setOnClickListener(v -> {
-                    if(message.isVisible()){
-                    Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
-                    goToCommentActivity.putExtra("channel_name", message.getChannelName());
-                    goToCommentActivity.putExtra("channel_image", message.getChannelImage());
-                    goToCommentActivity.putExtra("message_type", message.getType());
-                    goToCommentActivity.putExtra("message_id", message.getMessageId());
-                    goToCommentActivity.putExtra("message_content", message.getContent());
-                    goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
-                    goToCommentActivity.putExtra("message_color", message.getColor());
-                    goToCommentActivity.putExtra("message_like", message.getL().size());
-                    goToCommentActivity.putExtra("message_comment", message.getC().size());
-                    goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
+                    if (message.isVisible()) {
+                        Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
+                        goToCommentActivity.putExtra("channel_name", message.getChannelName());
+                        goToCommentActivity.putExtra("channel_image", message.getChannelImage());
+                        goToCommentActivity.putExtra("message_type", message.getType());
+                        goToCommentActivity.putExtra("message_id", message.getMessageId());
+                        goToCommentActivity.putExtra("message_content", finalAudioSource);
+                        goToCommentActivity.putExtra("message_timestamp", message.getTimestamp());
+                        goToCommentActivity.putExtra("message_color", message.getColor());
+                        goToCommentActivity.putExtra("message_like", message.getL().size());
+                        goToCommentActivity.putExtra("message_comment", message.getC().size());
+                        goToCommentActivity.putExtra("message_seen", message.getRead_by().size());
                         goToCommentActivity.putExtra("message_edited", message.isEdited());
-                    goToCommentActivity.putExtra("from", "Adapter");
-                    goToCommentActivity.putExtra("isOn", false);
-                    v.getContext().startActivity(goToCommentActivity);
-                }
+                        goToCommentActivity.putExtra("from", "Adapter");
+                        goToCommentActivity.putExtra("isOn", false);
+                        v.getContext().startActivity(goToCommentActivity);
+                    }
                 });
 
                 if (message.getAdmins().contains(phone)) {
@@ -1017,46 +929,46 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 });
                 ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
                 ((DocumentViewHolder) holder).moreSettings.setOnClickListener(view -> {
-                    if(message.isVisible()){
-                    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                    builder.setTitle(R.string.choose_option)
-                            .setItems(R.array.message_options, (dialog, which) -> {
-                                switch (which) {
-                                    case 0:
+                    if (message.isVisible()) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        builder.setTitle(R.string.choose_option)
+                                .setItems(R.array.message_options, (dialog, which) -> {
+                                    switch (which) {
+                                        case 0:
 
-                                        Intent i = new Intent(view.getContext(),
-                                                ForwardMessageActivity.class);
-                                        String s1 = "document";
-                                        i.putExtra("type", s1);
-                                        i.putExtra("message", message.getContent());
-                                        view.getContext().startActivity(i);
+                                            Intent i = new Intent(view.getContext(),
+                                                    ForwardMessageActivity.class);
+                                            String s1 = "document";
+                                            i.putExtra("type", s1);
+                                            i.putExtra("message", message.getContent());
+                                            view.getContext().startActivity(i);
 
-                                        break;
+                                            break;
 
-                                    case 1:
+                                        case 1:
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("visible").setValue(false);
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("visible").setValue(false);
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("content").setValue("Message Deleted");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("content").setValue("Message Deleted");
 
-                                        mMessageReference.child(message.getMessageId())
-                                                .child("type").setValue("text");
+                                            mMessageReference.child(message.getMessageId())
+                                                    .child("type").setValue("text");
 
-                                        // ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
+                                            // ((DocumentViewHolder) holder).mainDoc.setEnabled(false);
 
-                                        Toast.makeText(view.getContext(), "Message deleted",
-                                                Toast.LENGTH_SHORT).show();
-                                        break;
+                                            Toast.makeText(view.getContext(), "Message deleted",
+                                                    Toast.LENGTH_SHORT).show();
+                                            break;
 
-                                    default:
-                                        return;
-                                }
-                            });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
+                                        default:
+                                            return;
+                                    }
+                                });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 });
 
                 ((DocumentViewHolder) holder).numberOfSeen.setText(String.valueOf(message.getRead_by().size()));
@@ -1064,7 +976,7 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
                 ((DocumentViewHolder) holder).numberOfLikes.setText(String.valueOf(message.getL().size()));
 
                 ((DocumentViewHolder) holder).numberOfComments.setOnClickListener(v -> {
-                    if(message.isVisible()) {
+                    if (message.isVisible()) {
                         Intent goToCommentActivity = new Intent(v.getContext(), CommentActivity.class);
                         goToCommentActivity.putExtra("channel_name", message.getChannelName());
                         goToCommentActivity.putExtra("channel_image", message.getChannelImage());
@@ -1116,16 +1028,6 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-
-    public void stopMediaPlayers() {
-        if (!mediaPlayers.isEmpty()) {
-            for (MediaPlayer p : mediaPlayers) {
-                if (p != null) {
-                    p.release();
-                }
-            }
-        }
-    }
 
 
     @NonNull
@@ -1306,10 +1208,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         CircleImageView channelImage;
         EmojiTextView channelName, textEntered;
         TextView timestamp, numberOfLikes, numberOfComments, numberOfSeen, audioTime;
-        ImageView moreSettings, playAudio, pauseAudio;
+        ImageView moreSettings, playAudio;
         RelativeLayout messsageLayout;
-        GifImageView btfBackground;
-        SeekBar audioSeekbar;
+        //   GifImageView btfBackground;
+        //   SeekBar audioSeekbar;
 
 
         public AudioViewHolder(View itemView) {
@@ -1326,10 +1228,10 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
             moreSettings = itemView.findViewById(R.id.more_settings);
             audioTime = itemView.findViewById(R.id.audio_time);
             playAudio = itemView.findViewById(R.id.play_audio);
-            pauseAudio = itemView.findViewById(R.id.pause_audio);
+            // pauseAudio = itemView.findViewById(R.id.pause_audio);
             messsageLayout = itemView.findViewById(R.id.messageLayout);
-            btfBackground = itemView.findViewById(R.id.btf_bg);
-            audioSeekbar = itemView.findViewById(R.id.audio_seekbar);
+            //    btfBackground = itemView.findViewById(R.id.btf_bg);
+            //     audioSeekbar = itemView.findViewById(R.id.audio_seekbar);
 
         }
 
@@ -1426,11 +1328,11 @@ public class ChannelInteractionAdapter extends RecyclerView.Adapter<RecyclerView
         if (text.length() > 7 && text.contains("Default%")) {
             String[] parts = text.split("Default%");
             //String part1 = parts[0];
-            try{
+            try {
                 String part2 = parts[1];
                 textview.setText(part2);
                 textview.setVisibility(View.VISIBLE);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

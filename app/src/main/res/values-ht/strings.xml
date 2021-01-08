@@ -431,5 +431,22 @@
     <string name="refreshed">Reaktyalize</string>
     <string name="edit">Modifye</string>
 
+    <string name="m_comment">Kòmante</string>
+    <string name="edit_mode">Ou ka chanje mesaj la kounya</string>
+    <string name="edit_limit">Ou paka chanje mesaj la aprè 20 minit</string>
+    <string name="c_sent_by_you">Ou paka chanje mesaj ke ou pa voye</string>
+    <string name="edited">Chanje</string>
+
+    <string name="upload_files">Fichye ou yo ap ale..</string>
+    <string name="dummy_percentage">0%</string>
+    <string name="dummy_uploading_size">0mb</string>
+    <string name="dummy_filename">Filename.jpg</string>
+    <string name="pause_upload">Kanpe telechajman</string>
+    <string name="cancel_upload">Anile telechajman</string>
+    <string name="live">An dirèk</string>
+    <string name="btm_pic">Tanpri klike sou foto anba yo.</string>
+    <string name="pic_restr">Peze pou on ti tan pou ka chwazi jiska 10 foto</string>
+    <string name="back">Tanpri klike ankò pou sòti.</string>
+
 
 </resources>

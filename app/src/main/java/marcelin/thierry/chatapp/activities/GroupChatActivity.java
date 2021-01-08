@@ -14,6 +14,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.media.ThumbnailUtils;
@@ -39,6 +41,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -73,6 +76,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.islamassem.voicemessager.VoiceMessagerFragment;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.vanniktech.emoji.EmojiEditText;
 import com.vanniktech.emoji.EmojiPopup;
 
@@ -127,6 +131,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private String mChatId;
 
     private static boolean isOnActivity = false;
+    private Uri mImageUri;
 
     private Map<String, Object> mRead = new HashMap<>();
 
@@ -137,6 +142,8 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private static final int GALLERY_PICK = 1;
     private static final int MAX_ATTACHMENT_COUNT = 20;
     private static final int TOTAL_ITEMS_TO_LOAD = 30;
+    private static final int PICK_IMAGE_REQUEST = 1001;
+
 
 
     private List<String> mImagesPath;
@@ -165,7 +172,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
     private ImageButton mSendAttachment;
     private MediaPlayer mp1;
     private MediaRecorder mRecorder;
-    private Toolbar mChatToolbar;
+    private Toolbar mChatToolbar, mToolbar;
 
     private LinearLayout mainVLayout;
     private LinearLayout replyLinearLayout;
@@ -237,6 +244,8 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         super.onCreate(savedInstanceState);
         loadLocale();
         setContentView(R.layout.activity_chat);
+        mRootView = findViewById(R.id.rootView);
+        getImageBackground();
 
         mAlertDialogHelper = new AlertDialogHelper(this);
         fragment = VoiceMessagerFragment.build(this, true);
@@ -258,17 +267,16 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         mChatId = i.getStringExtra("chat_id");
 
         mChatToolbar = findViewById(R.id.chat_bar_main);
-        setSupportActionBar(mChatToolbar);
+        mChatToolbar.setVisibility(View.GONE);
 
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setDisplayShowCustomEnabled(true);
+        mToolbar = findViewById(R.id.toolbar);
+        mToolbar.setVisibility(View.VISIBLE);
+        setSupportActionBar(mToolbar);
 
         // mSend = findViewById(R.id.send);
+        title = mToolbar.findViewById(R.id.title);
+        title.setText(mChatId);
         linearLayout = findViewById(R.id.linearLayout);
-        getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.ic_try));
-
         // Saving the URI returned by the video and image library
         mImagesData = new ArrayList<>();
         mVideosData = new ArrayList<>();
@@ -277,41 +285,28 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         mFileName = Objects.requireNonNull(getExternalCacheDir()).getAbsolutePath();
         mFileName += "/" + randomIdentifier() + ".3gp";
 
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        assert inflater != null;
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.chat_bar, null);
-
-        actionBar.setCustomView(view);
-
         askPermission();
 
         mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
-        mProfileImage = findViewById(R.id.profileImage);
-        //mProfileName = findViewById(R.id.chat_bar_name);
+        mProfileImage = mToolbar.findViewById(R.id.profileImage);
 
         mTextToSend = findViewById(R.id.send_text);
         mTextToSend.addTextChangedListener(textWatcher);
 
-        title = findViewById(R.id.title);
+
         //   profileImage = findViewById(R.id.profileImage);
         backButton = findViewById(R.id.backButton);
-
-        title.setText(mChatId);
-
-
         mMessagesList = findViewById(R.id.messages_list);
         nested = findViewById(R.id.swipe_layout);
 
         nested.postDelayed(() -> {
-            // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
             nested.fullScroll(View.FOCUS_DOWN);
         },200);
 
         backButton.setOnClickListener(v -> {
             finish();
         });
-        // actionBar.setTitle(mChatId);
 
         recycler_layout = findViewById(R.id.recycler_layout);
 
@@ -518,7 +513,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
         mDialog = new Dialog(this, android.R.style.Theme_Translucent_NoTitleBar);
 
-        mRootView = findViewById(R.id.rootView);
+
         mSendVoice = findViewById(R.id.send_voice);
 
         mSendVoice.setOnClickListener(v -> {
@@ -535,7 +530,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
         Picasso.get().load(mChatPicture).placeholder(R.drawable.ic_avatar).into(mProfileImage);
 
         listenerOnMessage();
-        mChatToolbar.setOnClickListener(view13 -> {
+        mToolbar.setOnClickListener(view13 -> {
 
             // TODO: Handle view of new layout
 
@@ -672,6 +667,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                chatRefMap.put("msgId", push_id);
                                chatRefMap.put("seen", false);
                                chatRefMap.put("visible", true);
+                               chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                                mTextToSend.setText("");
 
@@ -795,6 +791,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         chatRefMap.put("msgId", push_id);
                         chatRefMap.put("seen", false);
                         chatRefMap.put("visible", true);
+                        chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                         mTextToSend.setText("");
 
@@ -922,6 +919,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         chatRefMap.put("msgId", push_id);
                         chatRefMap.put("seen", false);
                         chatRefMap.put("visible", true);
+                        chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                         mTextToSend.setText("");
 
@@ -975,7 +973,8 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
             }
 
-        } else if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
+        }
+        else if (requestCode == GALLERY_PICK && resultCode == RESULT_OK) {
 
             Uri songUri = data.getData();
 
@@ -1028,6 +1027,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                     chatRefMap.put("msgId", push_id);
                     chatRefMap.put("seen", false);
                     chatRefMap.put("visible", true);
+                    chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                     mTextToSend.setText("");
 
@@ -1077,6 +1077,43 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                         mFileSize.setText(progressText);
                         mFilePercentage.setText(MessageFormat.format("{0}%", (int) progress));
                     });
+        }
+        else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK) {
+            if (data != null) {
+                mImageUri = data.getData();
+
+                // Removes Uri Permission so that when you restart the device, it will be allowed to reload.
+                this.grantUriPermission(this.getPackageName(), mImageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                final int takeFlags = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                this.getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+
+                // Saves image URI as string to Default Shared Preferences
+                SharedPreferences preferences =
+                        PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("groupImage", String.valueOf(mImageUri));
+                editor.apply();
+
+                Picasso.get().load(mImageUri).into(new Target() {
+                    @Override
+                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                        mRootView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+                    }
+
+                    @Override
+                    public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                        Log.d("TAG", "FAILED");
+
+                    }
+
+                    @Override
+                    public void onPrepareLoad(Drawable placeHolderDrawable) {
+                        Log.d("TAG", "Prepare Load");
+
+                    }
+                });
+
+            }
         }
     }
 
@@ -1151,6 +1188,32 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.group_main_menu, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.menu_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+        return true;
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+         super.onOptionsItemSelected(item);
+         if(item.getItemId() == R.id.menu_cg_bg){
+             try {
+                 new CheckInternet_(internet -> {
+                     imageSelect();
+                 });
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+         }
+         return true;
+    }
 
     public void onPickDoc() {
         String[] zips = {".zip", ".rar"};
@@ -1222,8 +1285,9 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                     .child("content").setValue(message);
                             mMessagesReference.child(clickedMessageId).child("edited").setValue(true);
                             mMessagesReference.child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                            messagesList.clear();
-                            loadMessages();
+                            mRootReference.child("ads_group").child(mGroupName).child("messages").child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
+//                            messagesList.clear();
+//                            loadMessages();
                             mTextToSend.setText("");
                             editModeIsOn = false;
                             provideCorrectUI();
@@ -1368,7 +1432,38 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                 conversationQuery.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        Chat chatRef = dataSnapshot.getValue(Chat.class);
+                        if (chatRef == null) {
+                            return;
+                        }
+                        Log.i("CHAT_CHANGED", "CALLED");
+                        Query chatQ = messageRef.child(chatRef.getMsgId());
+                        chatQ.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Messages m = dataSnapshot.getValue(Messages.class);
+                                if (m == null) {
+                                    return;
+                                }
 
+                                m.setMessageId(chatRef.getMsgId());
+                                int pos = messagesList.indexOf(m);
+                                Log.i("CHAT_CHANGED_POS", String.valueOf(pos));
+                                if (pos < 0) {
+                                    return;
+                                }
+                                messagesList.set(pos, m);
+//                        messagesList.add(m);
+                                mGroupMessageAdapter.notifyDataSetChanged();
+                                nested.postDelayed(() -> {
+                                    nested.pageScroll(View.FOCUS_DOWN);
+                                }, 200);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
                     }
 
                     @Override
@@ -1873,10 +1968,9 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
             isMultiSelect = false;
             mSelectedMessages = new ArrayList<>();
             refreshAdapter();
-            mChatToolbar.setVisibility(View.VISIBLE);
+            mToolbar.setVisibility(View.VISIBLE);
         }
     };
-
     private TextWatcher textWatcher = new TextWatcher() {
 
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -2055,6 +2149,7 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
                                 chatRefMap.put("msgId", push_id);
                                 chatRefMap.put("seen", false);
                                 chatRefMap.put("visible", true);
+                                chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                                 mTextToSend.setText("");
 
@@ -2212,6 +2307,40 @@ public class GroupChatActivity extends AppCompatActivity implements AlertDialogH
 
         }
     }
+
+    public void imageSelect() {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.sel_pic)),
+                PICK_IMAGE_REQUEST);
+    }
+
+    private void getImageBackground() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String mImageUri = preferences.getString("groupImage", null);
+        if (mImageUri != null) {
+            Picasso.get().load(Uri.parse(mImageUri)).into(new Target() {
+                @Override
+                public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                    mRootView.setBackground(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
+                }
+
+                @Override
+                public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+                    Log.d("TAG", "FAILED");
+
+                }
+
+                @Override
+                public void onPrepareLoad(Drawable placeHolderDrawable) {
+                    Log.d("TAG", "Prepare Load");
+
+                }
+            });
+        }
+    }
+
 
 }
 

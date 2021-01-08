@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -28,28 +27,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
-
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -72,7 +49,26 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bestsoft32.tt_fancy_gif_dialog_lib.TTFancyGifDialog;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -132,7 +128,6 @@ import static marcelin.thierry.chatapp.activities.MainActivity.getDateDiff;
 public class ChatActivity extends AppCompatActivity implements AlertDialogHelper.AlertDialogListener,
         SearchView.OnQueryTextListener, Serializable, VoiceMessagerFragment.OnControllerClick {
 
-    // SearchView.OnQueryTextListener,
 
     private static final String[] WALK_THROUGH = new String[]{Manifest.permission.RECORD_AUDIO,
             Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -165,13 +160,11 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private static final DatabaseReference mVideoCallReference = FirebaseDatabase.getInstance()
             .getReference().child("ads_video_call_notifications");
 
-    private static final DatabaseReference mExceptReference = FirebaseDatabase.getInstance()
-            .getReference().child("ads_except");
+//    private static final DatabaseReference mExceptReference = FirebaseDatabase.getInstance()
+//            .getReference().child("ads_except");
 
     private static boolean isOnActivity = false;
     private Uri mImageUri;
-    private Runnable runnable;
-    private Handler handler;
 
 
     private static String mFileName = null;
@@ -186,8 +179,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private String mCurrentUserPhone;
     private String mChatId;
 
-    private int itemPosition = 0;
-
     private List<String> mImagesPath;
     private List<String> mVideosPath;
     private List<Uri> mImagesData;
@@ -199,7 +190,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
     private CircleImageView mProfileImage;
     private RecyclerView mMessagesList;
     private MessageAdapter mMessageAdapter;
-    private LinearLayoutManager mLinearLayoutManager;
 
     private Dialog mDialog;
     private EmojiEditText mTextToSend;
@@ -223,7 +213,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
     // Long click on messages
     private ActionMode mActionMode;
-    private Menu mContextMenu;
     private boolean isMultiSelect = false;
     private AlertDialogHelper mAlertDialogHelper;
     private List<Messages> mSelectedMessages = new ArrayList<>();
@@ -281,7 +270,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         mRootView = findViewById(R.id.rootView);
         getImageBackground();
         recycler_layout = findViewById(R.id.recycler_layout);
-
 
         mAlertDialogHelper = new AlertDialogHelper(this);
 
@@ -358,7 +346,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         title.setText(mChatName);
         mTextToSend = findViewById(R.id.send_text);
-        mLinearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager mLinearLayoutManager = new LinearLayoutManager(this);
         mLinearLayoutManager.setStackFromEnd(true);
 
         mMessagesList.setHasFixedSize(true);
@@ -369,7 +357,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
         mainVLayout = findViewById(R.id.mainVLayout);
         replyLinearLayout = findViewById(R.id.replyLinearLayout);
-        handler = new Handler();
+        Handler handler = new Handler();
 
         mMessageAdapter = new MessageAdapter(messagesList, mainVLayout, mSelectedMessages, this, this, handler);
         new ItemTouchHelper(mItemTouchHelperCallback).attachToRecyclerView(mMessagesList);
@@ -463,13 +451,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
 
                                                         break;
                                                     }
-
                                                 }
                                             }
-
-
                                             break;
-
                                         case 2:
 
                                             messageLinLayout = findViewById(R.id.messageLinLayout);
@@ -524,7 +508,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                                     }else{
                                                         Toast.makeText(ChatActivity.this, "Cannot be edited", Toast.LENGTH_SHORT).show();
                                                     }
-
                                                 }else{
                                                     Toast.makeText(ChatActivity.this, R.string.c_sent_by_you, Toast.LENGTH_SHORT).show();
                                                 }
@@ -535,6 +518,14 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                             }
 
                                             break;
+
+                                        case 4:
+
+                                            // Allow users to add messages to their favorites
+                                            Map<String, Object> favoriteMessages = new HashMap<>();
+                                            favoriteMessages.put("id", message.getMessageId());
+                                            mUsersReference.child(mCurrentUserPhone).child("conversation").child(mChatId).child("f").updateChildren(favoriteMessages);
+
                                     }
 
                                 });
@@ -732,19 +723,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             finish();
 
         });
-
-
-        // mSend.setOnClickListener(view12 -> sendMessage());
-
-//        mSwipeRefreshLayout.setOnRefreshListener(() -> {
-//
-//          //  mCurrentPage++;
-//
-//            itemPosition = 0;
-//
-//            loadMoreMessages();
-//
-//        });
 
         mSendAttachment.setOnClickListener(view1 -> {
             try {
@@ -3614,10 +3592,12 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
+
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+             //   messagesList.clear();
                 Chat chatRef = dataSnapshot.getValue(Chat.class);
                 if (chatRef == null) {
                     return;
@@ -3639,6 +3619,7 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                             return;
                         }
                         messagesList.set(pos, m);
+//                        messagesList.add(m);
                         mMessageAdapter.notifyDataSetChanged();
                         nested.postDelayed(() -> {
                             nested.pageScroll(View.FOCUS_DOWN);
@@ -3665,273 +3646,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
         };
 
         conversationQ.addChildEventListener(conversationListener);
-    }
-
-    private void loadMessagesDeprecated() {
-
-        mRootReference.child("ads_users").child(mCurrentUserPhone)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.hasChild("conversation")) {
-
-                            final Conversation[] c = new Conversation[1];
-                            List<Conversation> listConvo = new ArrayList<>();
-                            final boolean[] isThere = {false};
-                            // final String[] mConvoRef = new String[1];
-
-                            mRootReference.child("ads_users")
-                                    .child(mCurrentUserPhone)
-                                    .child("conversation").addListenerForSingleValueEvent
-                                    (new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                            for (DataSnapshot d : dataSnapshot.getChildren()) {
-                                                c[0] = d.getValue(Conversation.class);
-                                                listConvo.add(c[0]);
-                                            }
-                                            for (int i = 0; i < listConvo.size(); i++) {
-                                                if (listConvo.get(i).getPhone_number().equals(mChatPhone)) {
-                                                    isThere[0] = true;
-                                                    mConvoRef = listConvo.get(i).getId();
-                                                }
-                                            }
-                                            if (mConvoRef == null) {
-                                                return;
-                                            }
-                                            DatabaseReference conversationRef = mRootReference.child("ads_chat").child(mConvoRef)
-                                                    .child("messages");
-                                            conversationRef.keepSynced(true);
-
-                                            DatabaseReference messageRef = mRootReference.child("ads_messages");
-                                            messageRef.keepSynced(true);
-
-                                            Query conversationQuery = conversationRef.limitToLast(TOTAL_ITEMS_TO_LOAD);
-
-                                            conversationQuery.addChildEventListener(new ChildEventListener() {
-                                                @Override
-                                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                                    Chat chatRef = dataSnapshot.getValue(Chat.class);
-                                                    if (chatRef == null) {
-                                                        return;
-                                                    }
-                                                    messageRef.child(chatRef.getMsgId()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            Messages m = dataSnapshot.getValue(Messages.class);
-                                                            if (m == null) {
-                                                                return;
-                                                            }
-
-                                                            m.setMessageId(chatRef.getMsgId());
-                                                            if (isOnActivity && !m.getFrom().equals(mCurrentUserPhone)) {
-                                                                updateSeen(m, mConvoRef);
-                                                            }
-                                                            //    m.setMessageId(chatRef.getMsgId());
-                                                            m.setSent(true);
-
-//                                                            if(!m.isVisible()){
-//                                                                m.setContent("Message Deleted");
-//                                                            }
-
-                                                            if (!m.getParent().equals("Default") && m.isVisible()) {
-                                                                m.setReplyOn(true);
-                                                            }
-
-                                                            mExceptReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                    if (!dataSnapshot.hasChild(mCurrentUserPhone)) {
-                                                                        messagesList.add(m);
-                                                                        mMessageAdapter.notifyDataSetChanged();
-                                                                    } else {
-                                                                        mExceptReference.child(mCurrentUserPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                            @Override
-                                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                if (dataSnapshot.hasChild(mChatPhone)) {
-                                                                                    mExceptReference.child(mCurrentUserPhone).child(mChatPhone).addListenerForSingleValueEvent
-                                                                                            (new ValueEventListener() {
-                                                                                                @Override
-                                                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                                    Long timestamp = (Long) dataSnapshot.getValue();
-                                                                                                    if (timestamp == null) {
-                                                                                                        return;
-                                                                                                    }
-
-                                                                                                    if (m.getTimestamp() > timestamp) {
-                                                                                                        return;
-                                                                                                    } else {
-                                                                                                        messagesList.add(m);
-                                                                                                        mMessageAdapter.notifyDataSetChanged();
-                                                                                                    }
-
-                                                                                                }
-
-                                                                                                @Override
-                                                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                                                }
-                                                                                            });
-                                                                                } else {
-                                                                                    messagesList.add(m);
-                                                                                    mMessageAdapter.notifyDataSetChanged();
-                                                                                }
-                                                                            }
-
-                                                                            @Override
-                                                                            public void onCancelled(DatabaseError databaseError) {
-
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                }
-
-                                                                @Override
-                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                }
-                                                            });
-
-                                                            /*mExceptReference.child(mCurrentUserPhone).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                    if(dataSnapshot.hasChild(mChatPhone)){
-                                                                        mExceptReference.child(mCurrentUserPhone).child(mChatPhone)
-                                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                    @Override
-                                                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                                        Long timestamp = (Long) dataSnapshot.getValue();
-                                                                                        if(timestamp == null){
-                                                                                            return;
-                                                                                        }
-                                                                                        if(m.getTimestamp() > timestamp){
-                                                                                           return;
-                                                                                        }else{
-                                                                                            messagesList.add(m);
-                                                                                        }
-
-                                                                                    }
-
-                                                                                    @Override
-                                                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                                                    }
-                                                                                });
-                                                                    }else {
-                                                                        messagesList.add(m);
-                                                                    }
-                                                                }
-
-                                                                @Override
-                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                }
-                                                            });*/
-                                                            // messagesList.add(m);
-
-                                                            mMessageAdapter.notifyDataSetChanged();
-                                                            //   mMessagesList.scrollToPosition(messagesList.size() - 1);
-                                                            nested.postDelayed(() -> {
-                                                                // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
-                                                                nested.fullScroll(View.FOCUS_DOWN);
-                                                            }, 200);
-                                                            // nested.fullScroll(ScrollView.FOCUS_DOWN);
-                                                            // mSwipeRefreshLayout.setRefreshing(false);
-
-                                                        }
-
-
-                                                        @Override
-                                                        public void onCancelled(DatabaseError databaseError) {
-
-                                                        }
-                                                    });
-
-                                                }
-
-                                                @Override
-                                                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                                                    Chat chatRef = dataSnapshot.getValue(Chat.class);
-                                                    if (chatRef == null) {
-                                                        return;
-                                                    }
-                                                    Log.i("BlocChatRef", String.valueOf(chatRef.isSeen()));
-                                                    messageRef.child(chatRef.getMsgId())
-                                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                    Messages m = dataSnapshot.getValue(Messages.class);
-
-                                                                    if (m == null) {
-                                                                        return;
-                                                                    }
-
-
-                                                                    m.setMessageId(chatRef.getMsgId());
-                                                                    int pos = messagesList.indexOf(m);
-                                                                    Log.i("XXA", String.valueOf(pos));
-                                                                    if (pos < 0) {
-                                                                        return;
-                                                                    }
-                                                                    messagesList.set(pos, m);
-                                                                    mMessageAdapter.notifyDataSetChanged();
-                                                                    // mMessagesList.scrollToPosition(messagesList.size() - 1);
-                                                                    nested.postDelayed(() -> {
-                                                                        // listener.setAppBarExpanded(false, true); //appbar.setExpanded(expanded, animated);
-                                                                        nested.pageScroll(View.FOCUS_DOWN);
-                                                                    }, 200);
-                                                                    //  mSwipeRefreshLayout.setRefreshing(false);
-
-                                                                }
-
-
-                                                                @Override
-                                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                                }
-                                                            });
-//
-                                                }
-
-
-                                                @Override
-                                                public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-                                                }
-
-                                                @Override
-                                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                                                }
-
-                                                @Override
-                                                public void onCancelled(DatabaseError databaseError) {
-
-                                                }
-                                            });
-
-
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {
-
-                                        }
-                                    });
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-
-        // }
-        //});
-
-
     }
 
     private void pickImage() {
@@ -3964,8 +3678,9 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                                    .child("content").setValue(message);
                            mMessageReference.child(clickedMessageId).child("edited").setValue(true);
                            mMessageReference.child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                           messagesList.clear();
-                           loadMessages();
+                           mRootReference.child("ads_chat").child(mChatId).child("messages").child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
+//                           messagesList.clear();
+//                           loadMessages();
                            mTextToSend.setText("");
                            editModeIsOn = false;
                            provideCorrectUI();
@@ -4704,60 +4419,60 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
                 return true;
 
 
-            case R.id.menu_call:
-                try {
-                    new CheckInternet_(internet -> {
-                        if (internet) {
-                            Map<String, Object> m = new HashMap<>();
-                            m.put("from", mCurrentUserPhone);
-
-                            String voiceChannelId = randomIdentifier();
-                            mCallReference.child(mChatPhone).child(voiceChannelId).setValue(m).addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Intent goToPhoneCall = new Intent(ChatActivity.this, CallScreenActivity.class);
-                                    goToPhoneCall.putExtra("user_phone", mChatPhone);
-                                    goToPhoneCall.putExtra("channel_id", voiceChannelId);
-                                    startActivity(goToPhoneCall);
-                                }
-                            });
-                        } else {
-                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-
-            case R.id.menu_video:
-                try {
-                    new CheckInternet_(internet -> {
-                        if (internet) {
-                            DatabaseReference msg_push = mVideoCallReference.child(mChatPhone).push();
-
-                            String push_id = msg_push.getKey();
-
-                            Map<String, Object> m1 = new HashMap<>();
-                            m1.put("from", mCurrentUserPhone);
-
-                            mVideoCallReference.child(mChatPhone).child(push_id).setValue(m1).addOnCompleteListener(task -> {
-
-                                if (task.isSuccessful()) {
-
-                                    Intent goToVideoCall = new Intent(ChatActivity.this, VideoCallActivity.class);
-                                    goToVideoCall.putExtra("user_phone", mChatPhone);
-                                    goToVideoCall.putExtra("channel_id", push_id);
-                                    startActivity(goToVideoCall);
-                                }
-                            });
-                        } else {
-                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
+//            case R.id.menu_call:
+//                try {
+//                    new CheckInternet_(internet -> {
+//                        if (internet) {
+//                            Map<String, Object> m = new HashMap<>();
+//                            m.put("from", mCurrentUserPhone);
+//
+//                            String voiceChannelId = randomIdentifier();
+//                            mCallReference.child(mChatPhone).child(voiceChannelId).setValue(m).addOnCompleteListener(task -> {
+//                                if (task.isSuccessful()) {
+//                                    Intent goToPhoneCall = new Intent(ChatActivity.this, CallScreenActivity.class);
+//                                    goToPhoneCall.putExtra("user_phone", mChatPhone);
+//                                    goToPhoneCall.putExtra("channel_id", voiceChannelId);
+//                                    startActivity(goToPhoneCall);
+//                                }
+//                            });
+//                        } else {
+//                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                break;
+//
+//            case R.id.menu_video:
+//                try {
+//                    new CheckInternet_(internet -> {
+//                        if (internet) {
+//                            DatabaseReference msg_push = mVideoCallReference.child(mChatPhone).push();
+//
+//                            String push_id = msg_push.getKey();
+//
+//                            Map<String, Object> m1 = new HashMap<>();
+//                            m1.put("from", mCurrentUserPhone);
+//
+//                            mVideoCallReference.child(mChatPhone).child(push_id).setValue(m1).addOnCompleteListener(task -> {
+//
+//                                if (task.isSuccessful()) {
+//
+//                                    Intent goToVideoCall = new Intent(ChatActivity.this, VideoCallActivity.class);
+//                                    goToVideoCall.putExtra("user_phone", mChatPhone);
+//                                    goToVideoCall.putExtra("channel_id", push_id);
+//                                    startActivity(goToVideoCall);
+//                                }
+//                            });
+//                        } else {
+//                            Toast.makeText(ChatActivity.this, getString(R.string.no_internet_error), Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//                break;
 
             case R.id.menu_send_contact:
                 try {
@@ -6090,11 +5805,6 @@ public class ChatActivity extends AppCompatActivity implements AlertDialogHelper
             });
         }
     }
-
-//    public static long getDateDiff(long date1, long date2, TimeUnit timeUnit) {
-//        long diffInMillies = (date2 - date1);
-//        return timeUnit.convert(diffInMillies, TimeUnit.MILLISECONDS);
-//    }
 
     public void provideCorrectUI(){
         if(editModeIsOn){

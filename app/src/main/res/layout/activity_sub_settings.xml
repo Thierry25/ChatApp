@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".activities.SubSettingsActivity">
 
-    <include layout="@layout/app_bar_layout"
+    <include layout="@layout/custom_chat_layout"
         android:id="@+id/sub_settings_bar"/>
 
 

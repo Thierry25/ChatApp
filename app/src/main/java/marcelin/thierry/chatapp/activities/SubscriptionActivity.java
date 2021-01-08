@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.graphics.Typeface;
 import android.os.Bundle;
+
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
@@ -15,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +36,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.ChatAdapter;
 import marcelin.thierry.chatapp.classes.Channel;
@@ -60,6 +66,9 @@ public class SubscriptionActivity extends AppCompatActivity implements SearchVie
 
     private int z;
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +80,7 @@ public class SubscriptionActivity extends AppCompatActivity implements SearchVie
 
         setSupportActionBar(mSubsToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.your_subs);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mSubsAdapter = new ChatAdapter(mSubscriptionList, this);
 
@@ -81,6 +90,22 @@ public class SubscriptionActivity extends AppCompatActivity implements SearchVie
         mSubsList.setAdapter(mSubsAdapter);
 
         mTextToSee = findViewById(R.id.textToSee);
+
+
+        title = findViewById(R.id.title);
+        profileImage = findViewById(R.id.profileImage);
+
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(R.string.your_subs);
+        profileImage.setVisibility(View.GONE);
+
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
+            finish();
+        });
 
         getMySubscriptions();
     }
