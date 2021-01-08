@@ -9,8 +9,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,7 +18,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -193,7 +190,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 final Messages message = messagesList.get(position);
-                if(message.isVisible()){
+                if(message.isVisible() && message.getType().equals("text")){
                     AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                     builder.setTitle(R.string.choose_option)
                             .setItems(R.array.subscriber_channel_options, ((dialog, which) -> {
@@ -294,7 +291,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         isOnActivity = false;
-        mChannelInteractionAdapter.stopMediaPlayers();
+//        mChannelInteractionAdapter.stopMediaPlayers();
         //listenerOnMessage() detachListener
 
     }
@@ -375,7 +372,7 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         menu.setOutsideTouchable(true);
         menu.setFocusable(true);
         menu.showAsDropDown(notification_bell);
-        menu.setAnimationStyle(R.style.emoji_fade_animation_style);
+    //    menu.setAnimationStyle(R.style.emoji_fade_animation_style);
         menu.setNotificationSelectedListener((position, replyNotification) -> {
             menu.dismiss();
             // New Intent to CommentActivity
@@ -426,7 +423,44 @@ public class ChannelSubscriberActivity extends AppCompatActivity {
         conversationQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Chat chatRef = dataSnapshot.getValue(Chat.class);
+                if (chatRef == null) {
+                    return;
+                }
+                Log.i("BlocChatRef", String.valueOf(chatRef.isSeen()));
+                messageRef.child(chatRef.getMsgId())
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Messages m = dataSnapshot.getValue(Messages.class);
 
+                                if (m == null) {
+                                    return;
+                                }
+
+                                m.setMessageId(chatRef.getMsgId());
+                                m.setChannelName(mChannelName);
+                                m.setChannelImage(mChannelImage);
+                                m.setAdmins(mChannelAdmins);
+
+                                int pos = messagesList.indexOf(m);
+                                Log.i("XXA", String.valueOf(pos));
+                                if (pos < 0) {
+                                    return;
+                                }
+                                messagesList.set(pos, m);
+                                mChannelInteractionAdapter.notifyDataSetChanged();
+                                mMessagesList.scrollToPosition(messagesList.size() - 1);
+                                //  mSwipeRefreshLayout.setRefreshing(false);
+
+                            }
+
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
             }
 
             @Override

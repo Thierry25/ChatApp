@@ -3,12 +3,15 @@ package marcelin.thierry.chatapp.activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +27,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.BlockedUsersAdapter;
 import marcelin.thierry.chatapp.classes.Users;
@@ -46,11 +50,23 @@ public class BlockedUsersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         loadLocale();
         setContentView(R.layout.activity_blocked_users);
+        TextView title = findViewById(R.id.title);
+        ImageView backButton = findViewById(R.id.backButton);
+        CircleImageView profileImage = findViewById(R.id.profileImage);
+        profileImage.setVisibility(View.GONE);
+
+        title.setTextSize(20);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.capriola);
+        title.setTypeface(typeface);
+        title.setText(R.string.blocked_users);
+
+        backButton.setOnClickListener(v->{
+            finish();
+        });
 
         mBlockedBar = findViewById(R.id.blockedBar);
         setSupportActionBar(mBlockedBar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.blocked_users);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mBlockedAdapter = new BlockedUsersAdapter(mBlockedUsers, this);
         mBlockedList = findViewById(R.id.blockedList);

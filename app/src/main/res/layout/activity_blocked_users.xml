@@ -1,26 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.BlockedUsersActivity">
 
     <include
-        layout="@layout/app_bar_layout"
+        layout="@layout/custom_chat_layout"
         android:id="@+id/blockedBar"/>
-
-    <TextView
-        android:id="@+id/noUserBlocked"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/blockedBar"
-        android:fontFamily="@font/advent_pro_thin"
-        android:padding="8dp"
-        android:text="@string/no_user_blocked"
-        android:textColor="#FFA500"
-        android:textSize="20sp"
-        android:visibility="gone" />
 
     <RelativeLayout
         android:layout_below="@id/blockedBar"
@@ -42,5 +29,18 @@
         </androidx.core.widget.NestedScrollView>
 
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/noUserBlocked"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/capriola"
+        android:padding="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="@string/no_user_blocked"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:visibility="gone" />
 
 </RelativeLayout>

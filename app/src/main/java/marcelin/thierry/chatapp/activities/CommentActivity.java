@@ -333,17 +333,21 @@ public class CommentActivity extends AppCompatActivity implements VoiceMessagerF
             case "audio":
 
                 TextView audioTime;//audioText;
-                ImageView playAudio;
+                ImageView playAudio, play;
                 SeekBar audioSeekbar;
+                ConstraintLayout comment_section_audio;
 
                 audioTime = commentAudio.findViewById(R.id.audio_time);
                 playAudio = commentAudio.findViewById(R.id.play_audio);
+                play = commentAudio.findViewById(R.id.play);
                 audioSeekbar = commentAudio.findViewById(R.id.audio_seekbar);
+                comment_section_audio = commentAudio.findViewById(R.id.comment_section_audio);
               //  audioText = commentAudio.findViewById(R.id.audioText);
 
                 commentMessage.setVisibility(View.GONE);
                 //  commentImage.setVisibility(View.GONE);
                 commentAudio.setVisibility(View.VISIBLE);
+                comment_section_audio.setVisibility(View.VISIBLE);
 
                 mTimestamp = commentAudio.findViewById(R.id.timestamp);
                 numberOfLikes = commentAudio.findViewById(R.id.numberOfLikes);
@@ -363,7 +367,7 @@ public class CommentActivity extends AppCompatActivity implements VoiceMessagerF
                 Picasso.get().load(channelImage).placeholder(R.drawable.ic_avatar).into(mChannelImage);
                 mMoreSettings.setVisibility(View.GONE);
                 audioSeekbar.setVisibility(View.VISIBLE);
-                playAudio.setVisibility(View.VISIBLE);
+                playAudio.setVisibility(View.GONE);
                 audioTime.setVisibility(View.VISIBLE);
 //                audioText.setVisibility(View.VISIBLE);
 
@@ -389,12 +393,12 @@ public class CommentActivity extends AppCompatActivity implements VoiceMessagerF
 
                 });
 
-                playAudio.setOnClickListener((View view) -> {
+                play.setOnClickListener((View view) -> {
                         if (mediaPlayer.isPlaying()) {
-                          playAudio.setImageResource(R.drawable.ic_channel_play);
+                            play.setImageResource(R.drawable.ic_channel_play);
                             mediaPlayer.pause();
                         } else {
-                         playAudio.setImageResource(R.drawable.ic_channel_pause);
+                            play.setImageResource(R.drawable.ic_channel_pause);
                             mediaPlayer.start();
                             updateSeekbar(audioSeekbar);
                         }
@@ -402,7 +406,7 @@ public class CommentActivity extends AppCompatActivity implements VoiceMessagerF
 
                 mediaPlayer.setOnCompletionListener(mp -> {
                     mediaPlayer.pause();
-                    playAudio.setImageResource(R.drawable.ic_channel_play);
+                    play.setImageResource(R.drawable.ic_channel_play);
                     mediaPlayer.seekTo(0);
                 });
 

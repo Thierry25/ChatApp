@@ -169,7 +169,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     private ImageButton mSendAttachment;
     private MediaPlayer mp1;
     private MediaRecorder mRecorder;
-    private Toolbar mChatToolbar;
+    private Toolbar mChatToolbar, mToolBar;
     private ImageView mSendVoice;
     private ImageView notification_bell;
     private TextView unseenReplies;
@@ -261,16 +261,12 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         mChannelAdmins = i.getStringArrayListExtra("admins");
 
         mChatToolbar = findViewById(R.id.chat_bar_main);
-        setSupportActionBar(mChatToolbar);
+        mChatToolbar.setVisibility(View.GONE);
 
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-//        actionBar.setDisplayHomeAsUpEnabled(true);
-//        actionBar.setDisplayShowCustomEnabled(true);
-
+        mToolBar = findViewById(R.id.toolbar);
+        mToolBar.setVisibility(View.VISIBLE);
+        setSupportActionBar(mToolBar);
         //  mSend = findViewById(R.id.send);
-        getWindow().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.ic_try));
-
         fragment = VoiceMessagerFragment.build(this, true);
 
         // Saving the URI returned by the video and image library
@@ -281,17 +277,11 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         mFileName = Objects.requireNonNull(getExternalCacheDir()).getAbsolutePath();
         mFileName += "/" + randomIdentifier() + ".3gp";
 
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        assert inflater != null;
-        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.chat_bar, null);
-
-        actionBar.setCustomView(view);
-
         askPermission();
 
         mCurrentUserPhone = Objects.requireNonNull(mAuth.getCurrentUser()).getPhoneNumber();
 
-        mProfileImage = findViewById(R.id.profileImage);
+        mProfileImage = mToolBar.findViewById(R.id.profileImage);
         //mProfileName = findViewById(R.id.chat_bar_name);
 
         mTextToSend = findViewById(R.id.send_text);
@@ -305,7 +295,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             nested.fullScroll(View.FOCUS_DOWN);
         }, 200);
 
-        title = findViewById(R.id.title);
+        title = mToolBar.findViewById(R.id.title);
 
         //actionBar.setTitle(mChannelId);
         title.setText(mChannelId);
@@ -338,7 +328,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 
         selectColor = findViewById(R.id.selectColor);
         selectColor.setVisibility(View.VISIBLE);
-        notification_bell = findViewById(R.id.notification_bell);
+        notification_bell = mToolBar.findViewById(R.id.notification_bell);
         unseenReplies = findViewById(R.id.unseenReplies);
 
         mUploadLayout = findViewById(R.id.uploadLayout);
@@ -352,7 +342,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
 //
         Picasso.get().load(mChannelImage).placeholder(R.drawable.ic_avatar).into(mProfileImage);
 
-        mChatToolbar.setOnClickListener(view13 -> {
+        mToolBar.setOnClickListener(view13 -> {
 
             // TODO: Handle view of new layout
 
@@ -383,12 +373,11 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
             }
         });
 
-        backButton = findViewById(R.id.backButton);
+        backButton = mToolBar.findViewById(R.id.backButton);
 
         backButton.setOnClickListener(v -> finish());
 
         mCloseEditMode = findViewById(R.id.closeEditMode);
-
 
         horizontalScrollView = findViewById(R.id.horizontalScrollView);
         whiteBg = findViewById(R.id.whiteBg);
@@ -743,7 +732,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
         menu.setOutsideTouchable(true);
         menu.setFocusable(true);
         menu.showAsDropDown(notification_bell);
-        menu.setAnimationStyle(R.style.emoji_fade_animation_style);
+        //menu.setAnimationStyle(R.style.emoji_fade_animation_style);
         menu.setNotificationSelectedListener((position, replyNotification) -> {
             menu.dismiss();
             // New Intent to CommentActivity
@@ -777,7 +766,6 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mChannelInteractionAdapter.stopMediaPlayers();
     }
 
     private void sendAudio(File file) {
@@ -841,6 +829,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             chatRefMap.put("msgId", push_id);
                             chatRefMap.put("seen", false);
                             chatRefMap.put("visible", true);
+                            chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                             mTextToSend.setText("");
 
@@ -1035,6 +1024,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             chatRefMap.put("msgId", push_id);
                             chatRefMap.put("seen", false);
                             chatRefMap.put("visible", true);
+                            chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                             mTextToSend.setText("");
 
@@ -1166,6 +1156,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                 chatRefMap.put("msgId", push_id);
                                 chatRefMap.put("seen", false);
                                 chatRefMap.put("visible", true);
+                                chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                                 mTextToSend.setText("");
 
@@ -1277,6 +1268,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     chatRefMap.put("msgId", push_id);
                                     chatRefMap.put("seen", false);
                                     chatRefMap.put("visible", true);
+                                    chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                                     mTextToSend.setText("");
 
@@ -1334,7 +1326,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                 break;
 
             case 4:
-                imageSelected.setImageResource(R.drawable.audio);
+                imageSelected.setImageResource(R.drawable.audio_bg);
                 sendDescription.setOnClickListener(v -> {
                     mUploadLayout.setVisibility(View.VISIBLE);
                     addDescriptionDialog.dismiss();
@@ -1391,6 +1383,7 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                             chatRefMap.put("msgId", push_id);
                             chatRefMap.put("seen", false);
                             chatRefMap.put("visible", true);
+                            chatRefMap.put("timestamp", ServerValue.TIMESTAMP);
 
                             mTextToSend.setText("");
 
@@ -1584,8 +1577,9 @@ public class ChannelAdminChatActivity extends AppCompatActivity implements Voice
                                     .child("content").setValue(message);
                             mMessageReference.child(clickedMessageId).child("edited").setValue(true);
                             mMessageReference.child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
-                            messagesList.clear();
-                            loadMessages();
+                            mChannelReference.child(mChannelName).child("messages").child(clickedMessageId).child("timestamp").setValue(ServerValue.TIMESTAMP);
+//                            messagesList.clear();
+//                            loadMessages();
                             mTextToSend.setText("");
                             editModeIsOn = false;
                             provideCorrectUI();

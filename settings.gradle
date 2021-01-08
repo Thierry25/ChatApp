@@ -1,1 +1,1 @@
-include ':app', ':imageeditengine',':filepicker', ':videotrimmer', ':voicemessager'
+include ':app', ':imageeditengine',':filepicker', ':videotrimmer', ':voicemessager', ':pixeditor', ':pix'

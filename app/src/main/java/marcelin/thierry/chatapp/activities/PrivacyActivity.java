@@ -3,14 +3,19 @@ package marcelin.thierry.chatapp.activities;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -27,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import marcelin.thierry.chatapp.R;
 import marcelin.thierry.chatapp.adapters.UserSelectionAdapter;
 import marcelin.thierry.chatapp.classes.Users;
@@ -46,6 +52,10 @@ public class PrivacyActivity extends AppCompatActivity {
 
     private String phoneNumber;
 
+    private TextView title;
+    private ImageView backButton;
+    private CircleImageView profileImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,8 +64,17 @@ public class PrivacyActivity extends AppCompatActivity {
 
         Toolbar mUserSelectionBar = findViewById(R.id.userSelectionBar);
         setSupportActionBar(mUserSelectionBar);
+
+        profileImage = findViewById(R.id.profileImage);
+        title = findViewById(R.id.title);
+        title.setTextSize(32);
+        Typeface typeface = ResourcesCompat.getFont(getApplicationContext(), R.font.allura);
+        title.setTypeface(typeface);
+        title.setText(R.string.except);
+        profileImage.setVisibility(View.GONE);
+
         Objects.requireNonNull(getSupportActionBar()).setTitle(R.string.except);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUserSelectionAdapter = new UserSelectionAdapter(mUsersList);
 
@@ -87,6 +106,12 @@ public class PrivacyActivity extends AppCompatActivity {
                     mStatusReference.child(phoneNumber).child("e").setValue(mSelectedPhoneNumbers);
                 }
             //}
+            finish();
+        });
+
+        backButton = findViewById(R.id.backButton);
+
+        backButton.setOnClickListener(v -> {
             finish();
         });
 

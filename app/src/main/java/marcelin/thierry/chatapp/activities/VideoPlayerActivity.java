@@ -6,11 +6,12 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
 
-import com.github.rtoshiro.view.video.FullscreenVideoLayout;
+//import com.github.rtoshiro.view.video.FullscreenVideoLayout;
 
-import java.io.IOException;
 import java.util.Locale;
 
 import marcelin.thierry.chatapp.R;
@@ -21,7 +22,8 @@ public class VideoPlayerActivity extends AppCompatActivity {
     private String mTimestamp;
 
     private TextView mTime;
-    private FullscreenVideoLayout mVideoLayout;
+    private VideoView mVideoLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +38,16 @@ public class VideoPlayerActivity extends AppCompatActivity {
       //  mTime.setText("Received on " + mTimestamp);
 
         mVideoLayout = findViewById(R.id.videoview);
-        mVideoLayout.setActivity(this);
+     //   mVideoLayout.setActivity(this);
 
         Uri videoUri = Uri.parse(mVideoPath);
         try {
             mVideoLayout.setVideoURI(videoUri);
+            MediaController mediaController = new MediaController(this);
+            mVideoLayout.setMediaController(mediaController);
+            mediaController.setAnchorView(mVideoLayout);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

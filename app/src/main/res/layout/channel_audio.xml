@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
@@ -34,10 +35,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_toEndOf="@id/channel_image"
                 android:maxLength="35"
-                android:textStyle="bold"
                 android:text="@string/channel_name"
                 android:textColor="@color/black"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/timestamp"
@@ -72,66 +73,76 @@
                 android:id="@+id/audioText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:text="Audio"
                 android:textColor="@color/white"
                 android:textSize="22sp"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/play_audio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="110dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:padding="8dp"
                 android:src="@drawable/ic_channel_play" />
 
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/btf_bg"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/comment_section_audio"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/audio"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/pause_audio"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="4dp"
-                android:src="@drawable/ic_channel_pause"
-                android:visibility="gone" />
+                android:visibility="gone">
 
 
-            <SeekBar
-                android:id="@+id/audio_seekbar"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@id/play_audio"
-                android:padding="14dp" />
+                <ImageView
+                    android:id="@+id/play"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="44dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_channel_play"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.107"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
+                <SeekBar
+                    android:id="@+id/audio_seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/play"
+                    android:padding="14dp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/play"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.893"
+                    app:layout_constraintWidth_percent=".55" />
 
-            <TextView
-                android:id="@+id/audio_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/audio_seekbar"
-                android:layout_marginStart="-9dp"
-                android:layout_marginBottom="17dp"
-                android:layout_toEndOf="@id/audio_seekbar"
-                android:gravity="center"
-                android:paddingEnd="4dp"
-                android:paddingRight="8dp"
-                android:text="@string/_00_00"
-                android:textColor="@android:color/white"
-                android:textSize="9sp"
-                android:visibility="visible" />
+                <TextView
+                    android:id="@+id/audio_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/audio_seekbar"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="8dp"
+                    android:layout_toEndOf="@id/audio_seekbar"
+                    android:text="@string/_00_00"
+                    android:textColor="@android:color/white"
+                    android:textSize="13sp"
+                    android:visibility="visible"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/audio_seekbar"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.734" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </RelativeLayout>
 
@@ -140,14 +151,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/messageLayout"
+            android:layout_marginStart="12dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="4dp"
             android:maxLength="250"
-            android:textSize="16sp"
-            android:layout_marginStart="12dp"
-            android:visibility="gone"
             android:text="@string/scroll_horizontally_to_see_the_users_in_the_group"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:visibility="gone" />
 
 
         <TextView
@@ -163,8 +174,8 @@
             android:drawableStart="@drawable/ic_favorite_border"
             android:drawablePadding="8dp"
             android:text="@string/_333l"
-            android:visibility="gone"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/numberOfComments"
@@ -180,8 +191,8 @@
             android:drawableStart="@drawable/ic_chat_bubble_outline"
             android:drawablePadding="8dp"
             android:text="@string/_210c"
-            android:visibility="gone"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/numberOfSeen"
@@ -198,8 +209,8 @@
             android:drawablePadding="8dp"
             android:gravity="end"
             android:text="@string/_210c"
-            android:visibility="gone"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone" />
 
     </RelativeLayout>
 

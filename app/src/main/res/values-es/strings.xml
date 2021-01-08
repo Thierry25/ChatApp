@@ -432,4 +432,22 @@
     <string name="refreshed">Refrescado</string>
     <string name="edit">Editar</string>
 
+    <string name="m_comment">CommentarEd</string>
+    <string name="edit_mode">El modo de edición está activado</string>
+    <string name="edit_limit">Cannot edit message after 20 mns</string>
+    <string name="c_sent_by_you">No se puede editar el mensaje después de 20 minutos</string>
+    <string name="edited">Editado</string>
+
+    <string name="upload_files">Se están cargando sus archivos ...</string>
+    <string name="dummy_percentage">0%</string>
+    <string name="dummy_uploading_size">0mb</string>
+    <string name="dummy_filename">Filename.jpg</string>
+    <string name="pause_upload">Pausar carga</string>
+    <string name="cancel_upload">Cancelar carga</string>
+    <string name="live">En Vivo</string>
+    <string name="btm_pic">Haga clic en las imágenes inferiores</string>
+    <string name="pic_restr">Mantenga pulsado para seleccionar hasta diez imágenes</string>
+    <string name="back">Haga clic en atrás nuevamente para salir.</string>
+
+
 </resources>

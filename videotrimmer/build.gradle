@@ -41,13 +41,13 @@ android {
 }
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
-//    implementation 'com.googlecode.mp4parser:isoparser:1.1.20'
+   // implementation 'com.googlecode.mp4parser:isoparser:1.1.20'
     implementation 'com.github.kapilmhr:Compressor:1.0.1'
 
 
 }
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
-apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 
 android.libraryVariants.findAll { variant -> variant.name == 'Release' } each { variant ->
     task("generate${variant.name}Javadoc", type: Javadoc) {

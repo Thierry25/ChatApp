@@ -431,4 +431,22 @@
     <string name="refreshed">Réctualisé</string>
     <string name="edit">Éditer</string>
 
+    <string name="m_comment">Commenter</string>
+    <string name="edit_mode">Vous pouvez éditer</string>
+    <string name="edit_limit">Impossible de modifier le message après 20 minutes</string>
+    <string name="c_sent_by_you">Impossible de modifier non envoyé par vous</string>
+    <string name="edited">Edité</string>
+
+    <string name="upload_files">Vos fichiers sont en cours de téléchargement.</string>
+    <string name="dummy_percentage">0%</string>
+    <string name="dummy_uploading_size">0mb</string>
+    <string name="dummy_filename">Filename.jpg</string>
+    <string name="pause_upload">Suspendre le téléchargement</string>
+    <string name="cancel_upload">Annuler  le téléchargement</string>
+    <string name="live">En direct</string>
+    <string name="btm_pic">Veuillez cliquer sur les images du bas</string>
+    <string name="pic_restr">Appuyez longuement pour sélectionner jusqu\'à dix photos</string>
+    <string name="back">Veuillez cliquer à nouveau pour quitter</string>
+
+
 </resources>
